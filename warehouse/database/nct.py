@@ -21,10 +21,11 @@ db = dataset.connect(os.environ['OPENTRIALS_DATABASE_URL'])
 source_uuid = helpers.upsert(db['source'], ['name', 'type'], {
     'name': 'nct',
     'type': 'register',
+    'data': {},
 })
 
 
-for item in wh['nct'].find(_limit=10):
+for item in wh['nct'].find(_limit=50):
 # for item in wh['nct'].find(nct_id='NCT00104572'):
     print('Writing: %s' % item['nct_id'])
 
@@ -34,123 +35,147 @@ for item in wh['nct'].find(_limit=10):
     trial_uuid = helpers.upsert(db['trial'], ['primary_register', 'primary_id'], {
         'primary_register': 'nct',
         'primary_id': item['nct_id'],
-        'secondary_ids': {}, # TODO: keys issue
-        'registration_date': item.get('firstreceived_date'),
-        'public_title': item.get('brief_title'),
-        'scientific_title': item.get('official_title'),
-        'description': item.get('brief_summary'),
-        'eligibility_criteria': '', #TODO: merge json
-        'target_sample_size': item.get('enrollment_anticipated'),
-        'first_enrollment_date': item.get('start_date'),
-        'recruitment_status': item.get('overall_status'),
-        'study_type': item.get('study_type'),
-        'study_design': item.get('study_design'),
-        'study_phase': item.get('phase'),
+        'secondary_ids': {'others': item['secondary_ids'] },
+        'registration_date': item['firstreceived_date'],
+        'public_title': item['brief_title'],
+        'brief_summary': item['brief_summary'],
+        'scientific_title': item['official_title'],
+        'description': item['detailed_description'],
+        'recruitment_status': item['overall_status'],
+        'eligibility_criteria': item['eligibility'],
+        'target_sample_size': item['enrollment_anticipated'],
+        'first_enrollment_date': item['start_date'],
+        'study_type': item['study_type'],
+        'study_design': item['study_design'],
+        'study_phase': item['phase'],
+        'primary_outcomes': item['primary_outcomes'] or [],
+        'secondary_outcomes': item['secondary_outcomes'] or [],
     })
-
-
-    # trial_outcome
-
-    # ...
 
 
     # record/trial_record
 
     record_uuid = item['meta_uuid']
+
     helpers.upsert(db['record'], ['uuid'], {
         'uuid': record_uuid,
         'source_uuid': source_uuid,
+        'type': 'trial',
         'data': {'nct_id': item['nct_id']},  # TODO: serialization issue
     }, auto_uuid=False)
+
     helpers.upsert(db['trial_record'], ['trial_uuid', 'record_uuid'], {
         'trial_uuid': trial_uuid,
         'record_uuid': record_uuid,
         'role': 'primary',
-        'data': {},
+        'context': {},
     }, auto_uuid=False)
+
+
+    # publication/trial_publication
+
+    # ...
+
+
+    # document/trial_document
+
+    # ...
 
 
     # problem/trial_problem
 
-    for condition in item.get('conditions', []):
+    for condition in item['conditions'] or []:
+
         problem_uuid = helpers.upsert(db['problem'], ['name', 'type'], {
             'name': condition,
-            'type': 'condition',
+            'type': None,
             'data': {},
         })
+
         helpers.upsert(db['trial_problem'], ['trial_uuid', 'problem_uuid'], {
             'trial_uuid': trial_uuid,
             'problem_uuid': problem_uuid,
-            'role': 'studied',
-            'data': {},
+            'role': None,
+            'context': {},
         }, auto_uuid=False)
 
 
     # intervention/trial_intervention
 
-    for intervention in item.get('interventions', []) or []:
+    for intervention in item['interventions'] or []:
+
         intervention_uuid = helpers.upsert(db['intervention'], ['name', 'type'], {
             'name': intervention['intervention_name'],
-            'type': 'drug',
+            'type': None,
             'data': {},
         })
+
         helpers.upsert(db['trial_intervention'], ['trial_uuid', 'intervention_uuid'], {
             'trial_uuid': trial_uuid,
             'intervention_uuid': intervention_uuid,
-            'role': 'studied',
-            'data': intervention,
+            'role': None,
+            'context': intervention,
         }, auto_uuid=False)
 
 
     # location/trial_location
-    for location in item.get('location_countries', []) or []:
+
+    for location in item['location_countries'] or []:
+
         location_uuid = helpers.upsert(db['location'], ['name', 'type'], {
             'name': location,
             'type': 'country',
             'data': {},
         })
+
         helpers.upsert(db['trial_location'], ['trial_uuid', 'location_uuid'], {
             'trial_uuid': trial_uuid,
             'location_uuid': location_uuid,
             'role': 'recruitment_countries',
-            'data': {},
+            'context': {},
         }, auto_uuid=False)
 
 
     # organisation/trial_organisation
 
-    for sponsor in item.get('sponsors', []) or []:
+    for sponsor in item['sponsors'] or []:
+
         # TODO: get more information
         sponsor = sponsor.get('lead_sponsor', None)
         if sponsor is None:
             continue
+
         organisation_uuid = helpers.upsert(db['organisation'], ['name'], {
             'name': sponsor['agency'],
-            'type': 'other',
+            'type': None,
             'data': {},
         })
+
         helpers.upsert(db['trial_organisation'], ['trial_uuid', 'organisation_uuid'], {
             'trial_uuid': trial_uuid,
             'organisation_uuid': organisation_uuid,
             'role': 'primary_sponsor',
-            'data': {},
+            'context': {},
         }, auto_uuid=False)
 
 
     # person/trial_person
 
-    for person in item.get('overall_officials', []) or []:
+    for person in item['overall_officials'] or []:
+
         # TODO: get more information
         if person['role'] != 'Principal Investigator':
             continue
+
         person_uuid = helpers.upsert(db['person'], ['name'], {
             'name': person['last_name'],
-            'type': 'other',
+            'type': None,
             'data': {},
         })
+
         helpers.upsert(db['trial_person'], ['trial_uuid', 'person_uuid'], {
             'trial_uuid': trial_uuid,
             'person_uuid': person_uuid,
             'role': 'principal_investigator',
-            'data': {},
+            'context': {},
         }, auto_uuid=False)
