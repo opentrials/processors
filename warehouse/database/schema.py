@@ -49,53 +49,6 @@ sa.Table('trial', metadata,
 )
 
 
-sa.Table('trial_record', metadata,
-
-        # Columns
-
-        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
-        sa.Column('record_uuid', sa.Text, sa.ForeignKey('record.uuid')),
-        sa.Column('role', sa.Enum(
-            'primary',
-            'secondary',
-            name='trial_record_role',
-        )),
-
-        # Constraints
-
-        sa.PrimaryKeyConstraint('trial_uuid', 'record_uuid'),
-
-)
-
-
-sa.Table('trial_publication', metadata,
-
-        # Columns
-
-        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
-        sa.Column('publication_uuid', sa.Text, sa.ForeignKey('publication.uuid')),
-
-        # Constraints
-
-        sa.PrimaryKeyConstraint('trial_uuid', 'publication_uuid'),
-
-)
-
-
-sa.Table('trial_document', metadata,
-
-        # Columns
-
-        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
-        sa.Column('document_uuid', sa.Text, sa.ForeignKey('document.uuid')),
-
-        # Constraints
-
-        sa.PrimaryKeyConstraint('trial_uuid', 'document_uuid'),
-
-)
-
-
 sa.Table('trial_outcome', metadata,
 
         # Columns
@@ -117,12 +70,74 @@ sa.Table('trial_outcome', metadata,
 )
 
 
+sa.Table('trial_record', metadata,
+
+        # Columns
+
+        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
+        sa.Column('record_uuid', sa.Text, sa.ForeignKey('record.uuid')),
+        sa.Column('role', sa.Enum(
+            'primary',
+            'secondary',
+            name='trial_record_role',
+        )),
+        sa.Column('data', JSONB),
+
+        # Constraints
+
+        sa.PrimaryKeyConstraint('trial_uuid', 'record_uuid'),
+
+)
+
+
+sa.Table('trial_publication', metadata,
+
+        # Columns
+
+        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
+        sa.Column('publication_uuid', sa.Text, sa.ForeignKey('publication.uuid')),
+        sa.Column('role', sa.Enum(
+            'associated',
+            name='trial_publication_role',
+        )),
+        sa.Column('data', JSONB),
+
+        # Constraints
+
+        sa.PrimaryKeyConstraint('trial_uuid', 'publication_uuid'),
+
+)
+
+
+sa.Table('trial_document', metadata,
+
+        # Columns
+
+        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
+        sa.Column('document_uuid', sa.Text, sa.ForeignKey('document.uuid')),
+        sa.Column('role', sa.Enum(
+            'associated',
+            name='trial_document_role',
+        )),
+        sa.Column('data', JSONB),
+
+        # Constraints
+
+        sa.PrimaryKeyConstraint('trial_uuid', 'document_uuid'),
+
+)
+
+
 sa.Table('trial_problem', metadata,
 
         # Columns
 
         sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
         sa.Column('problem_uuid', sa.Text, sa.ForeignKey('problem.uuid')),
+        sa.Column('role', sa.Enum(
+            'studied',
+            name='trial_problem_role',
+        )),
         sa.Column('data', JSONB),
 
         # Constraints
@@ -138,6 +153,10 @@ sa.Table('trial_intervention', metadata,
 
         sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
         sa.Column('intervention_uuid', sa.Text, sa.ForeignKey('intervention.uuid')),
+        sa.Column('role', sa.Enum(
+            'studied',
+            name='trial_intervention_role',
+        )),
         sa.Column('data', JSONB),
 
         # Constraints
@@ -167,27 +186,6 @@ sa.Table('trial_location', metadata,
 )
 
 
-sa.Table('trial_person', metadata,
-
-        # Columns
-
-        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
-        sa.Column('person_uuid', sa.Text, sa.ForeignKey('person.uuid')),
-        sa.Column('role', sa.Enum(
-            'public_queries',
-            'scientific_queries',
-            'other',
-            name='trial_person_role',
-        )),
-        sa.Column('data', JSONB),
-
-        # Constraints
-
-        sa.PrimaryKeyConstraint('trial_uuid', 'person_uuid'),
-
-)
-
-
 sa.Table('trial_organisation', metadata,
 
         # Columns
@@ -210,12 +208,34 @@ sa.Table('trial_organisation', metadata,
 )
 
 
+sa.Table('trial_person', metadata,
+
+        # Columns
+
+        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
+        sa.Column('person_uuid', sa.Text, sa.ForeignKey('person.uuid')),
+        sa.Column('role', sa.Enum(
+            'principal_investigator',
+            'public_queries',
+            'scientific_queries',
+            'other',
+            name='trial_person_role',
+        )),
+        sa.Column('data', JSONB),
+
+        # Constraints
+
+        sa.PrimaryKeyConstraint('trial_uuid', 'person_uuid'),
+
+)
+
+
 sa.Table('record', metadata,
 
         # Columns
 
         sa.Column('uuid', sa.Text, primary_key=True),
-        sa.Column('source', sa.Text, sa.ForeignKey('source.uuid')),
+        sa.Column('source_uuid', sa.Text, sa.ForeignKey('source.uuid')),
         sa.Column('data', JSONB),
 
 )
@@ -226,7 +246,7 @@ sa.Table('publication', metadata,
         # Columns
 
         sa.Column('uuid', sa.Text, primary_key=True),
-        sa.Column('source', sa.Text, sa.ForeignKey('source.uuid')),
+        sa.Column('source_uuid', sa.Text, sa.ForeignKey('source.uuid')),
         sa.Column('name', sa.Text),
 
 )
@@ -237,7 +257,7 @@ sa.Table('document', metadata,
         # Columns
 
         sa.Column('uuid', sa.Text, primary_key=True),
-        sa.Column('source', sa.Text, sa.ForeignKey('source.uuid')),
+        sa.Column('source_uuid', sa.Text, sa.ForeignKey('source.uuid')),
         sa.Column('name', sa.Text),
 
 )
@@ -332,10 +352,16 @@ sa.Table('organisation', metadata,
 
         sa.Column('uuid', sa.Text, primary_key=True),
         sa.Column('name', sa.Text),
+        sa.Column('type', sa.Enum(
+            'other',
+            name='organisation_type',
+        )),
+        sa.Column('data', JSONB),
 
         # Constraints
 
-        # develop based on de-duplication
+        # Deduplication strategy for testing purposes
+        sa.UniqueConstraint('name', 'type'),
 
 )
 
@@ -344,10 +370,16 @@ sa.Table('person', metadata,
 
         sa.Column('uuid', sa.Text, primary_key=True),
         sa.Column('name', sa.Text),
+        sa.Column('type', sa.Enum(
+            'other',
+            name='person_type',
+        )),
+        sa.Column('data', JSONB),
 
         # Constraints
 
-        # develop based on de-duplication
+        # Deduplication strategy for testing purposes
+        sa.UniqueConstraint('name', 'type'),
 
 )
 
