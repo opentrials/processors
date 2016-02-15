@@ -23,10 +23,10 @@ sa.Table('trial', metadata,
         sa.Column('uuid', sa.Text, primary_key=True),
 
         # General
+        sa.Column('primary_register', sa.Text),
         sa.Column('primary_id', sa.Text),
         sa.Column('secondary_ids', JSONB),
         sa.Column('registration_date', sa.Date),
-        sa.Column('actualization_date', sa.Date),
         sa.Column('public_title', sa.Text),
         sa.Column('scientific_title', sa.Text),
         sa.Column('description', sa.Text),
@@ -44,7 +44,54 @@ sa.Table('trial', metadata,
 
         # Constraints
 
-        # ...
+        sa.UniqueConstraint('primary_register', 'primary_id'),
+
+)
+
+
+sa.Table('trial_record', metadata,
+
+        # Columns
+
+        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
+        sa.Column('record_uuid', sa.Text, sa.ForeignKey('record.uuid')),
+        sa.Column('role', sa.Enum(
+            'primary',
+            'secondary',
+            name='trial_record_role',
+        )),
+
+        # Constraints
+
+        sa.PrimaryKeyConstraint('trial_uuid', 'record_uuid'),
+
+)
+
+
+sa.Table('trial_publication', metadata,
+
+        # Columns
+
+        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
+        sa.Column('publication_uuid', sa.Text, sa.ForeignKey('publication.uuid')),
+
+        # Constraints
+
+        sa.PrimaryKeyConstraint('trial_uuid', 'publication_uuid'),
+
+)
+
+
+sa.Table('trial_document', metadata,
+
+        # Columns
+
+        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
+        sa.Column('document_uuid', sa.Text, sa.ForeignKey('document.uuid')),
+
+        # Constraints
+
+        sa.PrimaryKeyConstraint('trial_uuid', 'document_uuid'),
 
 )
 
@@ -159,34 +206,6 @@ sa.Table('trial_organisation', metadata,
         # Constraints
 
         sa.PrimaryKeyConstraint('trial_uuid', 'organisation_uuid'),
-
-)
-
-
-sa.Table('trial_publication', metadata,
-
-        # Columns
-
-        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
-        sa.Column('publication_uuid', sa.Text, sa.ForeignKey('publication.uuid')),
-
-        # Constraints
-
-        sa.PrimaryKeyConstraint('trial_uuid', 'publication_uuid'),
-
-)
-
-
-sa.Table('trial_document', metadata,
-
-        # Columns
-
-        sa.Column('trial_uuid', sa.Text, sa.ForeignKey('trial.uuid')),
-        sa.Column('document_uuid', sa.Text, sa.ForeignKey('document.uuid')),
-
-        # Constraints
-
-        sa.PrimaryKeyConstraint('trial_uuid', 'document_uuid'),
 
 )
 
@@ -316,7 +335,7 @@ sa.Table('organisation', metadata,
 
         # Constraints
 
-        # sa.UniqueConstraint('name'),
+        # develop based on de-duplication
 
 )
 
@@ -328,7 +347,7 @@ sa.Table('person', metadata,
 
         # Constraints
 
-        # sa.UniqueConstraint('name'),
+        # develop based on de-duplication
 
 )
 
