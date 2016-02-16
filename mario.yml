@@ -14,12 +14,9 @@ deploy:
     -p $OPENTRIALS_DOCKER_PASS
   - docker push opentrialsrobot/warehouse
   # Stacks
-  # - tutum stack inspect warehouse-database ||
-    # tutum stack create --sync -f stacks/database.yml -n warehouse-database
-  # - tutum stack update --sync -f stacks/database.yml warehouse-database
-
-preview:
-  - docker-compose -f stacks/database.yml up
+  - tutum stack inspect warehouse-database ||
+    tutum stack create --sync -f stacks/database.yml -n warehouse-database
+  - tutum stack update --sync -f stacks/database.yml warehouse-database
 
 test:
   - echo 'no-op'

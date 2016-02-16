@@ -5,6 +5,6 @@ if [ ! -f .git/hooks/pre-commit ]; then
 fi
 
 # Python env
-virtualenv venv
+virtualenv venv -p python2
 source venv/bin/activate
 pip install -Urrequirements.dev.txt
