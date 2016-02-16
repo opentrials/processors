@@ -50,6 +50,14 @@ Relationship tables:
 
 ![diagram](https://raw.githubusercontent.com/opentrials/warehouse/master/docs/database.png)
 
+### Schema Declaration
+
+https://github.com/opentrials/warehouse/blob/master/warehouse/database/schema.py
+
+### Warehouse-to-Database Script Example
+
+https://github.com/opentrials/warehouse/blob/master/warehouse/database/nct.py
+
 ### Test Dump
 
 https://raw.githubusercontent.com/opentrials/warehouse/master/docs/database.sql
