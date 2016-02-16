@@ -49,7 +49,7 @@ Relationship tables:
 
 ### Test Dump
 
-[download](database.sql)
+https://raw.githubusercontent.com/opentrials/warehouse/master/docs/database.sql
 
 ## TODO
 
