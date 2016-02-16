@@ -18,7 +18,8 @@ deploy:
     tutum stack create --sync -f stacks/database.yml -n warehouse-database
   - tutum stack update --sync -f stacks/database.yml warehouse-database
 
+review:
+  - pylama warehouse
+
 test:
-  - echo 'no-op'
-  # - pylama warehouse
-  # - py.test -vs tests
+  - py.test -vs tests
