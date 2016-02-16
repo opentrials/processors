@@ -18,7 +18,7 @@ Design compliance clients:
 Design patterns:
 - `uuid` as primary keys + unique constraint on natural keys.
 - data entegrity - relathiohip table is prefered way over array or json.
-- minimum nullable fields - make fields nullable only if there is a good readon.
+- minimum nullable fields - make fields nullable only if there is a good reason.
 - because of data inconsistency from the different sources `type` and `data` fields
 are used for many entities. `data` is a freejson with strcuture depends on `type`.
 - for trial relationships `role` and `context` fields are used. E.g. some person
