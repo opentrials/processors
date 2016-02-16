@@ -48,7 +48,7 @@ Relationship tables:
 
 ### ER Diagram
 
-![diagram](database.png)
+![diagram](https://raw.githubusercontent.com/opentrials/warehouse/master/docs/database.png)
 
 ### Test Dump
 
