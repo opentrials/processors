@@ -14,9 +14,9 @@ deploy:
     -p $OPENTRIALS_DOCKER_PASS
   - docker push opentrialsrobot/warehouse
   # Stacks
-  - tutum stack inspect warehouse-database ||
-    tutum stack create --sync -f stacks/database.yml -n warehouse-database
-  - tutum stack update --sync -f stacks/database.yml warehouse-database
+  - tutum stack inspect mapper ||
+    tutum stack create --sync -f stacks/mapper.yml -n mapper
+  - tutum stack update --sync -f stacks/mapper.yml mapper
 
 review:
   - pylama warehouse

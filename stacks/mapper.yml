@@ -1,13 +1,13 @@
-create:
+schema:
   image: opentrialsrobot/warehouse
-  command: python -m warehouse.database.schema
+  command: python -m mapper.database
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 nct:
   image: opentrialsrobot/warehouse
-  command: python -m warehouse.database.nct
+  command: python -m mapper.nct
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:

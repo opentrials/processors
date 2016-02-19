@@ -1,3 +1,5 @@
 *
-!warehouse/
+!exporter/
+!mapper/
+!processor/
 !requirements.txt
