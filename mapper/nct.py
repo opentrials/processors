@@ -8,6 +8,8 @@ import os
 import uuid
 import dataset
 import sqlalchemy as sa
+from dotenv import load_dotenv
+load_dotenv('.env')
 
 from . import helpers
 
