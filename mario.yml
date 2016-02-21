@@ -13,13 +13,18 @@ deploy:
     -u $OPENTRIALS_DOCKER_USER
     -p $OPENTRIALS_DOCKER_PASS
   - docker push opentrialsrobot/warehouse
-  # Stacks
+  - tutum stack inspect exporter ||
+    tutum stack create --sync -f docker-compose/exporter.yml -n exporter
+  - tutum stack update --sync -f docker-compose/exporter.yml exporter
   - tutum stack inspect mapper ||
-    tutum stack create --sync -f stacks/mapper.yml -n mapper
-  - tutum stack update --sync -f stacks/mapper.yml mapper
-
-review:
-  - pylama warehouse
+    tutum stack create --sync -f docker-compose/mapper.yml -n mapper
+  - tutum stack update --sync -f docker-compose/mapper.yml mapper
+  - tutum stack inspect processor ||
+    tutum stack create --sync -f docker-compose/processor.yml -n processor
+  - tutum stack update --sync -f docker-compose/processor.yml processor
 
 test:
-  - py.test -vs tests
+  - pylama exporter
+  - pylama mapper
+  - pylama processor
+  - py.test tests

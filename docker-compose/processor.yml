@@ -1,0 +1,5 @@
+process:
+  image: opentrialsrobot/warehouse
+  command: echo 'no-op'
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
