@@ -24,7 +24,7 @@ deploy:
   - tutum stack update --sync -f docker-compose/processor.yml processor
 
 test:
-  - pylama exporter
-  - pylama mapper
-  - pylama processor
+  # - pylama exporter
+  # - pylama mapper
+  # - pylama processor
   - py.test tests
