@@ -50,11 +50,11 @@ for item in wh['isrctn'].find(_limit=50):
             'euctr': item['eudract_number'],
             'nct': item['clinicaltrialsgov_number'],
         },
-        'registration_date': item['date_applied'],
+        'registration_date': item['date_applied'],  # TODO: review
         'public_title': item['title'],
         'brief_summary': item['plain_english_summary'],
         'scientific_title': item['scientific_title'],
-        'description': None,
+        'description': None,  # TODO: review
 
         # Recruitment
         'recruitment_status': item['recruitment_status'],
@@ -68,7 +68,7 @@ for item in wh['isrctn'].find(_limit=50):
         # Study design
         'study_type': item['primary_study_design'],
         'study_design': item['study_design'],
-        'study_phase': item['phase'] or 'N/A',
+        'study_phase': item['phase'] or 'N/A',  # TODO: review
 
         # Outcomes
         'primary_outcomes': item['primary_outcome_measures'] or [],
@@ -119,7 +119,7 @@ for item in wh['isrctn'].find(_limit=50):
 
     # location/trial_location
 
-    # TODO move to scraper
+    # TODO: move to scraper
     countries = (item['countries_of_recruitment'] or '').split(',') or []
 
     for country in countries:
