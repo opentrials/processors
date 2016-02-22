@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from dotenv import load_dotenv
 load_dotenv('.env')
 
-from .helpers import upsert
+from ..helpers import upsert
 
 
 wh = dataset.connect(os.environ['OPENTRIALS_WAREHOUSE_URL'])
