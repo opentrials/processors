@@ -1,6 +1,41 @@
+actrn:
+  image: opentrialsrobot/warehouse
+  command: python -m mapper.direct.actrn
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+euctr:
+  image: opentrialsrobot/warehouse
+  command: python -m mapper.direct.euctr
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+gsk:
+  image: opentrialsrobot/warehouse
+  command: python -m mapper.direct.gsk
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+isrctn:
+  image: opentrialsrobot/warehouse
+  command: python -m mapper.direct.isrctn
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+jprn:
+  image: opentrialsrobot/warehouse
+  command: python -m mapper.direct.jprn
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
 nct:
   image: opentrialsrobot/warehouse
-  command: python -m mapper.nct
+  command: python -m mapper.direct.nct
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
