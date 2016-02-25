@@ -30,4 +30,4 @@ for item in wh['isrctn']:
     helpers.update_trial(
         conn=wh,
         mapping=mapping,
-        identifier='euctr::%s' % item['meta_uuid'])
+        identifier='isrctn::%s' % item['meta_uuid'])
