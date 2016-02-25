@@ -1,5 +1,17 @@
-process:
+index-euctr:
   image: opentrialsrobot/warehouse
-  command: echo 'no-op'
+  command: python -m processor.trials.euctr
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+
+index-isrctn:
+  image: opentrialsrobot/warehouse
+  command: python -m processor.trials.isrctn
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+
+index-nct:
+  image: opentrialsrobot/warehouse
+  command: python -m processor.trials.nct
   environment:
     OPENTRIALS_WAREHOUSE_URL:
