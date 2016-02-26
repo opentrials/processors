@@ -1,0 +1,6 @@
+script:
+  image: opentrialsrobot/warehouse
+  command: python -m mapper.direct.actrn
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
