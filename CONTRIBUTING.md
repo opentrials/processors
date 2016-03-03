@@ -1,6 +1,6 @@
 # Contributing
 
-The contributing guideline.
+The project follows the [Open Knowledge International coding standards](https://github.com/okfn/coding-standards).
 
 ## Getting Started
 
@@ -23,16 +23,21 @@ To build a docker image:
 $ make build
 ```
 
+## Linting
+
+To run lint:
+
+```
+$ make lint
+```
+
 ## Testing
 
-To run code review and tests:
+To run tests:
 
 ```
 $ make test
 ```
-
-The project follow the next style guides:
-- [PEP 8 - Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/)
 
 ## Deploying
 

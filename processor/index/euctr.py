@@ -5,7 +5,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import dataset
-import sqlalchemy as sa
 from collections import OrderedDict
 
 from .. import helpers

@@ -5,9 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-import uuid
 import dataset
-import sqlalchemy as sa
 from dotenv import load_dotenv
 load_dotenv('.env')
 
