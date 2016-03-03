@@ -1,5 +1,0 @@
-script:
-  image: opentrialsrobot/warehouse
-  command: python -m processor.index.nct
-  environment:
-    OPENTRIALS_WAREHOUSE_URL:
