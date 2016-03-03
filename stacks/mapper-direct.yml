@@ -1,3 +1,5 @@
+# Direct mapping (warehouse to database)
+
 actrn:
   image: opentrialsrobot/warehouse
   command: python -m mapper.direct.actrn

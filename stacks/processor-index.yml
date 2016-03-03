@@ -1,3 +1,5 @@
+# Indexing
+
 euctr:
   image: opentrialsrobot/warehouse
   command: python -m processor.index.euctr
