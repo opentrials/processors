@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import time
 import dataset
 from dotenv import load_dotenv
 load_dotenv('.env')
@@ -18,21 +19,18 @@ db = dataset.connect(os.environ['OPENTRIALS_DATABASE_URL'])
 
 # source
 
-source_uuid = upsert(db['source'], ['name', 'type'], {
+source_id = upsert(db['sources'], ['name', 'type'], {
     'name': 'jprn',
     'type': 'register',
     'data': {},
 })
 
 
-for item in wh['jprn'].find(_limit=50):
-# for item in wh['jprn'].find(unique_trial_number='UMIN000006808'):
-    print('Writing: %s' % item['unique_trial_number'])
+for item in wh['jprn']:
 
+    # trials
 
-    # trial
-
-    trial_uuid = upsert(db['trial'], ['primary_register', 'primary_id'], {
+    trial_id = upsert(db['trials'], ['primary_register', 'primary_id'], {
 
         # General
         'primary_register': 'jprn',
@@ -65,90 +63,90 @@ for item in wh['jprn'].find(_limit=50):
     })
 
 
-    # record/trial_record
+    # records/trials_records
 
-    record_uuid = item['meta_uuid']
+    record_id = item['meta_uuid']
 
-    upsert(db['record'], ['uuid'], {
-        'uuid': record_uuid,
-        'source_uuid': source_uuid,
+    upsert(db['records'], ['id'], {
+        'id': record_id,
+        'source_id': source_id,
         'type': 'trial',
         'data': {'unique_trial_number': item['unique_trial_number']},  # TODO: serialization issue
-    }, auto_uuid=False)
+    }, auto_id=False)
 
-    upsert(db['trial_record'], ['trial_uuid', 'record_uuid'], {
-        'trial_uuid': trial_uuid,
-        'record_uuid': record_uuid,
+    upsert(db['trials_records'], ['trial_id', 'record_id'], {
+        'trial_id': trial_id,
+        'record_id': record_id,
         'role': 'primary',
         'context': {},
-    }, auto_uuid=False)
+    }, auto_id=False)
 
 
-    # publication/trial_publication
-
-    # ...
-
-
-    # document/trial_document
+    # publications/trials_publications
 
     # ...
 
 
-    # problem/trial_problem
+    # documents/trials_documents
+
+    # ...
+
+
+    # problems/trials_problems
 
     # TODO: item['condition'] - free text some time
 
 
-    # intervention/trial_intervention
+    # interventions/trials_interventions
 
     # TODO: item['interventions'] - array of free texts
 
 
-    # location/trial_location
+    # locations/trials_locations
 
     # TODO: fix on scraper item['region'] when possible
 
 
-    # organisation/trial_organisation
+    # organisations/trials_organisations
 
-    organisation_uuid = upsert(db['organisation'], ['name'], {
+    organisation_id = upsert(db['organisations'], ['name'], {
         'name': item['name_of_primary_sponsor'],
         'type': None,
         'data': {},
     })
 
-    upsert(db['trial_organisation'], ['trial_uuid', 'organisation_uuid'], {
-        'trial_uuid': trial_uuid,
-        'organisation_uuid': organisation_uuid,
+    upsert(db['trials_organisations'], ['trial_id', 'organisation_id'], {
+        'trial_id': trial_id,
+        'organisation_id': organisation_id,
         'role': 'primary_sponsor',
         'context': {},
-    }, auto_uuid=False)
+    }, auto_id=False)
 
-    organisation_uuid = upsert(db['organisation'], ['name'], {
+    organisation_id = upsert(db['organisations'], ['name'], {
         'name': item['source_of_funding'],
         'type': None,
         'data': {},
     })
 
-    upsert(db['trial_organisation'], ['trial_uuid', 'organisation_uuid'], {
-        'trial_uuid': trial_uuid,
-        'organisation_uuid': organisation_uuid,
+    upsert(db['trials_organisations'], ['trial_id', 'organisation_id'], {
+        'trial_id': trial_id,
+        'organisation_id': organisation_id,
         'role': 'funder',
         'context': {},
-    }, auto_uuid=False)
+    }, auto_id=False)
 
 
-    # person/trial_person
+    # persons/trials_persons
 
-    person_uuid = upsert(db['person'], ['name'], {
+    person_id = upsert(db['persons'], ['name'], {
         'name': item['research_name_of_lead_principal_investigator'],
         'type': None,
         'data': {},
     })
 
-    upsert(db['trial_person'], ['trial_uuid', 'person_uuid'], {
-        'trial_uuid': trial_uuid,
-        'person_uuid': person_uuid,
+    upsert(db['trials_persons'], ['trial_id', 'person_id'], {
+        'trial_id': trial_id,
+        'person_id': person_id,
         'role': 'principal_investigator',
         'context': {
             'research_name_of_lead_principal_investigator': item['research_name_of_lead_principal_investigator'],
@@ -159,17 +157,17 @@ for item in wh['jprn'].find(_limit=50):
             'research_homepage_url': item['research_homepage_url'],
             'research_email': item['research_email'],
         },
-    }, auto_uuid=False)
+    }, auto_id=False)
 
-    person_uuid = upsert(db['person'], ['name'], {
+    person_id = upsert(db['persons'], ['name'], {
         'name': item['public_name_of_contact_person'],
         'type': None,
         'data': {},
     })
 
-    upsert(db['trial_person'], ['trial_uuid', 'person_uuid'], {
-        'trial_uuid': trial_uuid,
-        'person_uuid': person_uuid,
+    upsert(db['trials_persons'], ['trial_id', 'person_id'], {
+        'trial_id': trial_id,
+        'person_id': person_id,
         'role': 'public_queries',
         'context': {
             'public_name_of_contact_person': item['public_name_of_contact_person'],
@@ -180,4 +178,10 @@ for item in wh['jprn'].find(_limit=50):
             'public_homepage_url': item['public_homepage_url'],
             'public_email': item['public_email'],
         },
-    }, auto_uuid=False)
+    }, auto_id=False)
+
+
+    # Log mapping
+
+    print('Mapped: %s' % item['unique_trial_number'])
+    time.sleep(0.1)

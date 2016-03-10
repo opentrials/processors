@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import time
 import dataset
 from dotenv import load_dotenv
 load_dotenv('.env')
@@ -16,23 +17,20 @@ wh = dataset.connect(os.environ['OPENTRIALS_WAREHOUSE_URL'])
 db = dataset.connect(os.environ['OPENTRIALS_DATABASE_URL'])
 
 
-# source
+# sources
 
-source_uuid = upsert(db['source'], ['name', 'type'], {
+source_id = upsert(db['sources'], ['name', 'type'], {
     'name': 'euctr',
     'type': 'register',
     'data': {},
 })
 
 
-for item in wh['euctr'].find(_limit=50):
-# for item in wh['euctr'].find(eudract_number_with_country='2010-024332-42-BE'):
+for item in wh['euctr']:
 
-    print('Writing: %s' % item['eudract_number_with_country'])
+    # trials
 
-    # trial
-
-    trial_uuid = upsert(db['trial'], ['primary_register', 'primary_id'], {
+    trial_id = upsert(db['trials'], ['primary_register', 'primary_id'], {
 
         # General
         'primary_register': 'euctr',
@@ -43,8 +41,8 @@ for item in wh['euctr'].find(_limit=50):
             'isrctn': item['isrctn_international_standard_randomised_controlled_trial_numbe'],  # TODO: why number, scraper has number
         },
         'registration_date': item['date_on_which_this_record_was_first_entered'],
-        'public_title': item['title_of_the_trial_for_lay_people_in'],
-        'brief_summary': item['trial_main_objective_of_the_trial'],  # TODO: review
+        'public_title': item['title_of_the_trial_for_lay_people_in'] or '',  # TODO: review
+        'brief_summary': item['trial_main_objective_of_the_trial'] or '',  # TODO: review
         'scientific_title': item['full_title_of_the_trial'],
         'description': None,  # TODO: review
 
@@ -71,87 +69,93 @@ for item in wh['euctr'].find(_limit=50):
     })
 
 
-    # record/trial_record
+    # records/trials_records
 
-    record_uuid = item['meta_uuid']
+    record_id = item['meta_uuid']
 
-    upsert(db['record'], ['uuid'], {
-        'uuid': record_uuid,
-        'source_uuid': source_uuid,
+    upsert(db['records'], ['id'], {
+        'id': record_id,
+        'source_id': source_id,
         'type': 'trial',
         'data': {'eudract_number_with_country': item['eudract_number_with_country']},  # TODO: serialization issue
-    }, auto_uuid=False)
+    }, auto_id=False)
 
-    upsert(db['trial_record'], ['trial_uuid', 'record_uuid'], {
-        'trial_uuid': trial_uuid,
-        'record_uuid': record_uuid,
+    upsert(db['trials_records'], ['trial_id', 'record_id'], {
+        'trial_id': trial_id,
+        'record_id': record_id,
         'role': 'primary',
         'context': {},
-    }, auto_uuid=False)
+    }, auto_id=False)
 
 
-    # publication/trial_publication
-
-    # ...
-
-
-    # document/trial_document
+    # publications/trials_publications
 
     # ...
 
 
-    # problem/trial_problem
+    # documents/trials_documents
+
+    # ...
+
+
+    # problems/trials_problems
 
     # TODO: discover item['trial_medical_conditions_being_investigated']
 
 
-    # intervention/trial_intervention
+    # interventions/trials_interventions
 
     for intervention in item['imps'] or []:
 
         if 'product_name' not in intervention:
             continue
 
-        intervention_uuid = upsert(db['intervention'], ['name', 'type'], {
+        intervention_id = upsert(db['interventions'], ['name', 'type'], {
             'name': intervention['product_name'],
             'type': None,
             'data': {},
         })
 
-        upsert(db['trial_intervention'], ['trial_uuid', 'intervention_uuid'], {
-            'trial_uuid': trial_uuid,
-            'intervention_uuid': intervention_uuid,
+        upsert(db['trials_interventions'], ['trial_id', 'intervention_id'], {
+            'trial_id': trial_id,
+            'intervention_id': intervention_id,
             'role': None,
             'context': intervention,
-        }, auto_uuid=False)
+        }, auto_id=False)
 
 
-    # location/trial_location
+    # locations/trials_locations
 
     # TODO: discover on scraper level
 
 
-    # organisation/trial_organisation
+    # organisations/trials_organisations
 
     for sponsor in item['sponsors'] or []:
 
         if 'name_of_sponsor' not in intervention:
             continue
 
-        organisation_uuid = upsert(db['organisation'], ['name'], {
+        organisation_id = upsert(db['organisations'], ['name'], {
             'name': sponsor['name_of_sponsor'],
             'type': None,
             'data': {},
         })
 
-        upsert(db['trial_organisation'], ['trial_uuid', 'organisation_uuid'], {
-            'trial_uuid': trial_uuid,
-            'organisation_uuid': organisation_uuid,
+        upsert(db['trials_organisations'], ['trial_id', 'organisation_id'], {
+            'trial_id': trial_id,
+            'organisation_id': organisation_id,
             'role': 'sponsor',
             'context': sponsor,
-        }, auto_uuid=False)
+        }, auto_id=False)
 
 
-    # person/trial_person
+    # persons/trials_persons
 
     # TODO: discover on scraper level
+
+
+    # Log mapping
+
+    print('Mapped: %s' % item['eudract_number_with_country'])
+    time.sleep(0.1)

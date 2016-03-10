@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import time
 import dataset
 from dotenv import load_dotenv
 load_dotenv('.env')
@@ -18,21 +19,18 @@ db = dataset.connect(os.environ['OPENTRIALS_DATABASE_URL'])
 
 # source
 
-source_uuid = helpers.upsert(db['source'], ['name', 'type'], {
+source_id = helpers.upsert(db['sources'], ['name', 'type'], {
     'name': 'nct',
     'type': 'register',
     'data': {},
 })
 
 
-for item in wh['nct'].find(_limit=50):
-# for item in wh['nct'].find(nct_id='NCT00104572'):
-    print('Writing: %s' % item['nct_id'])
+for item in wh['nct']:
 
+    # trials
 
-    # trial
-
-    trial_uuid = helpers.upsert(db['trial'], ['primary_register', 'primary_id'], {
+    trial_id = helpers.upsert(db['trials'], ['primary_register', 'primary_id'], {
         'primary_register': 'nct',
         'primary_id': item['nct_id'],
         'secondary_ids': {'others': item['secondary_ids'] },
@@ -53,90 +51,90 @@ for item in wh['nct'].find(_limit=50):
     })
 
 
-    # record/trial_record
+    # records/trials_records
 
-    record_uuid = item['meta_uuid']
+    record_id = item['meta_uuid']
 
-    helpers.upsert(db['record'], ['uuid'], {
-        'uuid': record_uuid,
-        'source_uuid': source_uuid,
+    helpers.upsert(db['records'], ['id'], {
+        'id': record_id,
+        'source_id': source_id,
         'type': 'trial',
         'data': {'nct_id': item['nct_id']},  # TODO: serialization issue
-    }, auto_uuid=False)
+    }, auto_id=False)
 
-    helpers.upsert(db['trial_record'], ['trial_uuid', 'record_uuid'], {
-        'trial_uuid': trial_uuid,
-        'record_uuid': record_uuid,
+    helpers.upsert(db['trials_records'], ['trial_id', 'record_id'], {
+        'trial_id': trial_id,
+        'record_id': record_id,
         'role': 'primary',
         'context': {},
-    }, auto_uuid=False)
+    }, auto_id=False)
 
 
-    # publication/trial_publication
-
-    # ...
-
-
-    # document/trial_document
+    # publications/trials_publications
 
     # ...
 
 
-    # problem/trial_problem
+    # documents/trials_documents
+
+    # ...
+
+
+    # problems/trials_problems
 
     for condition in item['conditions'] or []:
 
-        problem_uuid = helpers.upsert(db['problem'], ['name', 'type'], {
+        problem_id = helpers.upsert(db['problems'], ['name', 'type'], {
             'name': condition,
             'type': None,
             'data': {},
         })
 
-        helpers.upsert(db['trial_problem'], ['trial_uuid', 'problem_uuid'], {
-            'trial_uuid': trial_uuid,
-            'problem_uuid': problem_uuid,
+        helpers.upsert(db['trials_problems'], ['trial_id', 'problem_id'], {
+            'trial_id': trial_id,
+            'problem_id': problem_id,
             'role': None,
             'context': {},
-        }, auto_uuid=False)
+        }, auto_id=False)
 
 
-    # intervention/trial_intervention
+    # interventions/trials_interventions
 
     for intervention in item['interventions'] or []:
 
-        intervention_uuid = helpers.upsert(db['intervention'], ['name', 'type'], {
+        intervention_id = helpers.upsert(db['interventions'], ['name', 'type'], {
             'name': intervention['intervention_name'],
             'type': None,
             'data': {},
         })
 
-        helpers.upsert(db['trial_intervention'], ['trial_uuid', 'intervention_uuid'], {
-            'trial_uuid': trial_uuid,
-            'intervention_uuid': intervention_uuid,
+        helpers.upsert(db['trials_interventions'], ['trial_id', 'intervention_id'], {
+            'trial_id': trial_id,
+            'intervention_id': intervention_id,
             'role': None,
             'context': intervention,
-        }, auto_uuid=False)
+        }, auto_id=False)
 
 
-    # location/trial_location
+    # locations/trials_locations
 
     for location in item['location_countries'] or []:
 
-        location_uuid = helpers.upsert(db['location'], ['name', 'type'], {
+        location_id = helpers.upsert(db['locations'], ['name', 'type'], {
             'name': location,
             'type': 'country',
             'data': {},
         })
 
-        helpers.upsert(db['trial_location'], ['trial_uuid', 'location_uuid'], {
-            'trial_uuid': trial_uuid,
-            'location_uuid': location_uuid,
+        helpers.upsert(db['trials_locations'], ['trial_id', 'location_id'], {
+            'trial_id': trial_id,
+            'location_id': location_id,
             'role': 'recruitment_countries',
             'context': {},
-        }, auto_uuid=False)
+        }, auto_id=False)
 
 
-    # organisation/trial_organisation
+    # organisations/trials_organisations
 
     for sponsor in item['sponsors'] or []:
 
@@ -145,21 +143,21 @@ for item in wh['nct'].find(_limit=50):
         if sponsor is None:
             continue
 
-        organisation_uuid = helpers.upsert(db['organisation'], ['name'], {
+        organisation_id = helpers.upsert(db['organisations'], ['name'], {
             'name': sponsor['agency'],
             'type': None,
             'data': {},
         })
 
-        helpers.upsert(db['trial_organisation'], ['trial_uuid', 'organisation_uuid'], {
-            'trial_uuid': trial_uuid,
-            'organisation_uuid': organisation_uuid,
+        helpers.upsert(db['trials_organisations'], ['trial_id', 'organisation_id'], {
+            'trial_id': trial_id,
+            'organisation_id': organisation_id,
             'role': 'primary_sponsor',
             'context': {},
-        }, auto_uuid=False)
+        }, auto_id=False)
 
 
-    # person/trial_person
+    # persons/trials_persons
 
     for person in item['overall_officials'] or []:
 
@@ -167,15 +165,21 @@ for item in wh['nct'].find(_limit=50):
         if person['role'] != 'Principal Investigator':
             continue
 
-        person_uuid = helpers.upsert(db['person'], ['name'], {
+        person_id = helpers.upsert(db['persons'], ['name'], {
             'name': person['last_name'],
             'type': None,
             'data': {},
         })
 
-        helpers.upsert(db['trial_person'], ['trial_uuid', 'person_uuid'], {
-            'trial_uuid': trial_uuid,
-            'person_uuid': person_uuid,
+        helpers.upsert(db['trials_persons'], ['trial_id', 'person_id'], {
+            'trial_id': trial_id,
+            'person_id': person_id,
             'role': 'principal_investigator',
             'context': {},
-        }, auto_uuid=False)
+        }, auto_id=False)
+
+
+    # Log mapping
+
+    print('Mapped: %s' % item['nct_id'])
+    time.sleep(0.1)

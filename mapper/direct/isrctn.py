@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import time
 import dataset
 from dotenv import load_dotenv
 load_dotenv('.env')
@@ -18,19 +19,16 @@ db = dataset.connect(os.environ['OPENTRIALS_DATABASE_URL'])
 
 # source
 
-source_uuid = upsert(db['source'], ['name', 'type'], {
+source_id = upsert(db['sources'], ['name', 'type'], {
     'name': 'isrctn',
     'type': 'register',
     'data': {},
 })
 
 
-for item in wh['isrctn'].find(_limit=50):
-# for item in wh['isrctn'].find(isrctn_id='ISRCTN05858391'):
-    print('Writing: %s' % item['isrctn_id'])
+for item in wh['isrctn']:
 
-
-    # trial
+    # trials
 
     # TODO: review
     try:
@@ -38,7 +36,7 @@ for item in wh['isrctn'].find(_limit=50):
     except Exception:
         target_sample_size = None
 
-    trial_uuid = upsert(db['trial'], ['primary_register', 'primary_id'], {
+    trial_id = upsert(db['trials'], ['primary_register', 'primary_id'], {
 
         # General
         'primary_register': 'isrctn',
@@ -75,101 +73,101 @@ for item in wh['isrctn'].find(_limit=50):
     })
 
 
-    # record/trial_record
+    # records/trials_records
 
-    record_uuid = item['meta_uuid']
+    record_id = item['meta_uuid']
 
-    upsert(db['record'], ['uuid'], {
-        'uuid': record_uuid,
-        'source_uuid': source_uuid,
+    upsert(db['records'], ['id'], {
+        'id': record_id,
+        'source_id': source_id,
         'type': 'trial',
         'data': {'isrctn_id': item['isrctn_id']},  # TODO: serialization issue
-    }, auto_uuid=False)
+    }, auto_id=False)
 
-    upsert(db['trial_record'], ['trial_uuid', 'record_uuid'], {
-        'trial_uuid': trial_uuid,
-        'record_uuid': record_uuid,
+    upsert(db['trials_records'], ['trial_id', 'record_id'], {
+        'trial_id': trial_id,
+        'record_id': record_id,
         'role': 'primary',
         'context': {},
-    }, auto_uuid=False)
+    }, auto_id=False)
 
 
-    # publication/trial_publication
-
-    # ...
-
-
-    # document/trial_document
+    # publications/trials_publications
 
     # ...
 
 
-    # problem/trial_problem
+    # documents/trials_documents
+
+    # ...
+
+
+    # problems/trials_problems
 
     # TODO: item['condition'] - free text
 
 
-    # intervention/trial_intervention
+    # interventions/trials_interventions
 
     # TODO: item['interventions'] - free text
     # TODO: item['drug_names'] - free text
 
 
-    # location/trial_location
+    # locations/trials_locations
 
     # TODO: move to scraper
     countries = (item['countries_of_recruitment'] or '').split(',') or []
 
     for country in countries:
 
-        location_uuid = upsert(db['location'], ['name', 'type'], {
+        location_id = upsert(db['locations'], ['name', 'type'], {
             'name': country,
             'type': 'country',
             'data': {},
         })
 
-        upsert(db['trial_location'], ['trial_uuid', 'location_uuid'], {
-            'trial_uuid': trial_uuid,
-            'location_uuid': location_uuid,
+        upsert(db['trials_locations'], ['trial_id', 'location_id'], {
+            'trial_id': trial_id,
+            'location_id': location_id,
             'role': 'recruitment_countries',
             'context': {},
-        }, auto_uuid=False)
+        }, auto_id=False)
 
 
-    # organisation/trial_organisation
+    # organisations/trials_organisations
 
     for sponsor in item['sponsors'] or []:
 
-        organisation_uuid = upsert(db['organisation'], ['name'], {
+        organisation_id = upsert(db['organisations'], ['name'], {
             'name': sponsor['organisation'],
             'type': None,
             'data': sponsor,
         })
 
-        upsert(db['trial_organisation'], ['trial_uuid', 'organisation_uuid'], {
-            'trial_uuid': trial_uuid,
-            'organisation_uuid': organisation_uuid,
+        upsert(db['trials_organisations'], ['trial_id', 'organisation_id'], {
+            'trial_id': trial_id,
+            'organisation_id': organisation_id,
             'role': 'sponsor',
             'context': {},
-        }, auto_uuid=False)
+        }, auto_id=False)
 
     for funder in item['funders'] or []:
 
-        organisation_uuid = upsert(db['organisation'], ['name'], {
+        organisation_id = upsert(db['organisations'], ['name'], {
             'name': funder['funder_name'],
             'type': None,
             'data': funder,
         })
 
-        upsert(db['trial_organisation'], ['trial_uuid', 'organisation_uuid'], {
-            'trial_uuid': trial_uuid,
-            'organisation_uuid': organisation_uuid,
+        upsert(db['trials_organisations'], ['trial_id', 'organisation_id'], {
+            'trial_id': trial_id,
+            'organisation_id': organisation_id,
             'role': 'funder',
             'context': {},
-        }, auto_uuid=False)
+        }, auto_id=False)
 
 
-    # person/trial_person
+    # persons/trials_persons
 
     for person in item['contacts'] or []:
 
@@ -177,15 +175,21 @@ for item in wh['isrctn'].find(_limit=50):
         if not name:
             continue
 
-        person_uuid = upsert(db['person'], ['name'], {
+        person_id = upsert(db['persons'], ['name'], {
             'name': name,
             'type': None,
             'data': {},
         })
 
-        upsert(db['trial_person'], ['trial_uuid', 'person_uuid'], {
-            'trial_uuid': trial_uuid,
-            'person_uuid': person_uuid,
+        upsert(db['trials_persons'], ['trial_id', 'person_id'], {
+            'trial_id': trial_id,
+            'person_id': person_id,
             'role': None,
             'context': person,
-        }, auto_uuid=False)
+        }, auto_id=False)
+
+
+    # Log mapping
+
+    print('Mapped: %s' % item['isrctn_id'])
+    time.sleep(0.1)
