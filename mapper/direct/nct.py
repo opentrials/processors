@@ -47,7 +47,7 @@ while True:  # noqa
             'secondary_ids': {'others': item['secondary_ids'] },
             'registration_date': item['firstreceived_date'],
             'public_title': item['brief_title'],
-            'brief_summary': item['brief_summary'],
+            'brief_summary': item['brief_summary'] or '',  # TODO: review
             'scientific_title': item['official_title'],
             'description': item['detailed_description'],
             'recruitment_status': item['overall_status'],
