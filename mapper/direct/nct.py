@@ -27,7 +27,7 @@ source_id = helpers.upsert(db['sources'], ['name', 'type'], {
 
 
 offset = 0
-while True:
+while True:  # noqa
 
     # Get items
     query = {'_offset': offset, '_limit': 10, 'order_by': 'meta_uuid'}
