@@ -29,7 +29,6 @@ source_id = helpers.upsert(db['sources'], ['name', 'type'], {
 offset = 0
 while True:  # noqa
 
-
     # Get items
     query = {'_offset': offset, '_limit': 10, 'order_by': 'meta_uuid'}
     count = wh['nct'].find(return_count=True, **query)
@@ -37,7 +36,6 @@ while True:  # noqa
         break
     items = wh['nct'].find(**query)
     offset += 10
-
 
     for item in items:
 
@@ -175,7 +173,7 @@ while True:  # noqa
         for person in item['overall_officials'] or []:
 
             # TODO: get more information
-            if person['role'] != 'Principal Investigator':
+            if person.get('role', None) != 'Principal Investigator':
                 continue
 
             person_id = helpers.upsert(db['persons'], ['name'], {
