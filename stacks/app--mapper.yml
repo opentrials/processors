@@ -1,43 +1,41 @@
-# Direct mapping (warehouse to database)
-
 actrn:
   image: opentrialsrobot/warehouse
-  command: python -m mapper.direct.actrn
+  command: python -m mapper.modules.actrn
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 euctr:
   image: opentrialsrobot/warehouse
-  command: python -m mapper.direct.euctr
+  command: python -m mapper.modules.euctr
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 gsk:
   image: opentrialsrobot/warehouse
-  command: python -m mapper.direct.gsk
+  command: python -m mapper.modules.gsk
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 isrctn:
   image: opentrialsrobot/warehouse
-  command: python -m mapper.direct.isrctn
+  command: python -m mapper.modules.isrctn
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 jprn:
   image: opentrialsrobot/warehouse
-  command: python -m mapper.direct.jprn
+  command: python -m mapper.modules.jprn
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 nct:
   image: opentrialsrobot/warehouse
-  command: python -m mapper.direct.nct
+  command: python -m mapper.modules.nct
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
