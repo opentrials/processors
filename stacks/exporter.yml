@@ -1,5 +1,5 @@
-nct:
+main:
   image: opentrialsrobot/warehouse
-  command: python -m exporter.modules.nct
+  command: python -m exporter.export
   environment:
     OPENTRIALS_WAREHOUSE_URL:

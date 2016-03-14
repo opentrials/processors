@@ -1,5 +1,4 @@
 *
+!converter/
 !exporter/
-!mapper/
-!processor/
 !requirements.txt
