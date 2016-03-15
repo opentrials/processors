@@ -1,40 +1,40 @@
 actrn:
-  image: opentrialsrobot/warehouse
+  image: opentrialsrobot/processors
   command: python -m converter.mappers.actrn
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 euctr:
-  image: opentrialsrobot/warehouse
+  image: opentrialsrobot/processors
   command: python -m converter.mappers.euctr
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 gsk:
-  image: opentrialsrobot/warehouse
+  image: opentrialsrobot/processors
   command: python -m converter.mappers.gsk
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 isrctn:
-  image: opentrialsrobot/warehouse
+  image: opentrialsrobot/processors
   command: python -m converter.mappers.isrctn
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 jprn:
-  image: opentrialsrobot/warehouse
+  image: opentrialsrobot/processors
   command: python -m converter.mappers.jprn
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 nct:
-  image: opentrialsrobot/warehouse
+  image: opentrialsrobot/processors
   command: python -m converter.mappers.nct
   environment:
     OPENTRIALS_WAREHOUSE_URL:

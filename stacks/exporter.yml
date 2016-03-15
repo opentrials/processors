@@ -1,5 +1,5 @@
 main:
-  image: opentrialsrobot/warehouse
+  image: opentrialsrobot/processors
   command: python -m exporter.export
   environment:
     OPENTRIALS_WAREHOUSE_URL:
