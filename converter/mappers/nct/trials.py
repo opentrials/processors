@@ -4,22 +4,19 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from ... import indexers
+from .. import helpers
 
-def map_item_trials():
 
-    # # Create mapping
-    # mapping = OrderedDict()
-    # mapping['nct_id'] = item['nct_id']
-    # mapping['euctr_id'] = None
-    # mapping['isrctn_id'] = None
-    # mapping['scientific_title'] = item['official_title']
+def map_item_trials(source, target, item):
 
-    # helpers.update_trial(
-        # conn=wh,
-        # mapping=mapping,
-        # identifier='nct::%s' % item['meta_uuid'])
+    id = indexers.index_trial(source,
+        nct_id=item['nct_id'],
+        scientific_title=item['official_title'],
+    )
 
-    trial_id = helpers.upsert(db['trials'], ['primary_register', 'primary_id'], {
+    helpers.upsert(target['trials'], {
+        'id': id,
         'primary_register': 'nct',
         'primary_id': item['nct_id'],
         'secondary_ids': {'others': item['secondary_ids'] },
@@ -39,3 +36,4 @@ def map_item_trials():
         'secondary_outcomes': item['secondary_outcomes'] or [],
     })
 
+    return id

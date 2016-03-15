@@ -10,4 +10,3 @@ from datetime import datetime
 
 def index_problem():
     pass
-
