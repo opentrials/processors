@@ -10,3 +10,4 @@ load_dotenv('.env')
 
 
 WAREHOUSE_URL = os.environ['OPENTRIALS_WAREHOUSE_URL']
+DATABASE_URL = os.environ['OPENTRIALS_DATABASE_URL']

@@ -8,44 +8,41 @@ import uuid
 import logging
 from datetime import datetime
 
+from .. import base
 logger = logging.getLogger(__name__)
 
 
-def index_trial(source,
-        nct_id=None, euctr_id=None, isrctn_id=None, scientific_title=None):
-    """Index trial (of not already exists) and return id.
+class TrialIndexer(base.Indexer):
 
-    Args:
-        source (object): source dataset object
-        nct_id (str): nct identifier
-        euctr_id (str): euctr identifier
-        isrctn_id (str): isrctn identifier
-        scientific_title (str): scientific title
+    # Public
 
-    Returns:
-        str: identifier
+    table = 'index_trials'
 
-    """
+    def index(self, nct_id=None, euctr_id=None,
+            isrctn_id=None, scientific_title=None):
 
-    # Get index
-    index = None
-    for key in ['nct_id', 'euctr_id', 'isrctn_id', 'scientific_title']:
-        index = source['index_sources'].find_one(**{key: locals()[key]})
-        if index is not None:
-            break
+        # Get item
+        item = None
+        for key in ['nct_id', 'euctr_id', 'isrctn_id', 'scientific_title']:
+            value = locals()[key]
+            if not value:
+                continue
+            item = self.warehouse[self.table].find_one(**{key: value})
+            if item is not None:
+                break
 
-    # Create index
-    if index is None:
-        index = dict(name=name, type=type)
-        index['meta_id'] = uuid.uuid4().hex
-        index['meta_created'] = datetime.now()  # TODO: fix timezone
-        index['meta_updated'] = datetime.now()  # TODO: fix timezone
-        index['nct_id'] = nct_id
-        index['euctr_id'] = euctr_id
-        index['isrctn_id'] = isrctn_id
-        index['scientific_title'] = scientific_title
-        source['index_sources'].insert(index, ensure=True)
-        logger.debug('Indexed - trial: %s' % item['meta_id'])
+        # Create item
+        if item is None:
+            item = dict(name=name, type=type)
+            item['meta_id'] = uuid.uuid4().hex
+            item['meta_created'] = datetime.now()  # TODO: fix timezone
+            item['meta_updated'] = datetime.now()  # TODO: fix timezone
+            item['nct_id'] = nct_id
+            item['euctr_id'] = euctr_id
+            item['isrctn_id'] = isrctn_id
+            item['scientific_title'] = scientific_title
+            self.warehouse[self.table].insert(item, ensure=True)
+            logger.debug('Indexed - trial: %s' % item['meta_id'])
 
-    # Return id
-    return index['meta_id']
+        # Return id
+        return item['meta_id']

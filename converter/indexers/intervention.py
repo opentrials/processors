@@ -5,8 +5,18 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import uuid
+import logging
 from datetime import datetime
 
+from .. import base
+logger = logging.getLogger(__name__)
 
-def index_intervention():
-    pass
+
+class InterventionIndexer(base.Indexer):
+
+    # Public
+
+    table = 'index_interventions'
+
+    def index(self):
+        pass
