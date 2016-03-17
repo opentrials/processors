@@ -14,12 +14,15 @@ class JprnMapper(base.Mapper):
 
     # Public
 
+    table = 'jprn'
+    primary_key = 'unique_trial_number'
+
     def map(self):
 
         # Map sources
         source_id = map_source()
 
-        for item in helpers.table_read(self.warehouse['jprn']):
+        for item in helpers.table_read(self.warehouse[self.table]):
 
             # Map trials
             trial_id = self.map_item_trial(item)
@@ -35,68 +38,82 @@ class JprnMapper(base.Mapper):
             self.map_item_persons(item, trial_id)
 
             # Log and sleep
-            logger.debug('Mapped: %s' % item['unique_trial_number'])
+            logger.debug('Mapped: %s' % item[self.primary_key])
             time.sleep(0.1)
 
     def map_source(self):
 
-        source_id = upsert(db['sources'], ['name', 'type'], {
-            'name': 'jprn',
-            'type': 'register',
-            'data': {},
-        })
+        source_id = self.index('source',
+            name='jprn',
+            type='register',
+        )
+
+        self.write('sources', ['id'],
+            id=source_id,
+            name='jprn',
+            type='register',
+            data={},
+        )
+
+        return source_id
 
     def map_item_trial(self, item):
 
-        trial_id = upsert(db['trials'], ['primary_register', 'primary_id'], {
+        trial_id = self.index('trial',
+            nct_id=None,
+            euctr_id=None,
+            isrctn_id=None,
+            scientific_title=item['official_scientific_title_of_the_study'],
+        )
+
+        self.write('trials', ['id'],
 
             # General
-            'primary_register': 'jprn',
-            'primary_id': item['unique_trial_number'],
-            'secondary_ids': {},  # TODO: use item['secondary_study_id_*'] and item['org_issuing_secondary_study_id_*']
-            'registration_date': item['date_of_registration'],
-            'public_title': item['title_of_the_study'],
-            'brief_summary': 'N/A',  # TODO: review
-            'scientific_title': item['official_scientific_title_of_the_study'],
-            'description': None,  # TODO: review
+            id=trial_id,
+            primary_registerc='jprn',
+            primary_idc=item['unique_trial_number'],
+            secondary_idsc={},  # TODO: use item['secondary_study_id_*'] and item['org_issuing_secondary_study_id_*']
+            registration_datec=item['date_of_registration'],
+            public_titlec=item['title_of_the_study'],
+            brief_summaryc='N/A',  # TODO: review
+            scientific_titlec=item['official_scientific_title_of_the_study'],
+            descriptionc=None,  # TODO: review
 
             # Recruitment
-            'recruitment_status': item['recruitment_status'],
-            'eligibility_criteria': {
+            recruitment_statusc=item['recruitment_status'],
+            eligibility_criteriac={
                 'inclusion': item['key_inclusion_criteria'],
                 'exclusion': item['key_exclusion_criteria'],
             },
-            'target_sample_size': item['target_sample_size'],
-            'first_enrollment_date': item['anticipated_trial_start_date'],  # TODO: review
+            target_sample_size=item['target_sample_size'],
+            first_enrollment_date=item['anticipated_trial_start_date'],  # TODO: review
 
             # Study design
-            'study_type': item['study_type'] or 'N/A',  # TODO: review
-            'study_design': item['basic_design'] or 'N/A',  # TODO: review
-            'study_phase': item['developmental_phase'] or 'N/A',  # TODO: review
+            study_type=item['study_type'] or 'N/A',  # TODO: review
+            study_design=item['basic_design'] or 'N/A',  # TODO: review
+            study_phase=item['developmental_phase'] or 'N/A',  # TODO: review
 
             # Outcomes
-            'primary_outcomes': item['primary_outcomes'] or [],
-            'secondary_outcomes': item['key_secondary_outcomes'] or [],
+            primary_outcomes=item['primary_outcomes'] or [],
+            secondary_outcomes=item['key_secondary_outcomes'] or [],
 
-        })
+        )
 
     def map_item_record(self, item, trial_id, source_id):
 
-        record_id = item['meta_uuid']
+        self.write('records', ['id'],
+            id=item['meta_id'],
+            source_id=source_id,
+            type='trial',
+            data={'unique_trial_number': item['unique_trial_number']},  # TODO: serialization issue
+        )
 
-        upsert(db['records'], ['id'], {
-            'id': record_id,
-            'source_id': source_id,
-            'type': 'trial',
-            'data': {'unique_trial_number': item['unique_trial_number']},  # TODO: serialization issue
-        }, auto_id=False)
-
-        upsert(db['trials_records'], ['trial_id', 'record_id'], {
-            'trial_id': trial_id,
-            'record_id': record_id,
-            'role': 'primary',
-            'context': {},
-        }, auto_id=False)
+        self.write('trials_records', ['trial_id', 'record_id'],
+            trial_id=trial_id,
+            record_id=item['meta_id'],
+            role='primary',
+            context={},
+        )
 
     def map_item_problems(self, item, trial_id):
         # TODO: item['condition'] - free text some time
@@ -112,43 +129,42 @@ class JprnMapper(base.Mapper):
 
     def map_item_organisations(self, item, trial_id):
 
-        organisation_id = upsert(db['organisations'], ['name'], {
+        organisations = []
+        organisations.append({
             'name': item['name_of_primary_sponsor'],
-            'type': None,
-            'data': {},
-        })
-
-        upsert(db['trials_organisations'], ['trial_id', 'organisation_id'], {
-            'trial_id': trial_id,
-            'organisation_id': organisation_id,
             'role': 'primary_sponsor',
-            'context': {},
-        }, auto_id=False)
-
-        organisation_id = upsert(db['organisations'], ['name'], {
+        })
+        organisations.append({
             'name': item['source_of_funding'],
-            'type': None,
-            'data': {},
+            'role': 'funder',
         })
 
-        upsert(db['trials_organisations'], ['trial_id', 'organisation_id'], {
-            'trial_id': trial_id,
-            'organisation_id': organisation_id,
-            'role': 'funder',
-            'context': {},
-        }, auto_id=False)
+        for organisation in organisations:
+
+            organisation_id = self.index('organisation',
+                name=organisation['name'],
+                type=None,
+            )
+
+            self.write('organisations', ['id'],
+                id=organisation_id,
+                name=organisation['name'],
+                type=None,
+                data={},
+            )
+
+            self.write('trials_organisations', ['trial_id', 'organisation_id'],
+                trial_id=trial_id,
+                organisation_id=organisation_id,
+                role=organisation['role'],
+                context={},
+            )
 
     def map_item_persons(self, item, trial_id):
 
-        person_id = upsert(db['persons'], ['name'], {
+        persons = []
+        persons.append({
             'name': item['research_name_of_lead_principal_investigator'],
-            'type': None,
-            'data': {},
-        })
-
-        upsert(db['trials_persons'], ['trial_id', 'person_id'], {
-            'trial_id': trial_id,
-            'person_id': person_id,
             'role': 'principal_investigator',
             'context': {
                 'research_name_of_lead_principal_investigator': item['research_name_of_lead_principal_investigator'],
@@ -159,17 +175,9 @@ class JprnMapper(base.Mapper):
                 'research_homepage_url': item['research_homepage_url'],
                 'research_email': item['research_email'],
             },
-        }, auto_id=False)
-
-        person_id = upsert(db['persons'], ['name'], {
-            'name': item['public_name_of_contact_person'],
-            'type': None,
-            'data': {},
         })
-
-        upsert(db['trials_persons'], ['trial_id', 'person_id'], {
-            'trial_id': trial_id,
-            'person_id': person_id,
+        persons.append({
+            'name': item['public_name_of_contact_person'],
             'role': 'public_queries',
             'context': {
                 'public_name_of_contact_person': item['public_name_of_contact_person'],
@@ -180,7 +188,27 @@ class JprnMapper(base.Mapper):
                 'public_homepage_url': item['public_homepage_url'],
                 'public_email': item['public_email'],
             },
-        }, auto_id=False)
+        })
+
+        for person in persons:
+
+            person_id = self.index('person',
+                name=person['name'],
+            )
+
+            self.write('persons', ['id'],
+                id=person_id,
+                name=person['name'],
+                type=None,
+                data={},
+            )
+
+            self.write('trials_persons', ['trial_id', 'person_id'],
+                trial_id=trial_id,
+                person_id=person_id,
+                role=person['role'],
+                context=person['context']
+            )
 
 
 if __name__ == '__main__':
