@@ -106,7 +106,7 @@ class TakedaMapper(base.Mapper):
         )
 
         self.write(db['trials_records'], ['trial_id', 'record_id'],
-            trial_id=item['meta_id'],
+            trial_id=trial_id,
             record_id=item['meta_uuid'],
             role='primary',
             context={},

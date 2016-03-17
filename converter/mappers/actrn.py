@@ -105,7 +105,7 @@ class ActrnMapper(base.Mapper):
     def map_item_record(self, item, trial_id, source_id):
 
         self.write('records', ['id'],
-            id=item['meta_uuid'],
+            id=item['meta_id'],
             source_id=source_id,
             type='trial',
             data={'actrn_id': item['trial_id']},  # TODO: serialization issue
@@ -113,7 +113,7 @@ class ActrnMapper(base.Mapper):
 
         upsert('trials_records', ['trial_id', 'record_id'],
             trial_id=trial_id,
-            record_id=item['meta_uuid'],
+            record_id=item['meta_id'],
             role='primary',
             context={},
         )

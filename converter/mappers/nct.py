@@ -108,8 +108,8 @@ class NctMapper(base.Mapper):
         )
 
         self.write(db['trials_records'], ['trial_id', 'record_id'],
-            trial_id=item['meta_id'],
-            record_id=item['meta_uuid'],
+            trial_id=trial_id,
+            record_id=item['meta_id'],
             role='primary',
             context={},
         )
