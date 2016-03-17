@@ -15,12 +15,15 @@ class ActrnMapper(base.Mapper):
 
     # Public
 
+    table = 'actrn'
+    primary_key = 'trial_id'
+
     def map(self):
 
         # Map sources
         source_id = map_source()
 
-        for item in helpers.table_read(self.warehouse['actrn']):
+        for item in helpers.table_read(self.warehouse[self.table]):
 
             # Map trials
             trial_id = self.map_item_trial(item)
@@ -36,81 +39,84 @@ class ActrnMapper(base.Mapper):
             self.map_item_persons(item, trial_id)
 
             # Log and sleep
-            logger.debug('Mapped: %s' % item['nct_id'])
+            logger.debug('Mapped: %s' % item[self.primary_key])
             time.sleep(0.1)
 
     def map_source(self):
-        source_id = upsert(db['sources'], ['name', 'type'], {
-            'name': 'actrn',
-            'type': 'register',
-            'data': {},
-        })
+
+        source_id = self.index('source',
+            name='actrn',
+            type='register',
+        )
+
+        self.write('sources', ['id'],
+            id=source_id,
+            name='actrn',
+            type='register',
+            data={},
+        )
+
+        return source_id
 
     def map_item_trial(self, item):
-        # # Create mapping
-        # mapping = OrderedDict()
-        # mapping['nct_id'] = item['nct_id']
-        # mapping['euctr_id'] = None
-        # mapping['isrctn_id'] = None
-        # mapping['scientific_title'] = item['official_title']
 
-        # helpers.update_trial(
-            # conn=wh,
-            # mapping=mapping,
-            # identifier='nct::%s' % item['meta_uuid'])
+        trial_id = self.index('trial',
+            nct_id=item['nct_id'],
+            euctr_id=None,
+            isrctn_id=None,
+            scientific_title=item['official_title'],
+        )
 
-        # trials
-
-        trial_id = upsert(db['trials'], ['primary_register', 'primary_id'], {
+        self.write('trials', ['id'],
 
             # General
-            'primary_register': 'actrn',
-            'primary_id': item['trial_id'],
-            'secondary_ids': {
+            id=trial_id,
+            primary_register='actrn',
+            primary_id=item['trial_id'],
+            secondary_ids={
                 'others': item['secondary_ids'],
             },
-            'registration_date': item['date_registered'],
-            'public_title': item['public_title'],
-            'brief_summary': item['brief_summary'],
-            'scientific_title': item['scientific_title'],
-            'description': None,  # TODO: review
+            registration_date=item['date_registered'],
+            public_title=item['public_title'],
+            brief_summary=item['brief_summary'],
+            scientific_title=item['scientific_title'],
+            description=None,  # TODO: review
 
             # Recruitment
-            'recruitment_status': item['recruitment_status'],
-            'eligibility_criteria': {
+            recruitment_status=item['recruitment_status'],
+            eligibility_criteria={
                 'inclusion': item['key_inclusion_criteria'],
                 'exclusion': item['key_exclusion_criteria'],
             },
-            'target_sample_size': item['target_sample_size'],
-            'first_enrollment_date': item['anticipated_date_of_first_participant_enrolment'],  # TODO: review
+            target_sample_size=item['target_sample_size'],
+            first_enrollment_date=item['anticipated_date_of_first_participant_enrolment'],  # TODO: review
 
             # Study design
-            'study_type': item['study_type'],
-            'study_design': 'N/A',  # TODO: review
-            'study_phase': item['phase'] or 'N/A',  # TODO: review
+            study_type=item['study_type'],
+            study_design='N/A',  # TODO: review
+            study_phase=item['phase'] or 'N/A',  # TODO: review
 
             # Outcomes
-            'primary_outcomes': item['primary_outcomes'] or [],
-            'secondary_outcomes': item['secondary_outcomes'] or [],
+            primary_outcomes=item['primary_outcomes'] or [],
+            secondary_outcomes=item['secondary_outcomes'] or [],
 
-        })
+        )
 
     def map_item_record(self, item, trial_id, source_id):
-        record_id = item['meta_uuid']
 
-        upsert(db['records'], ['id'], {
-            'id': record_id,
-            'source_id': source_id,
-            'type': 'trial',
-            'data': {'actrn_id': item['trial_id']},  # TODO: serialization issue
-        }, auto_id=False)
+        self.write('records', ['id'],
+            id=item['meta_uuid'],
+            source_id=source_id,
+            type='trial',
+            data={'actrn_id': item['trial_id']},  # TODO: serialization issue
+        )
 
-        upsert(db['trials_records'], ['trial_id', 'record_id'], {
-            'trial_id': trial_id,
-            'record_id': record_id,
-            'role': 'primary',
-            'context': {},
-        }, auto_id=False)
+        upsert('trials_records', ['trial_id', 'record_id'],
+            trial_id=trial_id,
+            record_id=item['meta_uuid'],
+            role='primary',
+            context={},
+        )
 
     def map_item_problems(self, item, trial_id):
         # TODO: item['health_conditions_or_problems_studied'] - free text some time
@@ -125,54 +131,66 @@ class ActrnMapper(base.Mapper):
         pass
 
     def map_item_organisations(self, item, trial_id):
+
         for sponsor in item['sponsors'] or []:
 
             # TODO: process item['primary_sponsor']
-
             if 'name' not in sponsor:
                 continue
 
-            organisation_id = upsert(db['organisations'], ['name'], {
-                'name': sponsor['name'],
-                'type': None,
-                'data': sponsor,
-            })
+            organisation_id = self.index('organisation',
+                name=sponsor['name'],
+                type=None,
+            )
 
-            upsert(db['trials_organisations'], ['trial_id', 'organisation_id'], {
-                'trial_id': trial_id,
-                'organisation_id': organisation_id,
-                'role': 'sponsor',  # TODO: review
-                'context': {},
-            }, auto_id=False)
+            self.write('organisations', ['id'],
+                id=organisation_id,
+                name=sponsor['name'],
+                type=None,
+                data=sponsor,
+            )
+
+            self.write('trials_organisations', ['trial_id', 'organisation_id'],
+                trial_id=trial_id,
+                organisation_id=organisation_id,
+                role='sponsor',  # TODO: review
+                context={},
+            )
 
     def map_item_persons(self, item, trial_id):
+
         # TODO: process item['principal_investigator']
 
-        person_id = upsert(db['persons'], ['name'], {
-            'name': item['public_queries']['name'],
-            'type': None,
-            'data': {},
-        })
+        persons = []
 
-        upsert(db['trials_persons'], ['trial_id', 'person_id'], {
-            'trial_id': trial_id,
-            'person_id': person_id,
-            'role': 'public_queries',
-            'context': item['public_queries'],
-        }, auto_id=False)
+        for role in ['public_queries', 'scientific_queries']:
 
-        person_id = upsert(db['persons'], ['name'], {
-            'name': item['scientific_queries']['name'],
-            'type': None,
-            'data': {},
-        })
+            persons.append({
+                'name': item[role]['name'],
+                'role': role,
+                'context': item[role],
+            })
 
-        upsert(db['trials_persons'], ['trial_id', 'person_id'], {
-            'trial_id': trial_id,
-            'person_id': person_id,
-            'role': 'scientific_queries',
-            'context': item['scientific_queries'],
-        }, auto_id=False)
+        for person in persons:
+
+            person_id = self.index('person',
+                name=person['name'],
+                type=None,
+            )
+
+            self.write('persons', ['id'],
+                id=person_id,
+                name=person['name'],
+                type=None,
+                data={},
+            )
+
+            self.write('trials_persons', ['trial_id', 'person_id'],
+                trial_id=trial_id,
+                person_id=person_id,
+                role=person['role'],
+                context=person['context'],
+            )
 
 
 if __name__ == '__main__':
