@@ -67,6 +67,8 @@ class NctMapper(base.Mapper):
         )
 
         self.write('trials', ['id'],
+
+            # General
             id=trial_id,
             primary_register='nct',
             primary_id=item['nct_id'],
@@ -76,15 +78,22 @@ class NctMapper(base.Mapper):
             brief_summary=item['brief_summary'] or '',  # TODO: review
             scientific_title=item['official_title'],
             description=item['detailed_description'],
+
+            # Recruitment
             recruitment_status=item['overall_status'],
             eligibility_criteria=item['eligibility'],
             target_sample_size=item['enrollment_anticipated'],
             first_enrollment_date=item['start_date'],
+
+            # Study design
             study_type=item['study_type'],
             study_design=item['study_design'],
             study_phase=item['phase'],
+
+            # Outcomes
             primary_outcomes=item['primary_outcomes'] or [],
             secondary_outcomes=item['secondary_outcomes'] or [],
+
         )
 
         return trial_id
