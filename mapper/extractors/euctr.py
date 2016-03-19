@@ -186,12 +186,3 @@ class EuctrExtractor(base.Extractor):
     def map_item_persons(self, item, trial_id):
         # TODO: discover on scraper level
         pass
-
-
-if __name__ == '__main__':
-
-    warehouse = dataset.connect(settings.WAREHOUSE_URL)
-    database = dataset.connect(settings.DATABASE_URL)
-
-    mapper = EuctrMapper(warehouse, database)
-    mapper.map()

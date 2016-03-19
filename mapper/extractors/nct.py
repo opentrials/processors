@@ -14,7 +14,7 @@ class NctExtractor(base.Extractor):
 
     # Public
 
-    def extract_source(self):
+    def extract_source(self, item):
 
         source = {
             'name': 'nct',

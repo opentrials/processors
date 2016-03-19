@@ -16,7 +16,7 @@ class Extractor(object):
     # Public
 
     @abstractmethod
-    def extract(self, target, item):
+    def extract(self, target, item=None):
         """Extract data from item.
 
         Args:

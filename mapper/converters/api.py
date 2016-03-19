@@ -15,9 +15,9 @@ class Converter(object):
 
     # Public
 
-    def __init__(self, warehouse, database):
+    def __init__(self, warehouse, database, table):
         pass  # pragma: no cover
 
     @abstractmethod
-    def convert(self, table):
+    def convert(self):
         pass  # pragma: no cover

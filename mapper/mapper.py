@@ -20,24 +20,13 @@ class Mapper(object):
     # Public
 
     def __init__(self, warehouse, database):
+
         self.__warehouse = warehouse
         self.__database = database
 
-    def map_trial(adapter):
+    def map_trial(table):
 
-        source_id = self.index('source',
-            name=adapter.table,
-            type='register',
-        )
-
-        self.write('sources', ['id'],
-            id=source_id,
-            name=adapter.table,
-            type='register',
-            data={},
-        )
-
-        for item in helpers.table_read(self.__warehouse[adapter.table]):
+        pass
 
 
 if __name__ == '__main__':
@@ -46,4 +35,4 @@ if __name__ == '__main__':
     database = dataset.connect(settings.DATABASE_URL)
 
     mapper = Mapper(warehouse, database)
-    mapper.map_trial(adapters.Nct())
+    mapper.map_trial('nct')

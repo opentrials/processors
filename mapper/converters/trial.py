@@ -15,47 +15,55 @@ class TrialConverter(object):
 
     # Public
 
-    def convert(self, table):
+    def convert(self):
 
         # Map sources
-        source_id = convert_source()
+        source_id = convert_source(None)
 
-        for item in self.read(table):
+        for item in self.read():
 
             # Map trials
-            trial_id = self.convert_item_trial(item)
+            trial_id = self.convert_trial(item)
 
             # Map records
-            self.convert_item_record(item, trial_id, source_id)
+            self.convert_record(item, trial_id, source_id)
 
             # Map other entities
-            self.convert_item_problems(item, trial_id)
-            self.convert_item_interventions(item, trial_id)
-            self.convert_item_locations(item, trial_id)
-            self.convert_item_organisations(item, trial_id)
-            self.convert_item_persons(item, trial_id)
+            self.convert_problems(item, trial_id)
+            self.convert_interventions(item, trial_id)
+            self.convert_locations(item, trial_id)
+            self.convert_organisations(item, trial_id)
+            self.convert_persons(item, trial_id)
 
             # Log and sleep
-            logger.debug('Mapped: %s' % item['nct_id'])
+            logger.debug('Converted: %s' % trial_id)
             time.sleep(0.1)
 
-    def convert_source(self):
+    def convert_source(self, item):
+
+        source = self.extract('source',
+            item=item,
+        )
 
         source_id = self.index('source',
-            name='nct',
+            name=table,
             type='register',
         )
 
         self.write('sources', ['id'],
             id=source_id,
-            name='nct',
+            name=table,
             type='register',
             data={},
         )
 
         return source_id
 
-    def convert_item_trial(self, item):
+    def convert_trial(self, item):
+
+        trial = self.extract('trial',
+            item=item,
+        )
 
         trial_id = self.index('trial',
             nct_id=item['nct_id'],
@@ -65,8 +73,6 @@ class TrialConverter(object):
         )
 
         self.write('trials', ['id'],
-
-            # General
             id=trial_id,
             primary_register='nct',
             primary_id=item['nct_id'],
@@ -76,27 +82,24 @@ class TrialConverter(object):
             brief_summary=item['brief_summary'] or '',  # TODO: review
             scientific_title=item['official_title'],
             description=item['detailed_description'],
-
-            # Recruitment
             recruitment_status=item['overall_status'],
             eligibility_criteria=item['eligibility'],
             target_sample_size=item['enrollment_anticipated'],
             first_enrollment_date=item['start_date'],
-
-            # Study design
             study_type=item['study_type'],
             study_design=item['study_design'],
             study_phase=item['phase'],
-
-            # Outcomes
             primary_outcomes=item['primary_outcomes'] or [],
             secondary_outcomes=item['secondary_outcomes'] or [],
-
         )
 
         return trial_id
 
-    def convert_item_record(self, item, trial_id, source_id):
+    def convert_record(self, item, trial_id, source_id):
+
+        record = self.extract('record',
+            item=item,
+        )
 
         self.write('records', ['id'],
             id=item['meta_id'],
@@ -112,7 +115,11 @@ class TrialConverter(object):
             context={},
         )
 
-    def convert_item_problems(self, item, trial_id):
+    def convert_problems(self, item, trial_id):
+
+        problems = self.extract('problems',
+            item=item,
+        )
 
         for condition in item['conditions'] or []:
 
@@ -135,7 +142,11 @@ class TrialConverter(object):
                 context={},
             )
 
-    def convert_item_interventions(self, item, trial_id):
+    def convert_interventions(self, item, trial_id):
+
+        interventions = self.extract('interventions',
+            item=item,
+        )
 
         for intervention in item['interventions'] or []:
 
@@ -158,7 +169,11 @@ class TrialConverter(object):
                 context=intervention,
             )
 
-    def convert_item_locations(self, item, trial_id):
+    def convert_locations(self, item, trial_id):
+
+        locations = self.extract('locations',
+            item=item,
+        )
 
         for location in item['location_countries'] or []:
 
@@ -181,7 +196,11 @@ class TrialConverter(object):
                 context={},
             )
 
-    def convert_item_organisations(self, item, trial_id):
+    def convert_organisations(self, item, trial_id):
+
+        organisations = self.extract('organisations',
+            item=item,
+        )
 
         for sponsor in item['sponsors'] or []:
 
@@ -209,7 +228,11 @@ class TrialConverter(object):
                 context={},
             )
 
-    def convert_item_persons(self, item, trial_id):
+    def convert_persons(self, item, trial_id):
+
+        persons = self.extract('persons',
+            item=item,
+        )
 
         for person in item['overall_officials'] or []:
 

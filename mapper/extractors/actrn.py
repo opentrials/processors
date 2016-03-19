@@ -10,7 +10,7 @@ from . import base
 logger = logging.getLogger(__name__)
 
 
-class ActrnMapper(base.Extractor):
+class ActrnExtractor(base.Extractor):
 
     # Public
 

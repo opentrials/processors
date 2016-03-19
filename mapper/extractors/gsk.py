@@ -157,12 +157,3 @@ class GskExtractor(base.Extractor):
     def map_item_persons(self, item, trial_id):
         # TODO: discover how to get it/fix it on scraper
         pass
-
-
-if __name__ == '__main__':
-
-    warehouse = dataset.connect(settings.WAREHOUSE_URL)
-    database = dataset.connect(settings.DATABASE_URL)
-
-    mapper = GskMapper(warehouse, database)
-    mapper.map()

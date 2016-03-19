@@ -9,6 +9,8 @@ from six import add_metaclass
 from abc import ABCMeta, abstractmethod
 
 from .. import api
+from .. import extractors
+from .. import indexers
 logger = logging.getLogger(__name__)
 
 
@@ -19,27 +21,26 @@ class DirectConverter(api.Converter):
 
     # Public
 
-    def __init__(self, warehouse, database):
+    def __init__(self, warehouse, database, table):
 
         # Set attributes
         self.__warehouse = warehouse
         self.__database = database
-        self.__extractors = {}
-        self.__indexers = {}
+        self.__table = table
 
-        # Instantiate extractors
-        for name, value in vars(extractors).items():
-            key = name.lower()
-            if issubclass(value, extractors.API):
-                self.__extractors[key] = value()
+        # Instantiate extractor
+        self.__extractor = getattr(extractors, table.capitalize())()
 
         # Instantiate indexers
+        self.__indexers = {}
         for name, value in vars(indexers).items():
             key = name.lower()
+            if value is indexers.API:
+                continue
             if issubclass(value, indexers.API):
                 self.__indexers[key] = value(warehouse)
 
-    def read(self, table):
+    def read(self):
         """Read data from warehouse.
 
         Args:
@@ -52,26 +53,27 @@ class DirectConverter(api.Converter):
         offset = 0
         while True:
             query = {'_offset': offset, '_limit': bufsize, 'order_by': orderby}
-            count = self.__warehouse[table].find(return_count=True, **query)
+            count = self.__warehouse[self.__table].find(
+                return_count=True, **query)
             if not count:
                 break
-            items = self.__warehouse[table].find(**query)
+            items = self.__warehouse[self.__table].find(**query)
             offset += bufsize
             for item in items:
                 yield item
 
-    def extract(self, extractor, target, item):
+    def extract(self, target, item):
         """Extract data from item.
 
         Args:
-            extractor (str): extractor name
             target (str): extractrion target
+            item (dict): data item
 
         Returns:
             str: identifier
 
         """
-        return self.__extractors[extractor].extract(target, item)
+        return self.__extractor.extract(target, item)
 
     def index(self, indexer, **kwargs):
         """Index item.

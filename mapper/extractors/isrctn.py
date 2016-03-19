@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import logging
 
-from .. import base
+from . import base
 logger = logging.getLogger(__name__)
 
 

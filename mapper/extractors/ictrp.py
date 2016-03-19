@@ -6,11 +6,11 @@ from __future__ import unicode_literals
 
 import logging
 
-from .. import base
+from . import base
 logger = logging.getLogger(__name__)
 
 
-class Ictrp(base.Mapper):
+class IctrpExtractor(base.Extractor):
 
     # Public
 
@@ -190,12 +190,3 @@ class Ictrp(base.Mapper):
 
     def map_item_persons(self, item, trial_id):
         pass
-
-
-if __name__ == '__main__':
-
-    warehouse = dataset.connect(settings.WAREHOUSE_URL)
-    database = dataset.connect(settings.DATABASE_URL)
-
-    mapper = IctrpMapper(warehouse, database)
-    mapper.map()
