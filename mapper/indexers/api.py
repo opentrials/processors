@@ -21,14 +21,16 @@ class Indexer(object):
 
     # Public
 
+    @abstractmethod
     def __init__(self, warehouse):
-        self.__warehouse = warehouse
+        pass  # pragma: no cache
 
     @property
+    @abstractmethod
     def warehouse(self):
         """object: Warehouse dataset connection.
         """
-        return self.__warehouse
+        pass  # pragma: no cache
 
     @abstractmethod
     def index(self, **kwargs):

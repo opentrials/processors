@@ -6,11 +6,11 @@ from __future__ import unicode_literals
 
 import logging
 
-from .. import base
+from . import base
 logger = logging.getLogger(__name__)
 
 
-class TakedaMapper(base.Mapper):
+class TakedaExtractor(base.Extractor):
 
     # Public
 
@@ -186,12 +186,3 @@ class TakedaMapper(base.Mapper):
     def map_item_persons(self, item, trial_id):
         # TODO: review on scraper level
         pass
-
-
-if __name__ == '__main__':
-
-    warehouse = dataset.connect(settings.WAREHOUSE_URL)
-    database = dataset.connect(settings.DATABASE_URL)
-
-    mapper = TakedaMapper(warehouse, database)
-    mapper.map()

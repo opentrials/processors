@@ -4,37 +4,40 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import logging
 from six import add_metaclass
 from abc import ABCMeta, abstractmethod
 
-from .. import indexers
+from .. import api
+logger = logging.getLogger(__name__)
 
 
 # Module API
 
 @add_metaclass(ABCMeta)
-class Mapper(object):
+class DirectConverter(api.Converter):
 
     # Public
 
     def __init__(self, warehouse, database):
+
+        # Set attributes
         self.__warehouse = warehouse
         self.__database = database
-        self.__indexers = {
-            'intervention': indexers.Intervention(warehouse),
-            'location': indexers.Location(warehouse),
-            'organisation': indexers.Organisation(warehouse),
-            'person': indexers.Person(warehouse),
-            'problem': indexers.Problem(warehouse),
-            'source': indexers.Source(warehouse),
-            'trial': indexers.Trial(warehouse),
-        }
+        self.__extractors = {}
+        self.__indexers = {}
 
-    @abstractmethod
-    def map(self):
-        """Map data from warehouse to database.
-        """
-        pass  # pragma: no cache
+        # Instantiate extractors
+        for name, value in vars(extractors).items():
+            key = name.lower()
+            if issubclass(value, extractors.API):
+                self.__extractors[key] = value()
+
+        # Instantiate indexers
+        for name, value in vars(indexers).items():
+            key = name.lower()
+            if issubclass(value, indexers.API):
+                self.__indexers[key] = value(warehouse)
 
     def read(self, table):
         """Read data from warehouse.
@@ -56,6 +59,19 @@ class Mapper(object):
             offset += bufsize
             for item in items:
                 yield item
+
+    def extract(self, extractor, target, item):
+        """Extract data from item.
+
+        Args:
+            extractor (str): extractor name
+            target (str): extractrion target
+
+        Returns:
+            str: identifier
+
+        """
+        return self.__extractors[extractor].extract(target, item)
 
     def index(self, indexer, **kwargs):
         """Index item.

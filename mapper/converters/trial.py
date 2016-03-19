@@ -11,37 +11,35 @@ from . import base
 logger = logging.getLogger(__name__)
 
 
-class NctMapper(base.Mapper):
+class TrialConverter(object):
 
     # Public
 
-    table = 'nct'
-
-    def map(self):
+    def convert(self, table):
 
         # Map sources
-        source_id = map_source()
+        source_id = convert_source()
 
-        for item in self.read(self.table):
+        for item in self.read(table):
 
             # Map trials
-            trial_id = self.map_item_trial(item)
+            trial_id = self.convert_item_trial(item)
 
             # Map records
-            self.map_item_record(item, trial_id, source_id)
+            self.convert_item_record(item, trial_id, source_id)
 
             # Map other entities
-            self.map_item_problems(item, trial_id)
-            self.map_item_interventions(item, trial_id)
-            self.map_item_locations(item, trial_id)
-            self.map_item_organisations(item, trial_id)
-            self.map_item_persons(item, trial_id)
+            self.convert_item_problems(item, trial_id)
+            self.convert_item_interventions(item, trial_id)
+            self.convert_item_locations(item, trial_id)
+            self.convert_item_organisations(item, trial_id)
+            self.convert_item_persons(item, trial_id)
 
             # Log and sleep
             logger.debug('Mapped: %s' % item['nct_id'])
             time.sleep(0.1)
 
-    def map_source(self):
+    def convert_source(self):
 
         source_id = self.index('source',
             name='nct',
@@ -57,7 +55,7 @@ class NctMapper(base.Mapper):
 
         return source_id
 
-    def map_item_trial(self, item):
+    def convert_item_trial(self, item):
 
         trial_id = self.index('trial',
             nct_id=item['nct_id'],
@@ -98,7 +96,7 @@ class NctMapper(base.Mapper):
 
         return trial_id
 
-    def map_item_record(self, item, trial_id, source_id):
+    def convert_item_record(self, item, trial_id, source_id):
 
         self.write('records', ['id'],
             id=item['meta_id'],
@@ -114,7 +112,7 @@ class NctMapper(base.Mapper):
             context={},
         )
 
-    def map_item_problems(self, item, trial_id):
+    def convert_item_problems(self, item, trial_id):
 
         for condition in item['conditions'] or []:
 
@@ -137,7 +135,7 @@ class NctMapper(base.Mapper):
                 context={},
             )
 
-    def map_item_interventions(self, item, trial_id):
+    def convert_item_interventions(self, item, trial_id):
 
         for intervention in item['interventions'] or []:
 
@@ -160,7 +158,7 @@ class NctMapper(base.Mapper):
                 context=intervention,
             )
 
-    def map_item_locations(self, item, trial_id):
+    def convert_item_locations(self, item, trial_id):
 
         for location in item['location_countries'] or []:
 
@@ -183,7 +181,7 @@ class NctMapper(base.Mapper):
                 context={},
             )
 
-    def map_item_organisations(self, item, trial_id):
+    def convert_item_organisations(self, item, trial_id):
 
         for sponsor in item['sponsors'] or []:
 
@@ -211,7 +209,7 @@ class NctMapper(base.Mapper):
                 context={},
             )
 
-    def map_item_persons(self, item, trial_id):
+    def convert_item_persons(self, item, trial_id):
 
         for person in item['overall_officials'] or []:
 
@@ -237,12 +235,3 @@ class NctMapper(base.Mapper):
                 role='principal_investigator',
                 context={},
             )
-
-
-if __name__ == '__main__':
-
-    warehouse = dataset.connect(settings.WAREHOUSE_URL)
-    database = dataset.connect(settings.DATABASE_URL)
-
-    mapper = NctMapper(warehouse, database)
-    mapper.map()

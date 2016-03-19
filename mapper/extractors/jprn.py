@@ -6,11 +6,11 @@ from __future__ import unicode_literals
 
 import logging
 
-from .. import base
+from . import base
 logger = logging.getLogger(__name__)
 
 
-class JprnMapper(base.Mapper):
+class JprnExtractor(base.Extractor):
 
     # Public
 
@@ -209,12 +209,3 @@ class JprnMapper(base.Mapper):
                 role=person['role'],
                 context=person['context']
             )
-
-
-if __name__ == '__main__':
-
-    warehouse = dataset.connect(settings.WAREHOUSE_URL)
-    database = dataset.connect(settings.DATABASE_URL)
-
-    mapper = JprnMapper(warehouse, database)
-    mapper.map()

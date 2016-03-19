@@ -6,12 +6,11 @@ from __future__ import unicode_literals
 
 import logging
 
-from .. import settings
 from . import base
 logger = logging.getLogger(__name__)
 
 
-class ActrnMapper(base.Mapper):
+class ActrnMapper(base.Extractor):
 
     # Public
 
@@ -191,12 +190,3 @@ class ActrnMapper(base.Mapper):
                 role=person['role'],
                 context=person['context'],
             )
-
-
-if __name__ == '__main__':
-
-    warehouse = dataset.connect(settings.WAREHOUSE_URL)
-    database = dataset.connect(settings.DATABASE_URL)
-
-    mapper = ActrnMapper(warehouse, database)
-    mapper.map()

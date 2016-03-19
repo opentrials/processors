@@ -10,7 +10,7 @@ from .. import base
 logger = logging.getLogger(__name__)
 
 
-class IsrctnMapper(base.Mapper):
+class IsrctnExtractor(base.Extractor):
 
     # Public
 
@@ -230,12 +230,3 @@ class IsrctnMapper(base.Mapper):
                 role=None,
                 context=person,
             )
-
-
-if __name__ == '__main__':
-
-    warehouse = dataset.connect(settings.WAREHOUSE_URL)
-    database = dataset.connect(settings.DATABASE_URL)
-
-    mapper = IsrctnMapper(warehouse, database)
-    mapper.map()
