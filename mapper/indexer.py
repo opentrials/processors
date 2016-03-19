@@ -19,6 +19,21 @@ class Indexer(object):
     def __init__(self, warehouse):
         self.__warehouse = warehouse
 
+    def index(self, target, **kwargs):
+
+        # Get method
+        try:
+            method = getattr(self, 'index_%s' % target)
+        except AttributeError:
+            message = 'Indexer %s doesn\'t support %s target.'
+            message = message % (self, target)
+            raise ValueError(message)
+
+        # Index data
+        id = method(item)
+
+        return id
+
     def index_source(self, name, type):
 
         # Get index

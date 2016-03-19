@@ -14,6 +14,9 @@ class NctExtractor(base.Extractor):
 
     # Public
 
+    direct = True
+    table = 'data_nct'
+
     def extract_source(self, item):
 
         source = {

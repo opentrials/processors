@@ -17,34 +17,25 @@ logger = logging.getLogger(__name__)
 # Module API
 
 @add_metaclass(ABCMeta)
-class DirectConverter(api.Converter):
+class Converter(api.Converter):
 
     # Public
 
-    def __init__(self, warehouse, database, table):
-
-        # Set attributes
-        self.__warehouse = warehouse
-        self.__database = database
-        self.__table = table
-
-        # Instantiate extractor
-        self.__extractor = getattr(extractors, table.capitalize())()
-
-        # Instantiate indexers
-        self.__indexers = {}
-        for name, value in vars(indexers).items():
-            key = name.lower()
-            if value is indexers.API:
-                continue
-            if issubclass(value, indexers.API):
-                self.__indexers[key] = value(warehouse)
+    def __init__(self, warehouse, database, extractor):
+        if self.direct:
+            self.__source = warehouse
+            self.__target = database
+        else:
+            self.__source = database
+            self.__target = warehouse
+        self.__extractor = getattr(extractors, extractor.capitalize())()
+        if self.direct == self.__extractor.direct:
+            message = 'Converter %s and extractor %s are not compatible.'
+            message = message % (self, self.__extractor)
+        self.__indexer = Indexer(warehouse)
 
     def read(self):
         """Read data from warehouse.
-
-        Args:
-            table (object): datastore table object
 
         Yields:
             dict: the next item from table
@@ -53,11 +44,11 @@ class DirectConverter(api.Converter):
         offset = 0
         while True:
             query = {'_offset': offset, '_limit': bufsize, 'order_by': orderby}
-            count = self.__warehouse[self.__table].find(
+            count = self.__source[self.__extractor.table].find(
                 return_count=True, **query)
             if not count:
                 break
-            items = self.__warehouse[self.__table].find(**query)
+            items = self.__source[self.__extractor.table].find(**query)
             offset += bufsize
             for item in items:
                 yield item
@@ -75,7 +66,7 @@ class DirectConverter(api.Converter):
         """
         return self.__extractor.extract(target, item)
 
-    def index(self, indexer, **kwargs):
+    def index(self, target, **kwargs):
         """Index item.
 
         Args:
@@ -85,7 +76,7 @@ class DirectConverter(api.Converter):
             str: identifier
 
         """
-        return self.__indexers[indexer].index(**kwargs)
+        return self.__indexers.index(target, **kwargs)
 
     def write(self, table, keys, **data):
         """Write data to database.
@@ -96,4 +87,4 @@ class DirectConverter(api.Converter):
             data (dict): data to upsert
 
         """
-        self.__database[table].upsert(data, keys, ensure=False)
+        self.__target[table].upsert(data, keys, ensure=False)

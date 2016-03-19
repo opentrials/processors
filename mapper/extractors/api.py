@@ -15,6 +15,16 @@ class Extractor(object):
 
     # Public
 
+    @property
+    @abstractmethod
+    def direct(self):
+        pass  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def table(self):
+        pass  # pragma: no cover
+
     @abstractmethod
     def extract(self, target, item=None):
         """Extract data from item.

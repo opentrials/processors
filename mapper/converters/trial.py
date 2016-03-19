@@ -11,9 +11,11 @@ from . import base
 logger = logging.getLogger(__name__)
 
 
-class TrialConverter(object):
+class TrialConverter(base.Converter):
 
     # Public
+
+    direct = True
 
     def convert(self):
 
@@ -101,16 +103,18 @@ class TrialConverter(object):
             item=item,
         )
 
+        record_id = item['meta_id']
+
         self.write('records', ['id'],
-            id=item['meta_id'],
+            id=record_id,
             source_id=source_id,
             type='trial',
             data={'nct_id': item['nct_id']},  # TODO: serialization issue
         )
 
-        self.write(db['trials_records'], ['trial_id', 'record_id'],
+        self.write('trials_records', ['trial_id', 'record_id'],
             trial_id=trial_id,
-            record_id=item['meta_id'],
+            record_id=record_id,
             role='primary',
             context={},
         )
