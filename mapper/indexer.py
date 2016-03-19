@@ -12,13 +12,33 @@ from .. import base
 logger = logging.getLogger(__name__)
 
 
-class TrialIndexer(base.Indexer):
+class Indexer(object):
 
     # Public
 
-    table = 'index_trials'
+    def __init__(self, warehouse):
+        self.__warehouse = warehouse
 
-    def index(self, nct_id=None, euctr_id=None,
+    def index_source(self, name, type):
+
+        # Get index
+        index = self.warehouse['index_source'].find_one(name=name, type=type)
+
+        # Create index
+        if index is None:
+            index = dict(name=name, type=type)
+            index['meta_id'] = uuid.uuid4().hex
+            index['meta_created'] = datetime.now()  # TODO: fix timezone
+            index['meta_updated'] = datetime.now()  # TODO: fix timezone
+            index['name'] = name
+            index['type'] = type
+            self.warehouse['index_source'].insert(index, ensure=True)
+            logger.debug('Indexed - source: %s' % item['meta_id'])
+
+        # Return id
+        return index['meta_id']
+
+    def index_trial(self, nct_id=None, euctr_id=None,
             isrctn_id=None, scientific_title=None):
 
         # Get item
@@ -27,7 +47,7 @@ class TrialIndexer(base.Indexer):
             value = locals()[key]
             if not value:
                 continue
-            item = self.warehouse[self.table].find_one(**{key: value})
+            item = self.warehouse['index_trials'].find_one(**{key: value})
             if item is not None:
                 break
 
@@ -41,7 +61,7 @@ class TrialIndexer(base.Indexer):
             item['euctr_id'] = euctr_id
             item['isrctn_id'] = isrctn_id
             item['scientific_title'] = scientific_title
-            self.warehouse[self.table].insert(item, ensure=True)
+            self.warehouse['index_trials'].insert(item, ensure=True)
             logger.debug('Indexed - trial: %s' % item['meta_id'])
 
         # Return id
