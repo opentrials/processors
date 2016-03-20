@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import logging
 
-from . import converters
+from . import translators
 from . import settings
 logger = logging.getLogger(__name__)
 
@@ -21,10 +21,10 @@ class Mapper(object):
         self.__warehouse = warehouse
         self.__database = database
 
-    def map(self, converter, extractor):
-        converter = getattr(converters, converter.capitalize())(
+    def map(self, translator, extractor):
+        translator = getattr(translators, translator.capitalize())(
             self.__warehouse, self.__database, extractor)
-        converter.convert()
+        translator.convert()
 
 
 if __name__ == '__main__':

@@ -22,9 +22,9 @@ develop:
 	pip install --upgrade -r requirements.dev.txt
 
 lint:
-	# TODO: return linting for converter
-	# pylama converter
+	# TODO: return linting for mapper
 	pylama exporter
+	# pylama mapper
 
 list:
 	@grep '^\.PHONY' Makefile | cut -d' ' -f2- | tr ' ' '\n'

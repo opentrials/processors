@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 # Module API
 
 @add_metaclass(ABCMeta)
-class Converter(api.Converter):
+class Translator(api.Translator):
 
     # Public
 
@@ -30,7 +30,7 @@ class Converter(api.Converter):
             self.__target = warehouse
         self.__extractor = getattr(extractors, extractor.capitalize())()
         if self.direct == self.__extractor.direct:
-            message = 'Converter %s and extractor %s are not compatible.'
+            message = 'Translator %s and extractor %s are not compatible.'
             message = message % (self, self.__extractor)
         self.__indexer = Indexer(warehouse)
 

@@ -11,7 +11,7 @@ from abc import ABCMeta, abstractmethod
 # Module API
 
 @add_metaclass(ABCMeta)
-class Converter(object):
+class Translator(object):
 
     # Public
 
@@ -24,5 +24,5 @@ class Converter(object):
         pass  # pragma: no cover
 
     @abstractmethod
-    def convert(self):
+    def translate(self):
         pass  # pragma: no cover

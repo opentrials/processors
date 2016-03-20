@@ -7,8 +7,8 @@ The OpenTrials data processors.
 
 ## Documentation
 
-- [Converter](docs/converter/converter.md)
 - [Exporter](docs/exporter/exporter.md)
+- [Mapper](docs/mapper/mapper.md)
 
 ## Contributing
 
