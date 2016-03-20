@@ -17,7 +17,7 @@ class TakedaExtractor(base.Extractor):
     direct = True
     table = 'data_takeda'
 
-    def extract_source(self):
+    def extract_source(self, item):
 
         source = {
             'name': 'takeda',
@@ -66,7 +66,6 @@ class TakedaExtractor(base.Extractor):
     def extract_problems(self, item):
 
         problems = []
-
         problem.append({
             'name': item['condition'],
             'type': 'condition',

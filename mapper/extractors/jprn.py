@@ -14,120 +14,79 @@ class JprnExtractor(base.Extractor):
 
     # Public
 
-    table = 'jprn'
-    primary_key = 'unique_trial_number'
+    direct = True
+    table = 'data_jprn'
 
-    def map(self):
+    def extract_source(self, item):
 
-        # Map sources
-        source_id = map_source()
+        source = {
+            'name': 'jprn',
+            'type': 'register',
+        }
 
-        for item in helpers.table_read(self.warehouse[self.table]):
+        return source
 
-            # Map trials
-            trial_id = self.map_item_trial(item)
+    def extract_trial(self, item):
 
-            # Map records
-            self.map_item_record(item, trial_id, source_id)
-
-            # Map other entities
-            self.map_item_problems(item, trial_id)
-            self.map_item_interventions(item, trial_id)
-            self.map_item_locations(item, trial_id)
-            self.map_item_organisations(item, trial_id)
-            self.map_item_persons(item, trial_id)
-
-            # Log and sleep
-            logger.debug('Mapped: %s' % item[self.primary_key])
-            time.sleep(0.1)
-
-    def map_source(self):
-
-        source_id = self.index('source',
-            name='jprn',
-            type='register',
-        )
-
-        self.write('sources', ['id'],
-            id=source_id,
-            name='jprn',
-            type='register',
-            data={},
-        )
-
-        return source_id
-
-    def map_item_trial(self, item):
-
-        trial_id = self.index('trial',
-            nct_id=None,
-            euctr_id=None,
-            isrctn_id=None,
-            scientific_title=item['official_scientific_title_of_the_study'],
-        )
-
-        self.write('trials', ['id'],
-
-            # General
-            id=trial_id,
-            primary_registerc='jprn',
-            primary_idc=item['unique_trial_number'],
-            secondary_idsc={},  # TODO: use item['secondary_study_id_*'] and item['org_issuing_secondary_study_id_*']
-            registration_datec=item['date_of_registration'],
-            public_titlec=item['title_of_the_study'],
-            brief_summaryc='N/A',  # TODO: review
-            scientific_titlec=item['official_scientific_title_of_the_study'],
-            descriptionc=None,  # TODO: review
-
-            # Recruitment
-            recruitment_statusc=item['recruitment_status'],
-            eligibility_criteriac={
+        trial = {
+            'primary_registerc': 'jprn',
+            'primary_idc': item['unique_trial_number'],
+            'secondary_idsc': {},  # TODO: use item['secondary_study_id_*'] and item['org_issuing_secondary_study_id_*']
+            'registration_datec': item['date_of_registration'],
+            'public_titlec': item['title_of_the_study'],
+            'brief_summaryc': 'N/A',  # TODO: review
+            'scientific_titlec': item['official_scientific_title_of_the_study'],
+            'descriptionc': None,  # TODO: review
+            'recruitment_statusc': item['recruitment_status'],
+            'eligibility_criteriac': {
                 'inclusion': item['key_inclusion_criteria'],
                 'exclusion': item['key_exclusion_criteria'],
             },
-            target_sample_size=item['target_sample_size'],
-            first_enrollment_date=item['anticipated_trial_start_date'],  # TODO: review
+            'target_sample_size': item['target_sample_size'],
+            'first_enrollment_date': item['anticipated_trial_start_date'],  # TODO: review
+            'study_type': item['study_type'] or 'N/A',  # TODO: review
+            'study_design': item['basic_design'] or 'N/A',  # TODO: review
+            'study_phase': item['developmental_phase'] or 'N/A',  # TODO: review
+            'primary_outcomes': item['primary_outcomes'] or [],
+            'secondary_outcomes': item['key_secondary_outcomes'] or [],
+        }
 
-            # Study design
-            study_type=item['study_type'] or 'N/A',  # TODO: review
-            study_design=item['basic_design'] or 'N/A',  # TODO: review
-            study_phase=item['developmental_phase'] or 'N/A',  # TODO: review
+        return trial
 
-            # Outcomes
-            primary_outcomes=item['primary_outcomes'] or [],
-            secondary_outcomes=item['key_secondary_outcomes'] or [],
+    def extract_record(self, item):
 
-        )
+        record = {
+            'type': 'trial',
+            'data': {
+                # TODO: item seriliazation issue
+                'unique_trial_number': item['nct_id'],
+            },
+        }
 
-    def map_item_record(self, item, trial_id, source_id):
+        return record
 
-        self.write('records', ['id'],
-            id=item['meta_id'],
-            source_id=source_id,
-            type='trial',
-            data={'unique_trial_number': item['unique_trial_number']},  # TODO: serialization issue
-        )
+    def extract_problems(self, item):
 
-        self.write('trials_records', ['trial_id', 'record_id'],
-            trial_id=trial_id,
-            record_id=item['meta_id'],
-            role='primary',
-            context={},
-        )
-
-    def map_item_problems(self, item, trial_id):
         # TODO: item['condition'] - free text some time
-        pass
+        problems = []
 
-    def map_item_interventions(self, item, trial_id):
+        return problems
+
+    def extract_interventions(self, item):
+
         # TODO: item['interventions'] - array of free texts
-        pass
+        interventions = []
 
-    def map_item_locations(self, item, trial_id):
+        return interventions
+
+    def extract_locations(self, item):
+
         # TODO: fix on scraper item['region'] when possible
-        pass
+        locations = []
 
-    def map_item_organisations(self, item, trial_id):
+        return locations
+
+    def extract_organisations(self, item):
 
         organisations = []
         organisations.append({
@@ -139,28 +98,9 @@ class JprnExtractor(base.Extractor):
             'role': 'funder',
         })
 
-        for organisation in organisations:
+        return organisations
 
-            organisation_id = self.index('organisation',
-                name=organisation['name'],
-                type=None,
-            )
-
-            self.write('organisations', ['id'],
-                id=organisation_id,
-                name=organisation['name'],
-                type=None,
-                data={},
-            )
-
-            self.write('trials_organisations', ['trial_id', 'organisation_id'],
-                trial_id=trial_id,
-                organisation_id=organisation_id,
-                role=organisation['role'],
-                context={},
-            )
-
-    def map_item_persons(self, item, trial_id):
+    def extract_persons(self, item):
 
         persons = []
         persons.append({
@@ -190,22 +130,4 @@ class JprnExtractor(base.Extractor):
             },
         })
 
-        for person in persons:
-
-            person_id = self.index('person',
-                name=person['name'],
-            )
-
-            self.write('persons', ['id'],
-                id=person_id,
-                name=person['name'],
-                type=None,
-                data={},
-            )
-
-            self.write('trials_persons', ['trial_id', 'person_id'],
-                trial_id=trial_id,
-                person_id=person_id,
-                role=person['role'],
-                context=person['context']
-            )
+        return persons

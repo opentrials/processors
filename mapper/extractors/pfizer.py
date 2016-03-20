@@ -17,7 +17,7 @@ class PfizerExtractor(base.Extractor):
     direct = True
     table = 'data_pfizer'
 
-    def extract_source(self):
+    def extract_source(self, item):
 
         source = {
             'name': 'pfizer',
