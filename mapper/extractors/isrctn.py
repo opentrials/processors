@@ -14,7 +14,7 @@ class IsrctnExtractor(base.Extractor):
 
     # Public
 
-    direct = True
+    basis = 'warehouse'
     table = 'isrctn'
 
     def extract_source(self, item):

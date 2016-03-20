@@ -14,7 +14,7 @@ class TakedaExtractor(base.Extractor):
 
     # Public
 
-    direct = True
+    basis = 'warehouse'
     table = 'data_takeda'
 
     def extract_source(self, item):

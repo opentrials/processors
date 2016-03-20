@@ -14,7 +14,7 @@ class ActrnExtractor(base.Extractor):
 
     # Public
 
-    direct = True
+    basis = 'warehouse'
     table = 'actrn'
 
     def extract_source(self):

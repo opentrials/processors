@@ -15,7 +15,7 @@ class TrialTranslator(base.Translator):
 
     # Public
 
-    direct = True
+    basis = 'warehouse'
 
     def translate(self):
 

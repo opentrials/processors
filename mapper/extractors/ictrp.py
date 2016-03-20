@@ -14,8 +14,8 @@ class IctrpExtractor(base.Extractor):
 
     # Public
 
+    basis = 'warehouse'
     table = 'data_ictrp'
-    primary_key = 'main_id'
 
     def map(self):
 

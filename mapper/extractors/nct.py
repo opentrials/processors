@@ -14,7 +14,7 @@ class NctExtractor(base.Extractor):
 
     # Public
 
-    direct = True
+    basis = 'warehouse'
     table = 'data_nct'
 
     def extract_source(self, item):

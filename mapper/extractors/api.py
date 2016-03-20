@@ -17,7 +17,7 @@ class Extractor(object):
 
     @property
     @abstractmethod
-    def direct(self):
+    def basis(self):
         pass  # pragma: no cover
 
     @property

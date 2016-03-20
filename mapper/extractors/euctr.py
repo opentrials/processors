@@ -14,7 +14,7 @@ class EuctrExtractor(base.Extractor):
 
     # Public
 
-    direct = True
+    basis = 'warehouse'
     table = 'data_euctr'
 
     def extract_source(self):

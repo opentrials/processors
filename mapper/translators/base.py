@@ -22,17 +22,25 @@ class Translator(api.Translator):
     # Public
 
     def __init__(self, warehouse, database, extractor):
-        if self.direct:
+
+        self.__extractor = getattr(extractors, extractor.capitalize())()
+        self.__indexer = Indexer(warehouse)
+
+        if self.basis == 'warehouse':
             self.__source = warehouse
             self.__target = database
-        else:
+        elif self.basis == 'database':
             self.__source = database
             self.__target = warehouse
-        self.__extractor = getattr(extractors, extractor.capitalize())()
-        if self.direct == self.__extractor.direct:
-            message = 'Translator %s and extractor %s are not compatible.'
+        else:
+            message = 'Basis %s is not supported.'
+            message = message % self.basis
+            raise ValueError(message)
+
+        if self.basis != self.__extractor.basis:
+            message = 'Translator %s and extractor %s use different basises.'
             message = message % (self, self.__extractor)
-        self.__indexer = Indexer(warehouse)
+            raise ValueError(message)
 
     def read(self):
         """Read data from warehouse.

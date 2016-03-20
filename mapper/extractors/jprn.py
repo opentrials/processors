@@ -14,7 +14,7 @@ class JprnExtractor(base.Extractor):
 
     # Public
 
-    direct = True
+    basis = 'warehouse'
     table = 'data_jprn'
 
     def extract_source(self, item):
