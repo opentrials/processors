@@ -48,15 +48,15 @@ class TrialConverter(base.Converter):
         )
 
         source_id = self.index('source',
-            name=table,
-            type='register',
+            name=source['name'],
+            type=source.get('type', None),
         )
 
         self.write('sources', ['id'],
             id=source_id,
-            name=table,
-            type='register',
-            data={},
+            name=source['name'],
+            type=source.get('type', None),
+            data=source.get('data', {}),
         )
 
         return source_id
@@ -68,31 +68,31 @@ class TrialConverter(base.Converter):
         )
 
         trial_id = self.index('trial',
-            nct_id=item['nct_id'],
-            euctr_id=None,
-            isrctn_id=None,
-            scientific_title=item['official_title'],
+            nct_id=trial.get('nct_id', None),
+            euctr_id=trial.get('euctr_id', None),
+            isrctn_id=trial.get('isrctn_id', None),
+            scientific_title=trial.get('scientific_title', None),
         )
 
         self.write('trials', ['id'],
             id=trial_id,
-            primary_register='nct',
-            primary_id=item['nct_id'],
-            secondary_ids={'others': item['secondary_ids'] },
-            registration_date=item['firstreceived_date'],
-            public_title=item['brief_title'],
-            brief_summary=item['brief_summary'] or '',  # TODO: review
-            scientific_title=item['official_title'],
-            description=item['detailed_description'],
-            recruitment_status=item['overall_status'],
-            eligibility_criteria=item['eligibility'],
-            target_sample_size=item['enrollment_anticipated'],
-            first_enrollment_date=item['start_date'],
-            study_type=item['study_type'],
-            study_design=item['study_design'],
-            study_phase=item['phase'],
-            primary_outcomes=item['primary_outcomes'] or [],
-            secondary_outcomes=item['secondary_outcomes'] or [],
+            primary_register=trial['primary_register'],
+            primary_id=trial['primary_id'],
+            secondary_ids=trial['secondary_ids'],
+            registration_date=trial['registration_date'],
+            public_title=trial['public_title'],
+            brief_summary=trial['brief_summary'],
+            scientific_title=trial.get('scientific_title', None),
+            description=trial.get('descriptions', None),
+            recruitment_status=trial['recruitment_status'],
+            eligibility_criteria=trial['eligibility_criteria'],
+            target_sample_size=trial.get('target_sample_size', None),
+            first_enrollment_date=trial.get('first_enrollment_date', None),
+            study_type=trial['study_type'],
+            study_design=trial['study_design'],
+            study_phase=trial['study_phase'],
+            primary_outcomes=trial.get('primary_outcomes', None),
+            secondary_outcomes=trial.get('primary_outcomes', None),
         )
 
         return trial_id
@@ -108,15 +108,15 @@ class TrialConverter(base.Converter):
         self.write('records', ['id'],
             id=record_id,
             source_id=source_id,
-            type='trial',
-            data={'nct_id': item['nct_id']},  # TODO: serialization issue
+            type=record.get('type', None),
+            data=record.get('data', {}),
         )
 
         self.write('trials_records', ['trial_id', 'record_id'],
             trial_id=trial_id,
             record_id=record_id,
-            role='primary',
-            context={},
+            role=record.get('role', None),
+            context=record.get('context', {}),
         )
 
     def convert_problems(self, item, trial_id):
@@ -125,25 +125,25 @@ class TrialConverter(base.Converter):
             item=item,
         )
 
-        for condition in item['conditions'] or []:
+        for problem in problems:
 
             problem_id = self.index('problem',
-                name=condition,
-                type=None,
+                name=problem['name'],
+                type=problem.get('type', None),
             )
 
             self.write('problems', ['id'],
                 id=problem_id,
-                name=condition,
-                type=None,
-                data={},
+                name=problem['name'],
+                type=problem.get('type', None),
+                data=problem.get('data', {}),
             )
 
             self.write('trials_problems', ['trial_id', 'problem_id'],
                 trial_id=trial_id,
                 problem_id=problem_id,
-                role=None,
-                context={},
+                role=problem.get('role', None),
+                context=problem.get('context', {}),
             )
 
     def convert_interventions(self, item, trial_id):
@@ -152,25 +152,25 @@ class TrialConverter(base.Converter):
             item=item,
         )
 
-        for intervention in item['interventions'] or []:
+        for intervention in interventions:
 
             intervention_id = self.index('intervention',
-                name=intervention['intervention_name'],
-                type=None,
+                name=intervention['name'],
+                type=intervention.get('type', None),
             )
 
             self.write('interventions', ['id'],
                 id=intervention_id,
-                name=intervention['intervention_name'],
-                type=None,
-                data={},
+                name=intervention['name'],
+                type=intervention.get('type', None),
+                data=intervention.get('data', {}),
             )
 
             self.write('trials_interventions', ['trial_id', 'intervention_id'],
                 trial_id=trial_id,
                 intervention_id=intervention_id,
-                role=None,
-                context=intervention,
+                role=intervention.get('role', None),
+                context=intervention.get('context', {}),
             )
 
     def convert_locations(self, item, trial_id):
@@ -179,25 +179,25 @@ class TrialConverter(base.Converter):
             item=item,
         )
 
-        for location in item['location_countries'] or []:
+        for location in locations:
 
             location_id = self.index('location',
-                name=location,
-                type='country',
+                name=location['name'],
+                type=location.get('type', None),
             )
 
             self.write('locations', ['id'],
                 id=location_id,
-                name=location,
-                type='country',
-                data={},
+                name=location['name'],
+                type=location.get('type', None),
+                data=location.get('data', {}),
             )
 
             self.write('trials_locations', ['trial_id', 'location_id'],
                 trial_id=trial_id,
                 location_id=location_id,
-                role='recruitment_countries',
-                context={},
+                role=location.get('role', None),
+                context=location.get('context', {}),
             )
 
     def convert_organisations(self, item, trial_id):
@@ -206,30 +206,25 @@ class TrialConverter(base.Converter):
             item=item,
         )
 
-        for sponsor in item['sponsors'] or []:
-
-            # TODO: get more information
-            sponsor = sponsor.get('lead_sponsor', None)
-            if sponsor is None:
-                continue
+        for organisation in organisations:
 
             organisation_id = self.index('organisation',
-                name=sponsor['agency'],
-                type=None,
+                name=organisation['name'],
+                type=organisation.get('type', None),
             )
 
             self.write('organisations', ['id'],
                 id=organisation_id,
-                name=sponsor['agency'],
-                type=None,
-                data={},
+                name=organisation['name'],
+                type=organisation.get('type', None),
+                data=organisation.get('data', {}),
             )
 
             self.write('trials_organisations', ['trial_id', 'organisation_id'],
                 trial_id=trial_id,
                 organisation_id=organisation_id,
-                role='primary_sponsor',
-                context={},
+                role=organisation.get('role', None),
+                context=organisation.get('context', {}),
             )
 
     def convert_persons(self, item, trial_id):
@@ -238,27 +233,23 @@ class TrialConverter(base.Converter):
             item=item,
         )
 
-        for person in item['overall_officials'] or []:
-
-            # TODO: get more information
-            if person.get('role', None) != 'Principal Investigator':
-                continue
+        for person in persons:
 
             person_id = self.index('person',
-                name=person['last_name'],
-                type=None,
+                name=person['name'],
+                type=person.get('type', None),
             )
 
             self.write('persons', ['id'],
                 id=person_id,
-                name=person['last_name'],
-                type=None,
-                data={},
+                name=person['name'],
+                type=person.get('type', None),
+                data=person.get('data', {}),
             )
 
             self.write('trials_persons', ['trial_id', 'person_id'],
                 trial_id=trial_id,
                 person_id=person_id,
-                role='principal_investigator',
-                context={},
+                role=person.get('role', None),
+                context=person.get('context', {}),
             )

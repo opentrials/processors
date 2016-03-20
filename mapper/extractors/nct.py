@@ -53,7 +53,13 @@ class NctExtractor(base.Extractor):
 
     def extract_record(self, item):
 
-        record = item
+        record = {
+            'type': 'trial',
+            'data': {
+                # TODO: item seriliazation issue
+                'nct_id': item['nct_id'],
+            },
+        }
 
         return item
 
