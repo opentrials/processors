@@ -51,7 +51,7 @@ class TakedaExtractor(base.Extractor):
 
         return trial
 
-    def extract_record(self, item, trial_id, source_id):
+    def extract_record(self, item):
 
         record = {
             'type': 'trial',
@@ -63,7 +63,7 @@ class TakedaExtractor(base.Extractor):
 
         return record
 
-    def extract_problems(self, item, trial_id):
+    def extract_problems(self, item):
 
         problems = []
 
@@ -74,7 +74,7 @@ class TakedaExtractor(base.Extractor):
 
         return problems
 
-    def extract_interventions(self, item, trial_id):
+    def extract_interventions(self, item):
 
         interventions = []
 
@@ -87,7 +87,7 @@ class TakedaExtractor(base.Extractor):
 
         return interventions
 
-    def extract_locations(self, item, trial_id):
+    def extract_locations(self, item):
 
         locations = []
 
@@ -101,14 +101,14 @@ class TakedaExtractor(base.Extractor):
 
         return locations
 
-    def extract_organisations(self, item, trial_id):
+    def extract_organisations(self, item):
 
         # TODO: review on scraper level
         organisations = []
 
         return organisations
 
-    def extract_persons(self, item, trial_id):
+    def extract_persons(self, item):
 
         # TODO: review on scraper level
         persons = []
