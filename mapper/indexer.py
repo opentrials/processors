@@ -81,3 +81,18 @@ class Indexer(object):
 
         # Return id
         return item['meta_id']
+
+    def index_problem(self, name, type):
+        pass
+
+    def index_intervention(self, name, type):
+        pass
+
+    def index_location(self, name, type):
+        pass
+
+    def index_organisation(self, name, type):
+        pass
+
+    def index_person(self, name, type):
+        pass
