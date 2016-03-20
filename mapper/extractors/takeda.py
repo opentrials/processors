@@ -14,175 +14,103 @@ class TakedaExtractor(base.Extractor):
 
     # Public
 
+    direct = True
     table = 'data_takeda'
-    primary_key = 'takeda_trial_id'
 
-    def map(self):
+    def extract_source(self):
 
-        # Map sources
-        source_id = map_source()
+        source = {
+            'name': 'takeda',
+            'type': 'register',
+        }
 
-        for item in helpers.table_read(self.warehouse[self.table]):
+        return source
 
-            # Map trials
-            trial_id = self.map_item_trial(item)
+    def extract_trial(self, item):
 
-            # Map records
-            self.map_item_record(item, trial_id, source_id)
+        trial = {
+            'nct_id': item['nct_number'],
+            'primary_register': 'takeda',
+            'primary_id': item['takeda_trial_id'],
+            'secondary_ids': {'nct': item['nct_number'] },
+            'registration_date': item['start_date'], # TODO: review
+            'public_title': item['official_title'], # TODO: review
+            'brief_summary': item['brief_summary'] or '',  # TODO: review
+            'scientific_title': item['official_title'],
+            'description': item['detailed_description'],
+            'recruitment_status': item['recruitment_status'],
+            'eligibility_criteria': {'criteria': item['eligibility_criteria']},
+            'target_sample_size': None,
+            'first_enrollment_date': item['start_date'],
+            'study_type': item['trial_type'],
+            'study_design': item['trial_design'],
+            'study_phase': item['trial_phase'],
+            'primary_outcomes': None,  # TODO: review free text
+            'secondary_outcomes': None,  # TODO: review free text
+        }
 
-            # Map other entities
-            self.map_item_problems(item, trial_id)
-            self.map_item_interventions(item, trial_id)
-            self.map_item_locations(item, trial_id)
-            self.map_item_organisations(item, trial_id)
-            self.map_item_persons(item, trial_id)
+        return trial
 
-            # Log and sleep
-            logger.debug('Mapped: %s' % item[self.primary_key])
-            time.sleep(0.1)
+    def extract_record(self, item, trial_id, source_id):
 
-    def map_source(self):
+        record = {
+            'type': 'trial',
+            'data': {
+                # TODO: item seriliazation issue
+                'takeda_trial_id': item['takeda_trial_id'],
+            },
+        }
 
-        source_id = self.index('source',
-            name='takeda',
-            type='register',
-        )
+        return record
 
-        self.write('sources', ['id'],
-            id=source_id,
-            name='takeda',
-            type='register',
-            data={},
-        )
+    def extract_problems(self, item, trial_id):
 
-        return source_id
+        problems = []
 
-    def map_item_trial(self, item):
+        problem.append({
+            'name': item['condition'],
+            'type': 'condition',
+        })
 
-        trial_id = self.index('trial',
-            nct_id=item['nct_number'],
-            euctr_id=None,
-            isrctn_id=None,
-            scientific_title=item['official_title'],
-        )
+        return problems
 
-        self.write('trials', ['id'],
+    def extract_interventions(self, item, trial_id):
 
-            # General
-            id=trial_id,
-            primary_register='takeda',
-            primary_id=item['takeda_trial_id'],
-            secondary_ids={'nct': item['nct_number'] },
-            registration_date=item['start_date'], # TODO: review
-            public_title=item['official_title'], # TODO: review
-            brief_summary=item['brief_summary'] or '',  # TODO: review
-            scientific_title=item['official_title'],
-            description=item['detailed_description'],
+        interventions = []
 
-            # Recruitment
-            recruitment_status=item['recruitment_status'],
-            eligibility_criteria={'criteria': item['eligibility_criteria']},
-            target_sample_size=None,
-            first_enrollment_date=item['start_date'],
+        for element in item['compound'] or []:
 
-            # Study design
-            study_type=item['trial_type'],
-            study_design=item['trial_design'],
-            study_phase=item['trial_phase'],
+            interventions.append({
+                'name': element,
 
-            # Outcomes
-            primary_outcomes=None,  # TODO: review free test
-            secondary_outcomes=None,  # TODO: review free test
+            })
 
-        )
+        return interventions
 
-    def map_item_record(self, item, trial_id, source_id):
+    def extract_locations(self, item, trial_id):
 
-        self.write('records', ['id'],
-            id=item['meta_id'],
-            source_id=source_id,
-            type='trial',
-            data={},  # TODO: serialization issue
-        )
+        locations = []
 
-        self.write(db['trials_records'], ['trial_id', 'record_id'],
-            trial_id=trial_id,
-            record_id=item['meta_uuid'],
-            role='primary',
-            context={},
-        )
+        for element in item['locations'] or []:
 
-    def map_item_problems(self, item, trial_id):
+            location.append({
+                'name': element,
+                'type': 'country',
+                'role': 'recruitment_countries',
+            })
 
-        problem_id = self.index('problem',
-            name=item['condition'],
-            type=None,
-        )
+        return locations
 
-        self.write('problems', ['id'],
-            id=problem_id,
-            name=item['condition'],
-            type='condition',
-            data={},
-        )
+    def extract_organisations(self, item, trial_id):
 
-        self.write('trials_problems', ['trial_id', 'problem_id'],
-            trial_id=trial_id,
-            problem_id=problem_id,
-            role=None,
-            context={},
-        )
-
-    def map_item_interventions(self, item, trial_id):
-
-        for intervention in item['compound'] or []:
-
-            intervention_id = self.index('intervention',
-                name=intervention,
-                type=None,
-            )
-
-            self.write('interventions', ['id'],
-                id=intervention_id,
-                name=intervention,
-                type=None,
-                data={},
-            )
-
-            self.write('trials_interventions', ['trial_id', 'intervention_id'],
-                trial_id=trial_id,
-                intervention_id=intervention_id,
-                role=None,
-                context={},
-            )
-
-    def map_item_locations(self, item, trial_id):
-
-        for location in item['locations'] or []:
-
-            location_id = self.index('location',
-                name=location,
-                type='country',
-            )
-
-            self.write('locations', ['id'],
-                id=location_id,
-                name=location,
-                type='country',
-                data={},
-            )
-
-            self.write('trials_locations', ['trial_id', 'location_id'],
-                trial_id=trial_id,
-                location_id=location_id,
-                role='recruitment_countries',
-                context={},
-            )
-
-    def map_item_organisations(self, item, trial_id):
         # TODO: review on scraper level
-        pass
+        organisations = []
 
-    def map_item_persons(self, item, trial_id):
+        return organisations
+
+    def extract_persons(self, item, trial_id):
+
         # TODO: review on scraper level
-        pass
+        persons = []
+
+        return persons

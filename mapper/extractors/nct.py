@@ -61,42 +61,50 @@ class NctExtractor(base.Extractor):
             },
         }
 
-        return item
+        return record
 
     def extract_problems(self, item):
 
+        problems = []
+
         for element in item['conditions'] or []:
 
-            problem = {
+            problems.append({
                 'name': element,
-            }
+            })
 
-            yield problem
+        return problems
 
     def extract_interventions(self, item):
 
+        interventions = []
+
         for element in item['interventions'] or []:
 
-            intervetion = {
+            interventsion.append({
                 'name': element['intervention_name'],
                 'context': element,
-            }
+            })
 
-            yield intervetion
+        return interventions
 
     def extract_locations(self, item):
 
+        locations = []
+
         for element in item['location_countries'] or []:
 
-            location = {
+            locations.append({
                 'name': element,
                 'type': 'country',
                 'role': 'recruitment_countries',
-            }
+            })
 
-            yield location
+        return locations
 
     def extract_organisations(self, item):
+
+        organisations = []
 
         for element in item['sponsors'] or []:
 
@@ -105,14 +113,16 @@ class NctExtractor(base.Extractor):
             if element is None:
                 continue
 
-            sponsor = {
+            organisations.append({
                 'name': element['agency'],
                 'role': 'primary_sponsor',
-            }
+            })
 
-            yield sponsor
+        return organisations
 
     def extract_persons(self, item):
+
+        persons = []
 
         for element in item['overall_officials'] or []:
 
@@ -120,9 +130,9 @@ class NctExtractor(base.Extractor):
             if element.get('role', None) != 'Principal Investigator':
                 continue
 
-            sponsor = {
+            persons.append({
                 'name': element['last_name'],
                 'role': 'principal_investigator',
-            }
+            })
 
-            yield sponsor
+        return persons
