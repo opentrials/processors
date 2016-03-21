@@ -8,7 +8,7 @@ import uuid
 import logging
 import sqlalchemy as sa
 from datetime import datetime
-from sqlalchemy.dialects.postgres import ARRAY, UUID
+from sqlalchemy.dialects.postgres import ARRAY
 
 logger = logging.getLogger(__name__)
 
