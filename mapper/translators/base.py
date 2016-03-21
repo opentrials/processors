@@ -42,6 +42,9 @@ class Translator(api.Translator):
             message = message % (self, self.__extractor)
             raise ValueError(message)
 
+    def begin(self):
+        self.__target.begin()
+
     def read(self):
         """Read data from warehouse.
 
@@ -99,3 +102,9 @@ class Translator(api.Translator):
 
         """
         self.__target[table].upsert(data, keys, ensure=False)
+
+    def commit(self):
+        self.__target.commit()
+
+    def rollback(self):
+        self.__target.rollback()

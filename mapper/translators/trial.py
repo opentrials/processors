@@ -25,6 +25,9 @@ class TrialTranslator(base.Translator):
         count = 0
         for item in self.read():
 
+            # Begin transaction
+            self.begin()
+
             try:
 
                 # Map trials
@@ -40,16 +43,26 @@ class TrialTranslator(base.Translator):
                 self.translate_organisations(item, trial_id)
                 self.translate_persons(item, trial_id)
 
-                # Log and sleep
+                # Log success
                 count += 1
                 logger.info('Translated - trial: %s [%s]' %
                     (primary_id, count))
-                time.sleep(0.1)
 
             except Exception as exception:
 
+                # Rollback transaction
+                self.rollback()
+
                 # Log error
                 logger.warning('Translation error: %s' % repr(exception))
+
+            else:
+
+                # Commit transaction
+                self.commit()
+
+            # Sleep to avoid oveload
+            time.sleep(0.1)
 
     def translate_source(self, item):
 
