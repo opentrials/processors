@@ -25,7 +25,6 @@ class TrialTranslator(base.Translator):
         count = 0
         for item in self.read():
 
-            # Begin transaction
             self.begin()
 
             try:
@@ -49,19 +48,12 @@ class TrialTranslator(base.Translator):
                     (primary_id, count))
 
             except Exception as exception:
-
-                # Rollback transaction
                 self.rollback()
-
-                # Log error
                 logger.warning('Translation error: %s' % repr(exception))
-
             else:
-
-                # Commit transaction
                 self.commit()
 
-            # Sleep to avoid oveload
+            # Sleep to avoid overloading
             time.sleep(0.1)
 
     def translate_source(self, item):
