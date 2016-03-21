@@ -18,3 +18,7 @@ def cli():
 
     mapper = Mapper(warehouse, database)
     mapper.map(sys.argv[1], sys.argv[2])
+
+
+if __name__ == '__main__':
+    cli()

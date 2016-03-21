@@ -18,3 +18,7 @@ def cli():
 
     exporter = Exporter(warehouse, database)
     exporter.export(sys.argv[1])
+
+
+if __name__ == '__main__':
+    cli()
