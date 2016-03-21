@@ -17,176 +17,99 @@ class IctrpExtractor(base.Extractor):
     basis = 'warehouse'
     table = 'data_ictrp'
 
-    def map(self):
+    def extract_source(self, item):
 
-        # Map sources
-        source_id = map_source()
+        source = {
+            'name': 'ictrp',
+            'type': 'register',
+        }
 
-        for item in helpers.table_read(self.warehouse[self.table]):
+        return source
 
-            # Map trials
-            trial_id = self.map_item_trial(item)
+    def extract_trial(self, item):
 
-            # Map records
-            self.map_item_record(item, trial_id, source_id)
+        trial = {
+            'primary_register': 'ictrp',
+            'primary_id': item['main_id'],
+            'secondary_ids': {},
+            'registration_date': None,  # TODO: text on scrap layer
+            'public_title': item['pucli_title'],
+            'brief_summary': '',  # TODO: review
+            'scientific_title': item['scientific_title'],  # TODO: review
+            'description': None,  # TODO: review
+            'recruitment_status': item['recruitment_status'],
+            'eligibility_criteria': {'criteria': item['key_inclusion_exclusion_criteria']},
+            'target_sample_size': item['target_sample_size'],
+            'first_enrollment_date': None,  # TODO: text on scraper layer
+            'study_type': item['study_type'],
+            'study_design': item['study_design'],
+            'study_phase': item['study_phase'],
+            'primary_outcomes': item['primary_outcomes'],
+            'secondary_outcomes': item['secondary_outcomes'],
+        }
 
-            # Map other entities
-            self.map_item_problems(item, trial_id)
-            self.map_item_interventions(item, trial_id)
-            self.map_item_locations(item, trial_id)
-            self.map_item_organisations(item, trial_id)
-            self.map_item_persons(item, trial_id)
+        return trial
 
-            # Log and sleep
-            logger.debug('Mapped: %s' % item[self.primary_key])
-            time.sleep(0.1)
+    def extract_record(self, item):
 
-    def map_source(self):
+        record = {
+            'type': 'trial',
+            'data': {
+                # TODO: item seriliazation issue
+            },
+        }
 
-        source_id = self.index('source',
-            name='ictrp',
-            type='register',
-        )
+        return record
 
-        self.write('sources', ['id'],
-            id=source_id,
-            name='ictrp',
-            type='register',
-            data={},
-        )
+    def extract_problems(self, item):
 
-        return source_id
+        problems = []
 
-    def map_item_trial(self, item):
+        for element in item['health_conditions_or_problems_studied'] or []:
 
-        trial_id = self.index('trial',
-            nct_id=None,
-            euctr_id=None,
-            isrctn_id=None,
-            scientific_title=item['scientific_title'],
-        )
+            problems.append({
+                'name': element,
+            })
 
-        self.write('trials', ['id'],
+        return problems
 
-            # General
-            id=trial_id,
-            primary_register='ictrp',
-            primary_id=item['main_id'],
-            secondary_ids={},
-            registration_date=None,  # TODO: text on scrap layer
-            public_title=item['pucli_title'],
-            brief_summary='',  # TODO: review
-            scientific_title=item['scientific_title'],  # TODO: review
-            description=None,  # TODO: review
+    def extract_interventions(self, item):
 
-            # Recruitment
-            recruitment_status=item['recruitment_status'],
-            eligibility_criteria={'criteria': item['key_inclusion_exclusion_criteria']},
-            target_sample_size=item['target_sample_size'],
-            first_enrollment_date=None,  # TODO: text on scraper layer
+        interventions = []
 
-            # Study design
-            study_type=item['study_type'],
-            study_design=item['study_design'],
-            study_phase=item['study_phase'],
+        for element in item['interventions'] or []:
 
-            # Outcomes
-            primary_outcomes=item['primary_outcomes'],
-            secondary_outcomes=item['secondary_outcomes'],
+            # TODO: parse "drug: name"
+            interventions.append({
+                'name': element,
+            })
 
-        )
+        return interventions
 
-        return trial_id
+    def extract_locations(self, item):
 
-    def map_item_record(self, item, trial_id, source_id):
+        locations = []
 
-        self.write('records', ['id'],
-            id=item['meta_id'],
-            source_id=source_id,
-            type='trial',
-            data={},  # TODO: serialization issue
-        )
+        for element in item['countries_of_recruitment'] or []:
 
-        self.write(db['trials_records'], ['trial_id', 'record_id'],
-            trial_id=trial_id,
-            record_id=item['meta_id'],
-            role='primary',
-            context={},
-        )
+            locations.append({
+                'name': element,
+                'type': 'country',
+                'role': 'recruitment_countries',
+            })
 
-    def map_item_problems(self, item, trial_id):
+        return locations
 
-        for condition in item['health_conditions_or_problems_studied'] or []:
+    def extract_organisations(self, item):
 
-            problem_id = self.index('problem',
-                name=condition,
-                type=None,
-            )
+        # TODO: check on scraper level
+        organisations = []
 
-            self.write('problems', ['id'],
-                id=problem_id,
-                name=condition,
-                type=None,
-                data={},
-            )
+        return organisations
 
-            self.write('trials_problems', ['trial_id', 'problem_id'],
-                trial_id=trial_id,
-                problem_id=problem_id,
-                role=None,
-                context={},
-            )
+    def extract_persons(self, item):
 
-    def map_item_interventions(self, item, trial_id):
+        # TODO: check on scraper level
+        persons = []
 
-        # TODO: parse "drug: name"
-
-        for intervention in item['interventions'] or []:
-
-            intervention_id = self.index('intervention',
-                name=intervention,
-                type=None,
-            )
-
-            self.write('interventions', ['id'],
-                id=intervention_id,
-                name=intervention,
-                type=None,
-                data={},
-            )
-
-            self.write('trials_interventions', ['trial_id', 'intervention_id'],
-                trial_id=trial_id,
-                intervention_id=intervention_id,
-                role=None,
-                context={},
-            )
-
-    def map_item_locations(self, item, trial_id):
-
-        for location in item['countries_of_recruitment'] or []:
-
-            location_id = self.index('location',
-                name=location,
-                type='country',
-            )
-
-            self.write('locations', ['id'],
-                id=location_id,
-                name=location,
-                type='country',
-                data={},
-            )
-
-            self.write('trials_locations', ['trial_id', 'location_id'],
-                trial_id=trial_id,
-                location_id=location_id,
-                role='recruitment_countries',
-                context={},
-            )
-
-    def map_item_organisations(self, item, trial_id):
-        pass
-
-    def map_item_persons(self, item, trial_id):
-        pass
+        return persons
