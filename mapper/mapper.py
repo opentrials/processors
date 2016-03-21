@@ -25,12 +25,3 @@ class Mapper(object):
         translator = getattr(translators, translator.capitalize())(
             self.__warehouse, self.__database, extractor)
         translator.convert()
-
-
-if __name__ == '__main__':
-
-    warehouse = dataset.connect(settings.WAREHOUSE_URL)
-    database = dataset.connect(settings.DATABASE_URL)
-
-    mapper = Mapper(warehouse, database)
-    mapper.map('trial', 'nct')

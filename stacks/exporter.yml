@@ -1,5 +1,62 @@
-main:
+actrn:
   image: opentrialsrobot/processors
-  command: python -m exporter.exporter
+  command: python -m exporter trial actrn
   environment:
     OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+euctr:
+  image: opentrialsrobot/processors
+  command: python -m exporter trial euctr
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+gsk:
+  image: opentrialsrobot/processors
+  command: python -m exporter trial gsk
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+ictrp:
+  image: opentrialsrobot/processors
+  command: python -m exporter trial ictrp
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+isrctn:
+  image: opentrialsrobot/processors
+  command: python -m exporter trial isrctn
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+jprn:
+  image: opentrialsrobot/processors
+  command: python -m exporter trial jprn
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+nct:
+  image: opentrialsrobot/processors
+  command: python -m exporter trial nct
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+pfizer:
+  image: opentrialsrobot/processors
+  command: python -m exporter trial pfizer
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+takeda:
+  image: opentrialsrobot/processors
+  command: python -m exporter trial takeda
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
