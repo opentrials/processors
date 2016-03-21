@@ -5,7 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from six import add_metaclass
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 
 from . import api
 

@@ -54,6 +54,8 @@ class ActrnExtractor(base.Extractor):
             'secondary_outcomes': item['secondary_outcomes'] or [],
         }
 
+        return trial
+
     def extract_record(self, item):
 
         record = {
@@ -78,7 +80,7 @@ class ActrnExtractor(base.Extractor):
         # TODO: item['intervention_codes'] - discover
         interventions = []
 
-        return intervetions
+        return interventions
 
     def extract_locations(self, item):
 

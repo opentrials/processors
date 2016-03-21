@@ -66,7 +66,7 @@ class TakedaExtractor(base.Extractor):
     def extract_problems(self, item):
 
         problems = []
-        problem.append({
+        problems.append({
             'name': item['condition'],
             'type': 'condition',
         })
@@ -92,7 +92,7 @@ class TakedaExtractor(base.Extractor):
 
         for element in item['locations'] or []:
 
-            location.append({
+            locations.append({
                 'name': element,
                 'type': 'country',
                 'role': 'recruitment_countries',

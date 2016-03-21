@@ -83,7 +83,7 @@ class GskExtractor(base.Extractor):
     def extract_interventions(self, item):
 
         # TODO: item['interventions'] - reimplement on scraper - array -> dict
-        interventsion = []
+        interventions = []
 
         return interventions
 

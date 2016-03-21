@@ -81,7 +81,7 @@ class NctExtractor(base.Extractor):
 
         for element in item['interventions'] or []:
 
-            interventsion.append({
+            interventions.append({
                 'name': element['intervention_name'],
                 'context': element,
             })
