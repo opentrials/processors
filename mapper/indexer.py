@@ -9,7 +9,6 @@ import logging
 from datetime import datetime
 from sqlalchemy.dialects.postgres import ARRAY, UUID
 
-from .. import base
 logger = logging.getLogger(__name__)
 
 
@@ -20,7 +19,7 @@ class Indexer(object):
     def __init__(self, warehouse):
         self.__warehouse = warehouse
 
-    def index(self, target, **kwargs):
+    def index(self, target, **params):
 
         # Get method
         try:
@@ -31,7 +30,7 @@ class Indexer(object):
             raise ValueError(message)
 
         # Index data
-        id = method(item)
+        id = method(**params)
 
         return id
 
@@ -53,7 +52,7 @@ class Indexer(object):
             logger.info('Indexed - source: %s' % item['meta_id'])
 
         # Return id
-        return index['meta_id']
+        return item['meta_id']
 
     def index_trial(self, nct_id=None, euctr_id=None,
             isrctn_id=None, scientific_title=None):
@@ -103,7 +102,7 @@ class Indexer(object):
             logger.info('Indexed - source: %s' % item['meta_id'])
 
         # Return id
-        return index['meta_id']
+        return item['meta_id']
 
     def index_intervention(self, name, type):
 
@@ -123,7 +122,7 @@ class Indexer(object):
             logger.info('Indexed - intervention: %s' % item['meta_id'])
 
         # Return id
-        return index['meta_id']
+        return item['meta_id']
 
     def index_location(self, name, type):
 
@@ -143,7 +142,7 @@ class Indexer(object):
             logger.info('Indexed - location: %s' % item['meta_id'])
 
         # Return id
-        return index['meta_id']
+        return item['meta_id']
 
     def index_organisation(self, name, phones):
 

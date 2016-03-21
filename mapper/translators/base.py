@@ -6,11 +6,11 @@ from __future__ import unicode_literals
 
 import logging
 from six import add_metaclass
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 
 from .. import api
 from .. import extractors
-from .. import indexers
+from ..indexers import Indexer
 logger = logging.getLogger(__name__)
 
 
@@ -50,6 +50,8 @@ class Translator(api.Translator):
 
         """
         offset = 0
+        bufsize = 10
+        orderby = 'meta_id'
         while True:
             query = {'_offset': offset, '_limit': bufsize, 'order_by': orderby}
             count = self.__source[self.__extractor.table].find(
@@ -65,7 +67,7 @@ class Translator(api.Translator):
         """Extract data from item.
 
         Args:
-            target (str): extractrion target
+            target (str): extractrion target like `trial`
             item (dict): data item
 
         Returns:
@@ -74,17 +76,18 @@ class Translator(api.Translator):
         """
         return self.__extractor.extract(target, item)
 
-    def index(self, target, **kwargs):
+    def index(self, target, **params):
         """Index item.
 
         Args:
-            indexer (str): indexer name
+            target (str): indexing target like `trial`
+            params (dict): indexing params
 
         Returns:
             str: identifier
 
         """
-        return self.__indexers.index(target, **kwargs)
+        return self.__indexers.index(target, **params)
 
     def write(self, table, keys, **data):
         """Write data to database.

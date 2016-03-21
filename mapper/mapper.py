@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 import logging
 
 from . import translators
-from . import settings
 logger = logging.getLogger(__name__)
 
 

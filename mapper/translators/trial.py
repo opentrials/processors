@@ -4,9 +4,9 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import time
 import logging
 
-from .. import helpers
 from . import base
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class TrialTranslator(base.Translator):
     def translate(self):
 
         # Map sources
-        source_id = translate_source(None)
+        source_id = self.translate_source(None)
 
         for item in self.read():
 

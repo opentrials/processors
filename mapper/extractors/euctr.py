@@ -106,7 +106,7 @@ class EuctrExtractor(base.Extractor):
 
         for element in item['sponsors'] or []:
 
-            if 'name_of_sponsor' not in sponsor:
+            if 'name_of_sponsor' not in element:
                 continue
 
             organisations.append({
