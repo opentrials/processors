@@ -29,16 +29,16 @@ class JprnExtractor(base.Extractor):
     def extract_trial(self, item):
 
         trial = {
-            'primary_registerc': 'jprn',
-            'primary_idc': item['unique_trial_number'],
-            'secondary_idsc': {},  # TODO: use item['secondary_study_id_*'] and item['org_issuing_secondary_study_id_*']
-            'registration_datec': item['date_of_registration'],
-            'public_titlec': item['title_of_the_study'],
-            'brief_summaryc': 'N/A',  # TODO: review
-            'scientific_titlec': item['official_scientific_title_of_the_study'],
-            'descriptionc': None,  # TODO: review
-            'recruitment_statusc': item['recruitment_status'],
-            'eligibility_criteriac': {
+            'primary_register': 'jprn',
+            'primary_id': item['unique_trial_number'],
+            'secondary_ids': {},  # TODO: use item['secondary_study_id_*'] and item['org_issuing_secondary_study_id_*']
+            'registration_date': item['date_of_registration'],
+            'public_title': item['title_of_the_study'],
+            'brief_summary': 'N/A',  # TODO: review
+            'scientific_title': item['official_scientific_title_of_the_study'],
+            'description': None,  # TODO: review
+            'recruitment_status': item['recruitment_status'],
+            'eligibility_criteria': {
                 'inclusion': item['key_inclusion_criteria'],
                 'exclusion': item['key_exclusion_criteria'],
             },
@@ -59,7 +59,7 @@ class JprnExtractor(base.Extractor):
             'type': 'trial',
             'data': {
                 # TODO: item seriliazation issue
-                'unique_trial_number': item['nct_id'],
+                'unique_trial_number': item['unique_trial_number'],
             },
         }
 
@@ -103,31 +103,33 @@ class JprnExtractor(base.Extractor):
     def extract_persons(self, item):
 
         persons = []
-        persons.append({
-            'name': item['research_name_of_lead_principal_investigator'],
-            'role': 'principal_investigator',
-            'context': {
-                'research_name_of_lead_principal_investigator': item['research_name_of_lead_principal_investigator'],
-                'research_organization': item['research_organization'],
-                'research_division_name': item['research_division_name'],
-                'research_address': item['research_address'],
-                'research_tel': item['research_tel'],
-                'research_homepage_url': item['research_homepage_url'],
-                'research_email': item['research_email'],
-            },
-        })
-        persons.append({
-            'name': item['public_name_of_contact_person'],
-            'role': 'public_queries',
-            'context': {
-                'public_name_of_contact_person': item['public_name_of_contact_person'],
-                'public_organization': item['public_organization'],
-                'public_division_name': item['public_division_name'],
-                'public_address': item['public_address'],
-                'public_tel': item['public_tel'],
-                'public_homepage_url': item['public_homepage_url'],
-                'public_email': item['public_email'],
-            },
-        })
+        if item['research_name_of_lead_principal_investigator']:
+            persons.append({
+                'name': item['research_name_of_lead_principal_investigator'],
+                'role': 'principal_investigator',
+                'context': {
+                    'research_name_of_lead_principal_investigator': item['research_name_of_lead_principal_investigator'],
+                    'research_organization': item['research_organization'],
+                    'research_division_name': item['research_division_name'],
+                    'research_address': item['research_address'],
+                    'research_tel': item['research_tel'],
+                    'research_homepage_url': item['research_homepage_url'],
+                    'research_email': item['research_email'],
+                },
+            })
+        if item['public_name_of_contact_person']:
+            persons.append({
+                'name': item['public_name_of_contact_person'],
+                'role': 'public_queries',
+                'context': {
+                    'public_name_of_contact_person': item['public_name_of_contact_person'],
+                    'public_organization': item['public_organization'],
+                    'public_division_name': item['public_division_name'],
+                    'public_address': item['public_address'],
+                    'public_tel': item['public_tel'],
+                    'public_homepage_url': item['public_homepage_url'],
+                    'public_email': item['public_email'],
+                },
+            })
 
         return persons

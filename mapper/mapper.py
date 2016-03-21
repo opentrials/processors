@@ -23,4 +23,4 @@ class Mapper(object):
     def map(self, translator, extractor):
         translator = getattr(translators, translator.capitalize())(
             self.__warehouse, self.__database, extractor)
-        translator.convert()
+        translator.translate()

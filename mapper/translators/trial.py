@@ -22,24 +22,34 @@ class TrialTranslator(base.Translator):
         # Map sources
         source_id = self.translate_source(None)
 
+        count = 0
         for item in self.read():
 
-            # Map trials
-            trial_id = self.translate_trial(item)
+            try:
 
-            # Map records
-            self.translate_record(item, trial_id, source_id)
+                # Map trials
+                trial_id, primary_id = self.translate_trial(item)
 
-            # Map other entities
-            self.translate_problems(item, trial_id)
-            self.translate_interventions(item, trial_id)
-            self.translate_locations(item, trial_id)
-            self.translate_organisations(item, trial_id)
-            self.translate_persons(item, trial_id)
+                # Map records
+                self.translate_record(item, trial_id, source_id)
 
-            # Log and sleep
-            logger.debug('Converted: %s' % trial_id)
-            time.sleep(0.1)
+                # Map other entities
+                self.translate_problems(item, trial_id)
+                self.translate_interventions(item, trial_id)
+                self.translate_locations(item, trial_id)
+                self.translate_organisations(item, trial_id)
+                self.translate_persons(item, trial_id)
+
+                # Log and sleep
+                count += 1
+                logger.info('Translated - trial: %s [%s]' %
+                    (primary_id, count))
+                time.sleep(0.1)
+
+            except Exception as exception:
+
+                # Log error
+                logger.warning('Translation error: %s' % repr(exception))
 
     def translate_source(self, item):
 
@@ -49,7 +59,6 @@ class TrialTranslator(base.Translator):
 
         source_id = self.index('source',
             name=source['name'],
-            type=source.get('type', None),
         )
 
         self.write('sources', ['id'],
@@ -95,7 +104,7 @@ class TrialTranslator(base.Translator):
             secondary_outcomes=trial.get('primary_outcomes', None),
         )
 
-        return trial_id
+        return (trial_id, trial['primary_id'])
 
     def translate_record(self, item, trial_id, source_id):
 
@@ -129,7 +138,6 @@ class TrialTranslator(base.Translator):
 
             problem_id = self.index('problem',
                 name=problem['name'],
-                type=problem.get('type', None),
             )
 
             self.write('problems', ['id'],
@@ -156,7 +164,6 @@ class TrialTranslator(base.Translator):
 
             intervention_id = self.index('intervention',
                 name=intervention['name'],
-                type=intervention.get('type', None),
             )
 
             self.write('interventions', ['id'],
@@ -183,7 +190,6 @@ class TrialTranslator(base.Translator):
 
             location_id = self.index('location',
                 name=location['name'],
-                type=location.get('type', None),
             )
 
             self.write('locations', ['id'],
@@ -210,7 +216,6 @@ class TrialTranslator(base.Translator):
 
             organisation_id = self.index('organisation',
                 name=organisation['name'],
-                type=organisation.get('type', None),
             )
 
             self.write('organisations', ['id'],
@@ -237,7 +242,7 @@ class TrialTranslator(base.Translator):
 
             person_id = self.index('person',
                 name=person['name'],
-                type=person.get('type', None),
+                phones=person.get('phones', []),
             )
 
             self.write('persons', ['id'],

@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
+import datetime
 
 from . import base
 logger = logging.getLogger(__name__)
@@ -28,13 +29,17 @@ class TakedaExtractor(base.Extractor):
 
     def extract_trial(self, item):
 
+        # TODO: fix
+        registration_date = (
+            item['start_date'] or datetime.datetime.now().date())
+
         trial = {
             'nct_id': item['nct_number'],
             'primary_register': 'takeda',
             'primary_id': item['takeda_trial_id'],
-            'secondary_ids': {'nct': item['nct_number'] },
-            'registration_date': item['start_date'], # TODO: review
-            'public_title': item['official_title'], # TODO: review
+            'secondary_ids': {'nct': item['nct_number']},
+            'registration_date': registration_date,  # TODO: review
+            'public_title': item['official_title'],  # TODO: review
             'brief_summary': item['brief_summary'] or '',  # TODO: review
             'scientific_title': item['official_title'],
             'description': item['detailed_description'],
@@ -42,9 +47,9 @@ class TakedaExtractor(base.Extractor):
             'eligibility_criteria': {'criteria': item['eligibility_criteria']},
             'target_sample_size': None,
             'first_enrollment_date': item['start_date'],
-            'study_type': item['trial_type'],
-            'study_design': item['trial_design'],
-            'study_phase': item['trial_phase'],
+            'study_type': item['trial_type'] or 'N/A',  # TODO: review
+            'study_design': item['trial_design'] or 'N/A',  # TODO: review
+            'study_phase': item['trial_phase'] or 'N/A',  # TODO: review
             'primary_outcomes': None,  # TODO: review free text
             'secondary_outcomes': None,  # TODO: review free text
         }

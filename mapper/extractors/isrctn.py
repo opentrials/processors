@@ -15,7 +15,7 @@ class IsrctnExtractor(base.Extractor):
     # Public
 
     basis = 'warehouse'
-    table = 'isrctn'
+    table = 'data_isrctn'
 
     def extract_source(self, item):
 
@@ -101,7 +101,7 @@ class IsrctnExtractor(base.Extractor):
 
             locations.append({
                 'name': element,
-                'type': 'coutnry',
+                'type': 'country',
                 'role': 'recruitment_countries',
             })
 

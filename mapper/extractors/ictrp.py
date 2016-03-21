@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
+import datetime
 
 from . import base
 logger = logging.getLogger(__name__)
@@ -28,12 +29,15 @@ class IctrpExtractor(base.Extractor):
 
     def extract_trial(self, item):
 
+        # TODO: fix
+        registration_date = datetime.datetime.now().date()
+
         trial = {
             'primary_register': 'ictrp',
             'primary_id': item['main_id'],
             'secondary_ids': {},
-            'registration_date': None,  # TODO: text on scrap layer
-            'public_title': item['pucli_title'],
+            'registration_date': registration_date,  # TODO: text on scrap layer
+            'public_title': item['public_title'],
             'brief_summary': '',  # TODO: review
             'scientific_title': item['scientific_title'],  # TODO: review
             'description': None,  # TODO: review
@@ -43,7 +47,7 @@ class IctrpExtractor(base.Extractor):
             'first_enrollment_date': None,  # TODO: text on scraper layer
             'study_type': item['study_type'],
             'study_design': item['study_design'],
-            'study_phase': item['study_phase'],
+            'study_phase': item['study_phase'] or 'N/A',
             'primary_outcomes': item['primary_outcomes'],
             'secondary_outcomes': item['secondary_outcomes'],
         }

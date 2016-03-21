@@ -15,9 +15,9 @@ class ActrnExtractor(base.Extractor):
     # Public
 
     basis = 'warehouse'
-    table = 'actrn'
+    table = 'data_actrn'
 
-    def extract_source(self):
+    def extract_source(self, item):
 
         source = {
             'name': 'actrn',
@@ -29,7 +29,6 @@ class ActrnExtractor(base.Extractor):
     def extract_trial(self, item):
 
         trial = {
-            'nct_id': item['nct_id'],
             'primary_register': 'actrn',
             'primary_id': item['trial_id'],
             'secondary_ids': {

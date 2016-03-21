@@ -34,17 +34,17 @@ class PfizerExtractor(base.Extractor):
             'primary_id': item['nct_id'],
             'secondary_ids': {'nct_id': item['nct_id'] },
             'registration_date': item['study_start_date'],  # TODO: review
-            'public_title': item['title'],  # TODO: review
+            'public_title': item['title'] or 'N/A',  # TODO: review
             'brief_summary': '',  # TODO: review
             'scientific_title': None,  # TODO: review
             'description': None,  # TODO: review
             'recruitment_status': item['status'],
-            'eligibility_criteria': {'criteria': item['overall_status']},
+            'eligibility_criteria': {'criteria': item['eligibility_criteria']},
             'target_sample_size': None,
             'first_enrollment_date': item['study_start_date'],
             'study_type': item['study_type'],
-            'study_design': None,  # TODO: review
-            'study_phase': None,  # TODO: review
+            'study_design': 'N/A',  # TODO: review
+            'study_phase': 'N/A',  # TODO: review
             'primary_outcomes': None,  # TODO: review
             'secondary_outcomes': None,  # TODO: review
         }

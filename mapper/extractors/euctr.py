@@ -17,7 +17,7 @@ class EuctrExtractor(base.Extractor):
     basis = 'warehouse'
     table = 'data_euctr'
 
-    def extract_source(self):
+    def extract_source(self, item):
 
         source = {
             'name': 'euctr',
@@ -81,17 +81,19 @@ class EuctrExtractor(base.Extractor):
 
     def extract_interventions(self, item):
 
-        intervetions = []
+        interventions = []
 
         for element in item['imps'] or []:
 
             if 'product_name' not in element:
                 continue
 
-            intervetions.append({
+            interventions.append({
                 'name': element['product_name'],
                 'context': element,
             })
+
+        return interventions
 
     def extract_locations(self, item):
 

@@ -8,9 +8,9 @@ import logging
 from six import add_metaclass
 from abc import ABCMeta
 
-from .. import api
 from .. import extractors
-from ..indexers import Indexer
+from ..indexer import Indexer
+from . import api
 logger = logging.getLogger(__name__)
 
 
@@ -87,7 +87,7 @@ class Translator(api.Translator):
             str: identifier
 
         """
-        return self.__indexers.index(target, **params)
+        return self.__indexer.index(target, **params)
 
     def write(self, table, keys, **data):
         """Write data to database.
