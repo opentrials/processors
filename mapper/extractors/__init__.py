@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from .api import Extractor as API
 from .actrn import ActrnExtractor as Actrn
 from .euctr import EuctrExtractor as Euctr
 from .gsk import GskExtractor as Gsk

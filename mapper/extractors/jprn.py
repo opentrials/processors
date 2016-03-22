@@ -10,11 +10,13 @@ from . import base
 logger = logging.getLogger(__name__)
 
 
+# Module API
+
 class JprnExtractor(base.Extractor):
 
     # Public
 
-    basis = 'warehouse'
+    store = 'warehouse'
     table = 'data_jprn'
 
     def extract_source(self, item):

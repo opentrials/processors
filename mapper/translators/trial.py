@@ -4,262 +4,346 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import re
 import time
 import logging
+import hashlib
 
+from .. import extractors
+from ..finder import Finder
+from ..pipeline import Pipeline
 from . import base
 logger = logging.getLogger(__name__)
 
 
+# Module API
+
 class TrialTranslator(base.Translator):
+    """Trial based translator from warehouse to database.
+    """
 
     # Public
 
-    basis = 'warehouse'
+    def __init__(self, warehouse, database, extractor):
+
+        self.__extractor = getattr(extractors, extractor.capitalize())()
+        self.__pipeline = Pipeline(source=warehouse, target=database)
+        self.__finder = Finder(database)
+
+        if self.__extractor.store != 'warehouse':
+            message = 'Translator and extractor are not compatible: %s-%s'
+            message = message % (self, self.__extractor)
+            raise ValueError(message)
 
     def translate(self):
 
         # Map sources
         source_id = self.translate_source(None)
 
-        count = 0
-        for item in self.read():
+        sucess = 0
+        errors = 0
+        for item in self.__pipeline.read(self.__extractor.table):
 
-            self.begin()
+            self.__pipeline.begin()
 
             try:
 
                 # Map trials
-                trial_id, primary_id = self.translate_trial(item)
+                trial_id, primary = self.translate_trial(item)
 
                 # Map records
-                self.translate_record(item, trial_id, source_id)
+                self.translate_record(item, trial_id, source_id, primary=primary)
 
-                # Map other entities
-                self.translate_problems(item, trial_id)
-                self.translate_interventions(item, trial_id)
-                self.translate_locations(item, trial_id)
-                self.translate_organisations(item, trial_id)
-                self.translate_persons(item, trial_id)
+                if primary:
 
-                # Log success
-                count += 1
-                logger.info('Translated - trial: %s [%s]' %
-                    (primary_id, count))
+                    # Map other entities
+                    self.translate_problems(item, trial_id)
+                    self.translate_interventions(item, trial_id)
+                    self.translate_locations(item, trial_id)
+                    self.translate_organisations(item, trial_id)
+                    self.translate_persons(item, trial_id)
 
             except Exception as exception:
-                self.rollback()
-                logger.warning('Translation error: %s' % repr(exception))
-            else:
-                self.commit()
+                errors += 1
+                self.__pipeline.rollback()
+                logger.warning('Translation error: %s [%s]' % (repr(exception), errors))
 
-            # Sleep to avoid overloading
+            else:
+                sucess += 1
+                self.__pipeline.commit()
+                logger.info('Translated - trial: %s [%s]' % (trial_id, sucess))
+
+            # Sleep to avoid node overloading
             time.sleep(0.1)
 
     def translate_source(self, item):
 
-        source = self.extract('source',
+        source = self.__extractor.extract('source',
             item=item,
         )
 
-        source_id = self.index('source',
+        entry, existent = self.__finder.find('sources',
             name=source['name'],
         )
 
-        self.write('sources', ['id'],
-            id=source_id,
-            name=source['name'],
+        self.__pipeline.write_entity('sources', entry,
             type=source.get('type', None),
             data=source.get('data', {}),
         )
 
-        return source_id
+        if not existent:
+            logger.info('Created - source: %s' % (source['name']))
+
+        return entry['id']
 
     def translate_trial(self, item):
 
-        trial = self.extract('trial',
+        trial = self.__extractor.extract('trial',
             item=item,
         )
 
-        trial_id = self.index('trial',
-            nct_id=trial.get('nct_id', None),
-            euctr_id=trial.get('euctr_id', None),
-            isrctn_id=trial.get('isrctn_id', None),
-            scientific_title=trial.get('scientific_title', None),
+        facts=[
+            _slugify(trial.get('nct_id', None)),
+            _slugify(trial.get('euctr_id', None)),
+            _slugify(trial.get('isrctn_id', None)),
+            _slugify(trial.get('scientific_title', None), hash=True),
+        ]
+
+        entity, existent = self.__finder.find('trials',
+            facts=facts,
         )
 
-        self.write('trials', ['id'],
-            id=trial_id,
-            primary_register=trial['primary_register'],
-            primary_id=trial['primary_id'],
-            secondary_ids=trial['secondary_ids'],
-            registration_date=trial['registration_date'],
-            public_title=trial['public_title'],
-            brief_summary=trial['brief_summary'],
-            scientific_title=trial.get('scientific_title', None),
-            description=trial.get('descriptions', None),
-            recruitment_status=trial['recruitment_status'],
-            eligibility_criteria=trial['eligibility_criteria'],
-            target_sample_size=trial.get('target_sample_size', None),
-            first_enrollment_date=trial.get('first_enrollment_date', None),
-            study_type=trial['study_type'],
-            study_design=trial['study_design'],
-            study_phase=trial['study_phase'],
-            primary_outcomes=trial.get('primary_outcomes', None),
-            secondary_outcomes=trial.get('primary_outcomes', None),
-        )
+        # TODO: improve
+        primary = True
+        if existent:
+            if trial['primary_register'] != 'nct':
+                primary = False
 
-        return (trial_id, trial['primary_id'])
+        if primary:
+            self.__pipeline.write_entity('trials', entity,
+                primary_register=trial['primary_register'],
+                primary_id=trial['primary_id'],
+                secondary_ids=trial['secondary_ids'],
+                registration_date=trial['registration_date'],
+                public_title=trial['public_title'],
+                brief_summary=trial['brief_summary'],
+                scientific_title=trial.get('scientific_title', None),
+                description=trial.get('description', None),
+                recruitment_status=trial['recruitment_status'],
+                eligibility_criteria=trial['eligibility_criteria'],
+                target_sample_size=trial.get('target_sample_size', None),
+                first_enrollment_date=trial.get('first_enrollment_date', None),
+                study_type=trial['study_type'],
+                study_design=trial['study_design'],
+                study_phase=trial['study_phase'],
+                primary_outcomes=trial.get('primary_outcomes', None),
+                secondary_outcomes=trial.get('primary_outcomes', None),
+            )
 
-    def translate_record(self, item, trial_id, source_id):
+        if not existent:
+            logger.info('Created - trial: %s' % (trial['primary_id']))
 
-        record = self.extract('record',
+        return entity['id'], primary
+
+    def translate_record(self, item, trial_id, source_id, primary):
+
+        role = 'secondary'
+        if primary:
+            role = 'primary'
+
+        record = self.__extractor.extract('record',
             item=item,
         )
 
-        record_id = item['meta_id']
+        entity, existent = self.__finder.find('records',
+            id=item['meta_id'],
+        )
 
-        self.write('records', ['id'],
-            id=record_id,
+        self.__pipeline.write_entity('records', entity,
             source_id=source_id,
             type=record.get('type', None),
             data=record.get('data', {}),
         )
 
-        self.write('trials_records', ['trial_id', 'record_id'],
+        self.__pipeline.write_relation('trials_records', ['trial_id', 'record_id'],
             trial_id=trial_id,
-            record_id=record_id,
-            role=record.get('role', None),
+            record_id=entity['id'],
+            role=role,
             context=record.get('context', {}),
         )
 
+        if not existent:
+            logger.info('Created - record: %s' % (entity['id']))
+
     def translate_problems(self, item, trial_id):
 
-        problems = self.extract('problems',
+        problems = self.__extractor.extract('problems',
             item=item,
+        )
+
+        self.__pipeline.delete('trials_problems',
+            trial_id=trial_id,
         )
 
         for problem in problems:
 
-            problem_id = self.index('problem',
+            entity, existent = self.__finder.find('problems',
                 name=problem['name'],
             )
 
-            self.write('problems', ['id'],
-                id=problem_id,
-                name=problem['name'],
+            self.__pipeline.write_entity('problems', entity,
                 type=problem.get('type', None),
                 data=problem.get('data', {}),
             )
 
-            self.write('trials_problems', ['trial_id', 'problem_id'],
+            self.__pipeline.write_relation('trials_problems', ['trial_id', 'problem_id'],
                 trial_id=trial_id,
-                problem_id=problem_id,
+                problem_id=entity['id'],
                 role=problem.get('role', None),
                 context=problem.get('context', {}),
             )
 
+            if not existent:
+                logger.info('Created - problem: %s' % (problem['name']))
+
     def translate_interventions(self, item, trial_id):
 
-        interventions = self.extract('interventions',
+        interventions = self.__extractor.extract('interventions',
             item=item,
+        )
+
+        self.__pipeline.delete('trials_interventions',
+            trial_id=trial_id,
         )
 
         for intervention in interventions:
 
-            intervention_id = self.index('intervention',
+            entity, existent = self.__finder.find('interventions',
                 name=intervention['name'],
             )
 
-            self.write('interventions', ['id'],
-                id=intervention_id,
-                name=intervention['name'],
+            self.__pipeline.write_entity('interventions', entity,
                 type=intervention.get('type', None),
                 data=intervention.get('data', {}),
             )
 
-            self.write('trials_interventions', ['trial_id', 'intervention_id'],
+            self.__pipeline.write_relation('trials_interventions', ['trial_id', 'intervention_id'],
                 trial_id=trial_id,
-                intervention_id=intervention_id,
+                intervention_id=entity['id'],
                 role=intervention.get('role', None),
                 context=intervention.get('context', {}),
             )
 
+            if not existent:
+                logger.info('Created - intervention: %s' % (intervention['name']))
+
     def translate_locations(self, item, trial_id):
 
-        locations = self.extract('locations',
+        locations = self.__extractor.extract('locations',
             item=item,
+        )
+
+        self.__pipeline.delete('trials_locations',
+            trial_id=trial_id,
         )
 
         for location in locations:
 
-            location_id = self.index('location',
+            entity, existent = self.__finder.find('locations',
                 name=location['name'],
             )
 
-            self.write('locations', ['id'],
-                id=location_id,
-                name=location['name'],
+            self.__pipeline.write_entity('locations', entity,
                 type=location.get('type', None),
                 data=location.get('data', {}),
             )
 
-            self.write('trials_locations', ['trial_id', 'location_id'],
+            self.__pipeline.write_relation('trials_locations', ['trial_id', 'location_id'],
                 trial_id=trial_id,
-                location_id=location_id,
+                location_id=entity['id'],
                 role=location.get('role', None),
                 context=location.get('context', {}),
             )
 
+            if not existent:
+                logger.info('Created - location: %s' % (location['name']))
+
     def translate_organisations(self, item, trial_id):
 
-        organisations = self.extract('organisations',
+        organisations = self.__extractor.extract('organisations',
             item=item,
+        )
+
+        self.__pipeline.delete('trials_organisations',
+            trial_id=trial_id,
         )
 
         for organisation in organisations:
 
-            organisation_id = self.index('organisation',
+            entity, existent = self.__finder.find('organisations',
                 name=organisation['name'],
             )
 
-            self.write('organisations', ['id'],
-                id=organisation_id,
-                name=organisation['name'],
+            self.__pipeline.write_entity('organisations', entity,
                 type=organisation.get('type', None),
                 data=organisation.get('data', {}),
             )
 
-            self.write('trials_organisations', ['trial_id', 'organisation_id'],
+            self.__pipeline.write_relation('trials_organisations', ['trial_id', 'organisation_id'],
                 trial_id=trial_id,
-                organisation_id=organisation_id,
+                organisation_id=entity['id'],
                 role=organisation.get('role', None),
                 context=organisation.get('context', {}),
             )
 
+            if not existent:
+                logger.info('Created - organisation: %s' % (organisation['name']))
+
     def translate_persons(self, item, trial_id):
 
-        persons = self.extract('persons',
+        persons = self.__extractor.extract('persons',
             item=item,
+        )
+
+        self.__pipeline.delete('trials_persons',
+            trial_id=trial_id,
         )
 
         for person in persons:
 
-            person_id = self.index('person',
+            facts = []
+            for phone in person.get('phones', []):
+                facts.append(_slugify(phone))
+
+            entity, existent = self.__finder.find('persons',
                 name=person['name'],
-                phones=person.get('phones', []),
+                links=[trial_id],
+                facts=facts,
             )
 
-            self.write('persons', ['id'],
-                id=person_id,
-                name=person['name'],
+            self.__pipeline.write_entity('persons', entity,
                 type=person.get('type', None),
                 data=person.get('data', {}),
             )
 
-            self.write('trials_persons', ['trial_id', 'person_id'],
+            self.__pipeline.write_relation('trials_persons', ['trial_id', 'person_id'],
                 trial_id=trial_id,
-                person_id=person_id,
+                person_id=entity['id'],
                 role=person.get('role', None),
                 context=person.get('context', {}),
             )
+
+            if not existent:
+                logger.info('Created - person: %s' % (person['name']))
+
+
+# Internal
+
+# TODO: use slugify package
+def _slugify(string, hash=False):
+    slug = None
+    if string:
+        slug = re.sub(r'\W', '', string).lower() or None
+    if slug and hash:
+        slug = hashlib.md5(slug).hexdigest()
+    return slug

@@ -11,11 +11,13 @@ from . import base
 logger = logging.getLogger(__name__)
 
 
+# Module API
+
 class IctrpExtractor(base.Extractor):
 
     # Public
 
-    basis = 'warehouse'
+    store = 'warehouse'
     table = 'data_ictrp'
 
     def extract_source(self, item):

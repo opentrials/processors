@@ -5,19 +5,37 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from six import add_metaclass
-from abc import ABCMeta
-
-from . import api
+from abc import ABCMeta, abstractmethod
 
 
 # Module API
 
 @add_metaclass(ABCMeta)
-class Extractor(api.Extractor):
+class Extractor(object):
 
     # Public
 
+    @property
+    @abstractmethod
+    def store(self):
+        pass  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def table(self):
+        pass  # pragma: no cover
+
     def extract(self, target, item):
+        """Extract data from item.
+
+        Args:
+            target (str): target like `trial`
+            item (dict): source item
+
+        Returns:
+            dict: extracted data
+
+        """
 
         # Get method
         try:
