@@ -18,6 +18,7 @@ class NctExtractor(base.Extractor):
 
     store = 'warehouse'
     table = 'nct'
+    heads = []
 
     def extract_source(self, item):
 

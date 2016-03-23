@@ -19,6 +19,7 @@ class GskExtractor(base.Extractor):
 
     store = 'warehouse'
     table = 'gsk'
+    heads = ['nct', 'euctr', 'isrctn']
 
     def extract_source(self, item):
 

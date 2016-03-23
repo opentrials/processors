@@ -18,6 +18,7 @@ class JprnExtractor(base.Extractor):
 
     store = 'warehouse'
     table = 'jprn'
+    heads = ['nct', 'euctr', 'isrctn']
 
     def extract_source(self, item):
 

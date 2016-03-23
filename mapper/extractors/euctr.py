@@ -18,6 +18,7 @@ class EuctrExtractor(base.Extractor):
 
     store = 'warehouse'
     table = 'euctr'
+    heads = ['nct']
 
     def extract_source(self, item):
 

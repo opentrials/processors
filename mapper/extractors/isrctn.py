@@ -18,6 +18,7 @@ class IsrctnExtractor(base.Extractor):
 
     store = 'warehouse'
     table = 'isrctn'
+    heads = ['nct']
 
     def extract_source(self, item):
 

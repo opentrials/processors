@@ -25,6 +25,11 @@ class Extractor(object):
     def table(self):
         pass  # pragma: no cover
 
+    @property
+    @abstractmethod
+    def heads(self):
+        pass  # pragma: no cover
+
     def extract(self, target, item):
         """Extract data from item.
 

@@ -19,6 +19,7 @@ class IctrpExtractor(base.Extractor):
 
     store = 'warehouse'
     table = 'ictrp'
+    heads = ['nct', 'euctr', 'isrctn']
 
     def extract_source(self, item):
 

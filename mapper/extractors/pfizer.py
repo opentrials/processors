@@ -18,6 +18,7 @@ class PfizerExtractor(base.Extractor):
 
     store = 'warehouse'
     table = 'pfizer'
+    heads = ['nct', 'euctr', 'isrctn']
 
     def extract_source(self, item):
 

@@ -26,14 +26,14 @@ def cli():
     # Create columns
     # TODO: move to api migrations
     for table in ['interventions', 'locations', 'organisations', 'persons', 'problems', 'records', 'sources', 'trials']:
-        if 'created' not in database[table]:
+        if 'created' not in database[table].columns:
             database[table].create_column('created', sa.DateTime(timezone=True))
-        if 'updated' not in database[table]:
+        if 'updated' not in database[table].columns:
             database[table].create_column('updated', sa.DateTime(timezone=True))
-        if 'links' not in database[table]:
+        if 'links' not in database[table].columns:
             database[table].create_column('links', ARRAY(sa.Text))
             database.query('CREATE INDEX %s_links_idx on %s USING GIN(links)' % (table, table))
-        if 'facts' not in database[table]:
+        if 'facts' not in database[table].columns:
             database[table].create_column('facts', ARRAY(sa.Text))
             database.query('CREATE INDEX %s_facts_idx on %s USING GIN(facts)' % (table, table))
 

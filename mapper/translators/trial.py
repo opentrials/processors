@@ -113,10 +113,13 @@ class TrialTranslator(base.Translator):
             facts=facts,
         )
 
-        # TODO: improve
         primary = True
         if existent:
-            if trial['primary_register'] != 'nct':
+            # Do not overwrite the same register
+            if trial['primary_register'] == self.__extractor.table:
+                primary = False
+            # Do not overwrite superior registers
+            if trial['primary_register'] in self.__extractor.heads:
                 primary = False
 
         if primary:

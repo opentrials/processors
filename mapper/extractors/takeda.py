@@ -19,6 +19,7 @@ class TakedaExtractor(base.Extractor):
 
     store = 'warehouse'
     table = 'takeda'
+    heads = ['nct', 'euctr', 'isrctn']
 
     def extract_source(self, item):
 
