@@ -49,12 +49,12 @@ class TrialTranslator(base.Translator):
             try:
 
                 # Map trials
-                trial_id, primary = self.translate_trial(item)
+                trial_id, write = self.translate_trial(item)
 
                 # Map records
-                self.translate_record(item, trial_id, source_id, primary=primary)
+                self.translate_record(item, trial_id, source_id, write=write)
 
-                if primary:
+                if write:
 
                     # Map other entities
                     self.translate_problems(item, trial_id)
@@ -113,16 +113,16 @@ class TrialTranslator(base.Translator):
             facts=facts,
         )
 
-        primary = True
+        write = True
         if existent:
-            # Do not overwrite the same register
+            # Do not write the same register
             if trial['primary_register'] == self.__extractor.table:
-                primary = False
-            # Do not overwrite superior registers
+                write = False
+            # Do not write superior registers
             if trial['primary_register'] in self.__extractor.heads:
-                primary = False
+                write = False
 
-        if primary:
+        if write:
             self.__pipeline.write_entity('trials', entity,
                 primary_register=trial['primary_register'],
                 primary_id=trial['primary_id'],
@@ -143,15 +143,17 @@ class TrialTranslator(base.Translator):
                 secondary_outcomes=trial.get('primary_outcomes', None),
             )
 
-        if not existent:
+        if existent:
+            logger.info('Matched - trial: %s (write:%s)' % (trial['primary_id'], write))
+        else:
             logger.info('Created - trial: %s' % (trial['primary_id']))
 
-        return entity['id'], primary
+        return entity['id'], write
 
-    def translate_record(self, item, trial_id, source_id, primary):
+    def translate_record(self, item, trial_id, source_id, write):
 
         role = 'secondary'
-        if primary:
+        if write:
             role = 'primary'
 
         record = self.__extractor.extract('record',
@@ -175,7 +177,9 @@ class TrialTranslator(base.Translator):
             context=record.get('context', {}),
         )
 
-        if not existent:
+        if existent:
+            logger.info('Matched - record: %s' % (entity['id']))
+        else:
             logger.info('Created - record: %s' % (entity['id']))
 
     def translate_problems(self, item, trial_id):
@@ -206,7 +210,9 @@ class TrialTranslator(base.Translator):
                 context=problem.get('context', {}),
             )
 
-            if not existent:
+            if existent:
+                logger.info('Matched - problem: %s' % (problem['name']))
+            else:
                 logger.info('Created - problem: %s' % (problem['name']))
 
     def translate_interventions(self, item, trial_id):
@@ -237,7 +243,9 @@ class TrialTranslator(base.Translator):
                 context=intervention.get('context', {}),
             )
 
-            if not existent:
+            if existent:
+                logger.info('Matched - intervention: %s' % (intervention['name']))
+            else:
                 logger.info('Created - intervention: %s' % (intervention['name']))
 
     def translate_locations(self, item, trial_id):
@@ -268,7 +276,9 @@ class TrialTranslator(base.Translator):
                 context=location.get('context', {}),
             )
 
-            if not existent:
+            if existent:
+                logger.info('Matched - location: %s' % (location['name']))
+            else:
                 logger.info('Created - location: %s' % (location['name']))
 
     def translate_organisations(self, item, trial_id):
@@ -299,7 +309,9 @@ class TrialTranslator(base.Translator):
                 context=organisation.get('context', {}),
             )
 
-            if not existent:
+            if existent:
+                logger.info('Matched - organisation: %s' % (organisation['name']))
+            else:
                 logger.info('Created - organisation: %s' % (organisation['name']))
 
     def translate_persons(self, item, trial_id):
@@ -336,7 +348,9 @@ class TrialTranslator(base.Translator):
                 context=person.get('context', {}),
             )
 
-            if not existent:
+            if existent:
+                logger.info('Matched - person: %s' % (person['name']))
+            else:
                 logger.info('Created - person: %s' % (person['name']))
 
 
