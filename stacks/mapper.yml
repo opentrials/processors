@@ -1,41 +1,62 @@
 actrn:
-  image: opentrialsrobot/warehouse
-  command: python -m mapper.modules.actrn
+  image: opentrialsrobot/processors
+  command: python -m mapper.cli trial actrn
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 euctr:
-  image: opentrialsrobot/warehouse
-  command: python -m mapper.modules.euctr
+  image: opentrialsrobot/processors
+  command: python -m mapper.cli trial euctr
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 gsk:
-  image: opentrialsrobot/warehouse
-  command: python -m mapper.modules.gsk
+  image: opentrialsrobot/processors
+  command: python -m mapper.cli trial gsk
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+ictrp:
+  image: opentrialsrobot/processors
+  command: python -m mapper.cli trial ictrp
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 isrctn:
-  image: opentrialsrobot/warehouse
-  command: python -m mapper.modules.isrctn
+  image: opentrialsrobot/processors
+  command: python -m mapper.cli trial isrctn
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 jprn:
-  image: opentrialsrobot/warehouse
-  command: python -m mapper.modules.jprn
+  image: opentrialsrobot/processors
+  command: python -m mapper.cli trial jprn
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
 
 nct:
-  image: opentrialsrobot/warehouse
-  command: python -m mapper.modules.nct
+  image: opentrialsrobot/processors
+  command: python -m mapper.cli trial nct
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+pfizer:
+  image: opentrialsrobot/processors
+  command: python -m mapper.cli trial pfizer
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+
+takeda:
+  image: opentrialsrobot/processors
+  command: python -m mapper.cli trial takeda
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
