@@ -113,17 +113,32 @@ class TrialTranslator(base.Translator):
             facts=facts,
         )
 
-        primary = True
+        # TODO: review
+        # Decide item role based on entity we've found:
+        # - primary - create/update all entities and relations
+        # - secondary - only add secondary record
+        if not existent:
+            # New trial - primary (create)
+            primary = True
         if existent:
-            if trial['primary_id'] != entity['primary_id']:
-                # Do not overwrite the same register
-                if trial['primary_register'] == self.__extractor.table:
+            # Existent trial
+            if entity['primary_id'] == trial['primary_id']:
+                # The same item - primary (update)
+                primary = True
+            else:
+                # Different item
+                if entity['primary_register'] == self.__extractor.table:
+                    # Item from the same register - secondary
                     primary = False
-                # Do not overwrite superior registers
-                if trial['primary_register'] in self.__extractor.heads:
+                elif entity['primary_register'] in self.__extractor.heads:
+                    # Item from low priority register - secondary
                     primary = False
+                else:
+                    # Item from high priority register - primary
+                    primary = True
 
         if primary:
+            # Update trial
             self.__pipeline.write_entity('trials', entity,
                 primary_register=trial['primary_register'],
                 primary_id=trial['primary_id'],
@@ -143,11 +158,14 @@ class TrialTranslator(base.Translator):
                 primary_outcomes=trial.get('primary_outcomes', None),
                 secondary_outcomes=trial.get('primary_outcomes', None),
             )
+        else:
+            # Just update links, facts (etc)
+            self.__pipeline.write_entity('trials', entity)
 
         if existent:
             logger.info('Matched - trial: %s (primary:%s)' % (trial['primary_id'], primary))
         else:
-            logger.info('Created - trial: %s' % (trial['primary_id']))
+            logger.info('Created - trial: %s (primary: True)' % (trial['primary_id']))
 
         return entity['id'], primary
 
@@ -170,6 +188,13 @@ class TrialTranslator(base.Translator):
             type=record.get('type', None),
             data=record.get('data', {}),
         )
+
+        # Make all existent records secondary
+        if primary:
+            self.__pipeline.update('trials_records', ['trial_id'],
+                trial_id=trial_id,
+                role='secondary',
+            )
 
         self.__pipeline.write_relation('trials_records', ['trial_id', 'record_id'],
             trial_id=trial_id,

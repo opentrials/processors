@@ -51,8 +51,26 @@ class Pipeline(object):
         """
         self.__target.begin()
 
-    def delete(self, table, **data):
-        self.__target[table].delete(**data)
+    def delete(self, table, **filter):
+        """Delete from target.
+
+        Args:
+            table (str): table name
+            filter (dict): deletion filter
+
+        """
+        self.__target[table].delete(**filter)
+
+    def update(self, table, keys, **data):
+        """Update target.
+
+        Args:
+            table (str): table name
+            keys (str[]): filter keys
+            data (dict): data to upsert
+
+        """
+        self.__target[table].update(data, keys, ensure=False)
 
     def write_entity(self, table, entity, **data):
         """Write entity to target.
@@ -69,11 +87,11 @@ class Pipeline(object):
         self.__target[table].upsert(entity, keys, ensure=False)
 
     def write_relation(self, table, keys, **data):
-        """Write to target.
+        """Write relation to target.
 
         Args:
             table (str): table name
-            keys (str[]): keys to decide insert or update
+            keys (str[]): filter keys
             data (dict): data to upsert
 
         """
