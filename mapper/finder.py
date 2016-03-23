@@ -45,39 +45,39 @@ class Finder(object):
         query.append(" AND ".join(where))
         query = ' '.join(query)
 
-        # Get entry
-        entries = list(self.__database.query(query))
+        # Get entities
+        entities = list(self.__database.query(query))
         timestamp = datetime.utcnow()
         existent = False
 
-        # Create entry
-        if not entries:
-            entry = {}
-            entry.update(filter)
-            entry['id'] = uuid.uuid4().hex
-            entry['created'] = timestamp
-            entry['updated'] = timestamp
-            entry['links'] = links or []
-            entry['facts'] = facts or []
-            entry.update(filter)
+        # Create entity
+        if not entities:
+            entity = {}
+            entity.update(filter)
+            entity['id'] = uuid.uuid4().hex
+            entity['created'] = timestamp
+            entity['updated'] = timestamp
+            entity['links'] = links or []
+            entity['facts'] = facts or []
+            entity.update(filter)
 
-        # Update entry
-        elif len(entries) == 1:
+        # Update entity
+        elif len(entities) == 1:
             existent = True
-            entry = entries[0]
-            entry['id'] = entry['id'].hex
-            entry['updated'] = timestamp
-            entry['links'] = list(set(entry['links'] + (links or [])))
-            entry['facts'] = list(set(entry['facts'] + (facts or [])))
-            entry.update(filter)
+            entity = entities[0]
+            entity['id'] = entity['id'].hex
+            entity['updated'] = timestamp
+            entity['links'] = list(set(entity['links'] + (links or [])))
+            entity['facts'] = list(set(entity['facts'] + (facts or [])))
+            entity.update(filter)
 
-        # Too many entries
+        # Too many entities
         else:
-            message = 'Finding error: More than 1 entry: %s - %s - %s'
+            message = 'Finding error: More than 1 entity: %s - %s - %s'
             message = message % (table, facts, filter)
             raise RuntimeError(message)
 
-        return entry, existent
+        return entity, existent
 
 
 # Internal
