@@ -17,7 +17,7 @@ class PfizerExtractor(base.Extractor):
     # Public
 
     store = 'warehouse'
-    table = 'data_pfizer'
+    table = 'pfizer'
 
     def extract_source(self, item):
 

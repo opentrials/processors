@@ -18,7 +18,7 @@ class GskExtractor(base.Extractor):
     # Public
 
     store = 'warehouse'
-    table = 'data_gsk'
+    table = 'gsk'
 
     def extract_source(self, item):
 

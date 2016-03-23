@@ -18,7 +18,7 @@ class IctrpExtractor(base.Extractor):
     # Public
 
     store = 'warehouse'
-    table = 'data_ictrp'
+    table = 'ictrp'
 
     def extract_source(self, item):
 
