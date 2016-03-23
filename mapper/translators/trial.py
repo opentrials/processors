@@ -49,12 +49,12 @@ class TrialTranslator(base.Translator):
             try:
 
                 # Map trials
-                trial_id, write = self.translate_trial(item)
+                trial_id, primary = self.translate_trial(item)
 
                 # Map records
-                self.translate_record(item, trial_id, source_id, write=write)
+                self.translate_record(item, trial_id, source_id, primary=primary)
 
-                if write:
+                if primary:
 
                     # Map other entities
                     self.translate_problems(item, trial_id)
@@ -113,16 +113,17 @@ class TrialTranslator(base.Translator):
             facts=facts,
         )
 
-        write = True
+        primary = True
         if existent:
-            # Do not write the same register
-            if trial['primary_register'] == self.__extractor.table:
-                write = False
-            # Do not write superior registers
-            if trial['primary_register'] in self.__extractor.heads:
-                write = False
+            if trial['primary_id'] != entity['primary_id']:
+                # Do not overwrite the same register
+                if trial['primary_register'] == self.__extractor.table:
+                    primary = False
+                # Do not overwrite superior registers
+                if trial['primary_register'] in self.__extractor.heads:
+                    primary = False
 
-        if write:
+        if primary:
             self.__pipeline.write_entity('trials', entity,
                 primary_register=trial['primary_register'],
                 primary_id=trial['primary_id'],
@@ -144,16 +145,16 @@ class TrialTranslator(base.Translator):
             )
 
         if existent:
-            logger.info('Matched - trial: %s (write:%s)' % (trial['primary_id'], write))
+            logger.info('Matched - trial: %s (primary:%s)' % (trial['primary_id'], primary))
         else:
             logger.info('Created - trial: %s' % (trial['primary_id']))
 
-        return entity['id'], write
+        return entity['id'], primary
 
-    def translate_record(self, item, trial_id, source_id, write):
+    def translate_record(self, item, trial_id, source_id, primary):
 
         role = 'secondary'
-        if write:
+        if primary:
             role = 'primary'
 
         record = self.__extractor.extract('record',
