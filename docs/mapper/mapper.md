@@ -11,8 +11,8 @@ concrete mappings to warehouse should be improved.
 ## Stacks
 
 Mapper provides the following stacks:
-- make-initial-mapping - map all items
-- mapper - map updated items (under development)
+- `make-initial-mapping` - map all items
+- `mapper` - map updated items (under development)
 
 ## Components
 
@@ -87,7 +87,7 @@ print(trial)
 Pipiline is a abstraction to read from source (e.g. `warehouse`)
 and write to target (e.g `databae`).
 
-```pyton
+```python
 pipeline = Pipeline(source=warehouse, target=database)
 pipeline.read(table)
 pipelint.write(table, keys, **data)
@@ -101,7 +101,7 @@ and finds it in `database`:
 - if entity exists Finder updated search fields and returns
 - if entity doesn't exist Finder create entity draft and returns
 
-```
+```python
 finder = Finder(database)
 
 # Existent
@@ -132,3 +132,4 @@ print(entity)
     'created': ...,
     'updated': ...
 }
+```
