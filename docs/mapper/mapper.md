@@ -96,10 +96,41 @@ pipelint.write(table, keys, **data)
 
 ### Finder
 
-Finder get `filter`, `links` and `facts` about some entity
+Finder is a main component of deduplication system.
+
+Finder gets `filter`, `links` and `facts` about some entity
 and finds it in `database`:
 - if entity exists Finder updated search fields and returns
 - if entity doesn't exist Finder create entity draft and returns
+
+For example trial `facts` is slugified register indentifiers
+and hashed/slugified scientific titles:
+`['nct21231', 'isrct23412', 'sa35434525']`
+
+On deduplication stage finder finds trials with this facts
+(we need to use GIN index here to do not have full scan in postgress)
+to associate item from some other register with one living in our database.
+
+If there is a match facts will be merged:
+`['nct21231', 'isrct23412', 'sa35434525', 'euctr2224']`
+
+The same for the persons for example where facts will be
+slugified `phones`, `email` etc (not fully implemented). But for persons
+we also check `name` equality. Persons with the same name and
+one of the facts equal is a one person:
+`'Mr. Smith'`
+`AND`
+`['53242345432', 'simthgailcom']`
+
+Other concept is `links` - here stored trial uuids for entities like
+persons - if no facts are match but name is the same and persons
+used to be part of the same trial - it'is a one person:
+`'Mr. Smith'`
+`AND`
+`['<trial_id>']`
+
+It's quite WIP but the best approack I've found for now to have
+robust and flexible dedup system for all entities we need.
 
 ```python
 finder = Finder(database)
