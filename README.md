@@ -3,7 +3,7 @@
 [![Gitter](https://img.shields.io/gitter/room/opentrials/chat.svg)](https://gitter.im/opentrials/chat)
 [![Travis](https://img.shields.io/travis/opentrials/processors/master.svg)](https://travis-ci.org/opentrials/processors)
 
-The OpenTrials data processors.
+The OpenTrials data processors set.
 
 ## Documentation
 
