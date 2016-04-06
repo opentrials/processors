@@ -34,7 +34,7 @@ class EuctrExtractor(base.Extractor):
         trial = {
             'euctr_id': item['eudract_number'],
             'primary_register': 'euctr',
-            'primary_id': item['eudract_number_with_country'],
+            'primary_id': item['eudract_number'],
             'secondary_ids': {
                 'nct': item['us_nct_clinicaltrialsgov_registry_number'],
                 'who': item['who_universal_trial_reference_number_utrn'],
