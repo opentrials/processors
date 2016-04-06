@@ -20,6 +20,6 @@ script:
 
 deploy:
   - provider: script
-    script: make deploy
+    script: make push
     on:
-      condition: '`git show -s --format=%B ${TRAVIS_COMMIT} | grep "\[deploy\]"`'
+      branch: master
