@@ -1,4 +1,4 @@
-.PHONY: all build deploy develop lint list test
+.PHONY: all build install lint list push test
 
 
 all: list
@@ -6,7 +6,7 @@ all: list
 build:
 	docker build -t opentrialsrobot/processors .
 
-develop:
+install:
 	pip install --upgrade -r requirements.dev.txt
 
 lint:
