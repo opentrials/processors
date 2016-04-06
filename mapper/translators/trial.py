@@ -49,10 +49,14 @@ class TrialTranslator(base.Translator):
             try:
 
                 # Translate trial
-                trial_id, primary = self.translate_trial(item)
+                trial_id, trial_data, primary = self.translate_trial(item)
 
                 # Translate record
-                self.translate_record(item, trial_id, source_id, primary=primary)
+                self.translate_record(item,
+                    trial_id=trial_id,
+                    trial_data=trial_data,
+                    source_id=source_id,
+                    primary=primary)
 
                 if primary:
 
@@ -167,9 +171,9 @@ class TrialTranslator(base.Translator):
         else:
             logger.info('Created - trial: %s (primary: True)' % (trial['primary_id']))
 
-        return entity['id'], primary
+        return entity['id'], trial, primary
 
-    def translate_record(self, item, trial_id, source_id, primary):
+    def translate_record(self, item, trial_id, trial_data, source_id, primary):
 
         role = 'secondary'
         if primary:
@@ -177,7 +181,13 @@ class TrialTranslator(base.Translator):
 
         record = {
             'type': 'trial',
+            'created_at': item['meta_created'],
+            'updated_at': item['meta_updated'],
+            'reference': item['meta_source'],
             'data': json.dumps(item, cls=helpers.JSONEncoder),
+            'extracted_data': json.dumps(trial_data, cls=helpers.JSONEncoder),
+            'role': role,
+            'context': {},
         }
 
         entity, existent = self.__finder.find('records',
@@ -186,8 +196,12 @@ class TrialTranslator(base.Translator):
 
         self.__pipeline.write_entity('records', entity,
             source_id=source_id,
-            type=record.get('type', None),
-            data=record.get('data', {}),
+            type=record['type'],
+            created_at=record['created_at'],
+            updated_at=record['updated_at'],
+            reference=record['reference'],
+            data=record['data'],
+            extracted_data=record['extracted_data'],
         )
 
         # Make all existent records secondary
@@ -200,8 +214,8 @@ class TrialTranslator(base.Translator):
         self.__pipeline.write_relation('trials_records', ['trial_id', 'record_id'],
             trial_id=trial_id,
             record_id=entity['id'],
-            role=role,
-            context=record.get('context', {}),
+            role=record['role'],
+            context=record['context'],
         )
 
         if existent:

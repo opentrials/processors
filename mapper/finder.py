@@ -55,8 +55,8 @@ class Finder(object):
             entity = {}
             entity.update(filter)
             entity['id'] = uuid.uuid4().hex
-            entity['created'] = timestamp
-            entity['updated'] = timestamp
+            entity['created_at'] = timestamp
+            entity['updated_at'] = timestamp
             entity['links'] = links or []
             entity['facts'] = facts or []
             entity.update(filter)
@@ -66,7 +66,7 @@ class Finder(object):
             existent = True
             entity = entities[0]
             entity['id'] = entity['id'].hex
-            entity['updated'] = timestamp
+            entity['updated_at'] = timestamp
             entity['links'] = list(set(entity['links'] + (links or [])))
             entity['facts'] = list(set(entity['facts'] + (facts or [])))
             entity.update(filter)
