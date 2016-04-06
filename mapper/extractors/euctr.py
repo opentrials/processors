@@ -32,9 +32,9 @@ class EuctrExtractor(base.Extractor):
     def extract_trial(self, item):
 
         trial = {
-            'euctr_id': item['eudract_number'],
+            'euctr_id': item['eudract_number_with_country'],  # TODO: review
             'primary_register': 'euctr',
-            'primary_id': item['eudract_number'],
+            'primary_id': item['eudract_number_with_country'],  # TODO: review
             'secondary_ids': {
                 'nct': item['us_nct_clinicaltrialsgov_registry_number'],
                 'who': item['who_universal_trial_reference_number_utrn'],

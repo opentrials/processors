@@ -32,10 +32,25 @@ class IctrpExtractor(base.Extractor):
 
     def extract_trial(self, item):
 
+        # Get identifiers
+        nct_id = None
+        euctr_id = None
+        isrctn_id = None
+        if item['register'] == 'ClinicalTrials.gov':
+            nct_id = item['main_id']
+        if item['register'] == 'EUCTR':
+            euctr_id = item['main_id']
+        if item['register'] == 'ISRCTN':
+            isrctn_id = item['main_id']
+
         # TODO: fix
+        # Get registration date
         registration_date = datetime.datetime.now().date()
 
         trial = {
+            'nct_id': nct_id,
+            'euctr_id': euctr_id,
+            'isrctn_id': isrctn_id,
             'primary_register': 'ictrp',
             'primary_id': item['main_id'],
             'secondary_ids': {},
