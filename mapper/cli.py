@@ -7,8 +7,6 @@ from __future__ import unicode_literals
 import sys
 import logging
 import dataset
-import sqlalchemy as sa
-from sqlalchemy.dialects.postgres import ARRAY
 
 from . import settings
 from .mapper import Mapper
