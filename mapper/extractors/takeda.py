@@ -59,18 +59,6 @@ class TakedaExtractor(base.Extractor):
 
         return trial
 
-    def extract_record(self, item):
-
-        record = {
-            'type': 'trial',
-            'data': {
-                # TODO: item seriliazation issue
-                'takeda_trial_id': item['takeda_trial_id'],
-            },
-        }
-
-        return record
-
     def extract_problems(self, item):
 
         problems = []

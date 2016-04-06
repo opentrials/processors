@@ -4,11 +4,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import re
+import json
 import time
 import logging
-import hashlib
 
+from .. import helpers
 from .. import extractors
 from ..finder import Finder
 from ..pipeline import Pipeline
@@ -37,7 +37,7 @@ class TrialTranslator(base.Translator):
 
     def translate(self):
 
-        # Map sources
+        # Translate source
         source_id = self.translate_source(None)
 
         sucess = 0
@@ -48,15 +48,15 @@ class TrialTranslator(base.Translator):
 
             try:
 
-                # Map trials
+                # Translate trial
                 trial_id, primary = self.translate_trial(item)
 
-                # Map records
+                # Translate record
                 self.translate_record(item, trial_id, source_id, primary=primary)
 
                 if primary:
 
-                    # Map other entities
+                    # Translate other entities
                     self.translate_problems(item, trial_id)
                     self.translate_interventions(item, trial_id)
                     self.translate_locations(item, trial_id)
@@ -103,10 +103,10 @@ class TrialTranslator(base.Translator):
         )
 
         facts=[
-            _slugify(trial.get('nct_id', None)),
-            _slugify(trial.get('euctr_id', None)),
-            _slugify(trial.get('isrctn_id', None)),
-            _slugify(trial.get('scientific_title', None), hash=True),
+            helpers.slugify(trial.get('nct_id', None)),
+            helpers.slugify(trial.get('euctr_id', None)),
+            helpers.slugify(trial.get('isrctn_id', None)),
+            helpers.slugify(trial.get('scientific_title', None), hash=True),
         ]
 
         entity, existent = self.__finder.find('trials',
@@ -175,9 +175,10 @@ class TrialTranslator(base.Translator):
         if primary:
             role = 'primary'
 
-        record = self.__extractor.extract('record',
-            item=item,
-        )
+        record = {
+            'type': 'trial',
+            'data': json.dumps(item, cls=helpers.JSONEncoder),
+        }
 
         entity, existent = self.__finder.find('records',
             id=item['meta_id'],
@@ -354,7 +355,7 @@ class TrialTranslator(base.Translator):
 
             facts = []
             for phone in person.get('phones', []):
-                facts.append(_slugify(phone))
+                facts.append(helpers.slugify(phone))
 
             entity, existent = self.__finder.find('persons',
                 name=person['name'],
@@ -378,15 +379,3 @@ class TrialTranslator(base.Translator):
                 logger.info('Matched - person: %s' % (person['name']))
             else:
                 logger.info('Created - person: %s' % (person['name']))
-
-
-# Internal
-
-# TODO: use slugify package
-def _slugify(string, hash=False):
-    slug = None
-    if string:
-        slug = re.sub(r'\W', '', string).lower() or None
-    if slug and hash:
-        slug = hashlib.md5(slug).hexdigest()
-    return slug
