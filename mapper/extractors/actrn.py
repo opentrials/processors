@@ -58,18 +58,6 @@ class ActrnExtractor(base.Extractor):
 
         return trial
 
-    def extract_record(self, item):
-
-        record = {
-            'type': 'trial',
-            'data': {
-                # TODO: item seriliazation issue
-                'actrn_id': item['trial_id'],
-            },
-        }
-
-        return record
-
     def extract_problems(self, item):
 
         # TODO: item['health_conditions_or_problems_studied'] - free text some time

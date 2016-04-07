@@ -51,8 +51,8 @@ class TrialTranslator(base.Translator):
                 # Translate trial
                 trial_id, trial_data, primary = self.translate_trial(item)
 
-                # Translate record
-                self.translate_record(item,
+                # Translate trialrecord
+                self.translate_trialrecord(item,
                     trial_id=trial_id,
                     trial_data=trial_data,
                     source_id=source_id,
@@ -120,7 +120,7 @@ class TrialTranslator(base.Translator):
         # TODO: review
         # Decide item role based on entity we've found:
         # - primary - create/update all entities and relations
-        # - secondary - only add secondary record
+        # - secondary - only add secondary trialrecord
         if not existent:
             # New trial - primary (create)
             primary = True
@@ -173,55 +173,59 @@ class TrialTranslator(base.Translator):
 
         return entity['id'], trial, primary
 
-    def translate_record(self, item, trial_id, trial_data, source_id, primary):
+    def translate_trialrecord(self, item, trial_id, trial_data, source_id, primary):
 
         role = 'secondary'
         if primary:
             role = 'primary'
 
-        record = {
-            'type': 'trial',
-            'created_at': item['meta_created'],
-            'updated_at': item['meta_updated'],
-            'reference': item['meta_source'],
-            'data': json.dumps(item, cls=helpers.JSONEncoder),
-            'extracted_data': json.dumps(trial_data, cls=helpers.JSONEncoder),
-            'role': role,
-            'context': {},
-        }
-
-        entity, existent = self.__finder.find('records',
+        entity, existent = self.__finder.find('trialrecords',
             id=item['meta_id'],
         )
 
-        self.__pipeline.write_entity('records', entity,
+        self.__pipeline.write_entity('trialrecords', entity,
             source_id=source_id,
-            type=record['type'],
-            created_at=record['created_at'],
-            updated_at=record['updated_at'],
-            reference=record['reference'],
-            data=record['data'],
-            extracted_data=record['extracted_data'],
+            source_url=item['meta_source'],
+            source_data=json.dumps(item, cls=helpers.JSONEncoder),
+            created_at=item['meta_created'],
+            updated_at=item['meta_updated'],
+            primary_register=trial_data['primary_register'],
+            primary_id=trial_data['primary_id'],
+            secondary_ids=trial_data['secondary_ids'],
+            registration_date=trial_data['registration_date'],
+            public_title=trial_data['public_title'],
+            brief_summary=trial_data['brief_summary'],
+            scientific_title=trial_data.get('scientific_title', None),
+            description=trial_data.get('description', None),
+            recruitment_status=trial_data['recruitment_status'],
+            eligibility_criteria=trial_data['eligibility_criteria'],
+            target_sample_size=trial_data.get('target_sample_size', None),
+            first_enrollment_date=trial_data.get('first_enrollment_date', None),
+            study_type=trial_data['study_type'],
+            study_design=trial_data['study_design'],
+            study_phase=trial_data['study_phase'],
+            primary_outcomes=trial_data.get('primary_outcomes', None),
+            secondary_outcomes=trial_data.get('primary_outcomes', None),
         )
 
-        # Make all existent records secondary
+        # Make all existent trialrecords secondary
         if primary:
-            self.__pipeline.update('trials_records', ['trial_id'],
+            self.__pipeline.update('trials_trialrecords', ['trial_id'],
                 trial_id=trial_id,
                 role='secondary',
             )
 
-        self.__pipeline.write_relation('trials_records', ['trial_id', 'record_id'],
+        self.__pipeline.write_relation('trials_trialrecords', ['trial_id', 'trialrecord_id'],
             trial_id=trial_id,
-            record_id=entity['id'],
-            role=record['role'],
-            context=record['context'],
+            trialrecord_id=entity['id'],
+            role=role,
+            context={},
         )
 
         if existent:
-            logger.info('Matched - record: %s' % (entity['id']))
+            logger.info('Matched - trialrecord: %s' % (entity['id']))
         else:
-            logger.info('Created - record: %s' % (entity['id']))
+            logger.info('Created - trialrecord: %s' % (entity['id']))
 
     def translate_problems(self, item, trial_id):
 

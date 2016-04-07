@@ -15,21 +15,6 @@ class Extractor(object):
 
     # Public
 
-    @property
-    @abstractmethod
-    def store(self):
-        pass  # pragma: no cover
-
-    @property
-    @abstractmethod
-    def table(self):
-        pass  # pragma: no cover
-
-    @property
-    @abstractmethod
-    def heads(self):
-        pass  # pragma: no cover
-
     def extract(self, target, item):
         """Extract data from item.
 
@@ -54,3 +39,18 @@ class Extractor(object):
         data = method(item)
 
         return data
+
+    @property
+    @abstractmethod
+    def store(self):
+        pass  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def table(self):
+        pass  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def heads(self):
+        pass  # pragma: no cover

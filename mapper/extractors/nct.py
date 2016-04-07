@@ -54,18 +54,6 @@ class NctExtractor(base.Extractor):
 
         return trial
 
-    def extract_record(self, item):
-
-        record = {
-            'type': 'trial',
-            'data': {
-                # TODO: item seriliazation issue
-                'nct_id': item['nct_id'],
-            },
-        }
-
-        return record
-
     def extract_problems(self, item):
 
         problems = []

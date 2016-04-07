@@ -56,18 +56,6 @@ class JprnExtractor(base.Extractor):
 
         return trial
 
-    def extract_record(self, item):
-
-        record = {
-            'type': 'trial',
-            'data': {
-                # TODO: item seriliazation issue
-                'unique_trial_number': item['unique_trial_number'],
-            },
-        }
-
-        return record
-
     def extract_problems(self, item):
 
         # TODO: item['condition'] - free text some time

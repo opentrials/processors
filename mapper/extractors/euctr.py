@@ -63,18 +63,6 @@ class EuctrExtractor(base.Extractor):
 
         return trial
 
-    def extract_record(self, item):
-
-        record = {
-            'type': 'trial',
-            'data': {
-                # TODO: item seriliazation issue
-                'eudract_number_with_country': item['eudract_number_with_country'],
-            },
-        }
-
-        return record
-
     def extract_problems(self, item):
 
         # TODO: discover item['trial_medical_conditions_being_investigated']

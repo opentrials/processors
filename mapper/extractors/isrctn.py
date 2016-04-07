@@ -68,18 +68,6 @@ class IsrctnExtractor(base.Extractor):
 
         return trial
 
-    def extract_record(self, item):
-
-        record = {
-            'type': 'trial',
-            'data': {
-                # TODO: item seriliazation issue
-                'isrctn_id': item['isrctn_id'],
-            },
-        }
-
-        return record
-
     def extract_problems(self, item):
 
         # TODO: item['condition'] - free text

@@ -64,18 +64,6 @@ class GskExtractor(base.Extractor):
 
         return trial
 
-    def extract_record(self, item):
-
-        record = {
-            'type': 'trial',
-            'data': {
-                # TODO: item seriliazation issue
-                'study_id': item['study_id'],
-            },
-        }
-
-        return record
-
     def extract_problems(self, item):
 
         problems = []
