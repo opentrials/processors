@@ -78,7 +78,7 @@ class TrialTranslator(base.Translator):
                 logger.info('Translated - trial: %s [%s]' % (trial_id, sucess))
 
             # Sleep to avoid node overloading
-            time.sleep(0.1)
+            # time.sleep(0.1)
 
     def translate_source(self, item):
 
