@@ -27,7 +27,7 @@ class Pipeline(object):
         self.__source = source
         self.__target = target
 
-    def read(self, table, bufsize=10, orderby='meta_id'):
+    def read(self, table, bufsize=100, orderby='meta_id'):
         """Read data from source.
 
         Yields:
