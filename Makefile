@@ -4,7 +4,7 @@
 all: list
 
 build:
-	docker build -t opentrialsrobot/processors .
+	docker build -t okibot/processors .
 
 install:
 	pip install --upgrade -r requirements.dev.txt
@@ -22,7 +22,7 @@ push:
     -e $$OPENTRIALS_DOCKER_EMAIL \
     -u $$OPENTRIALS_DOCKER_USER \
     -p $$OPENTRIALS_DOCKER_PASS
-	docker push opentrialsrobot/processors
+	docker push okibot/processors
 	python scripts/push-stacks.py
 
 test:
