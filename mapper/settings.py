@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv('.env')
 
 
-# Storare
+# Storage
 
 WAREHOUSE_URL = os.environ['OPENTRIALS_WAREHOUSE_URL']
 DATABASE_URL = os.environ['OPENTRIALS_DATABASE_URL']

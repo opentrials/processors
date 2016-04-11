@@ -4,6 +4,7 @@ actrn:
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
+    OPENTRIALS_LOGGING_URL:
 
 euctr:
   image: okibot/processors
@@ -11,6 +12,7 @@ euctr:
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
+    OPENTRIALS_LOGGING_URL:
 
 gsk:
   image: okibot/processors
@@ -18,6 +20,7 @@ gsk:
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
+    OPENTRIALS_LOGGING_URL:
 
 ictrp:
   image: okibot/processors
@@ -25,6 +28,7 @@ ictrp:
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
+    OPENTRIALS_LOGGING_URL:
 
 isrctn:
   image: okibot/processors
@@ -32,6 +36,7 @@ isrctn:
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
+    OPENTRIALS_LOGGING_URL:
 
 jprn:
   image: okibot/processors
@@ -39,6 +44,7 @@ jprn:
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
+    OPENTRIALS_LOGGING_URL:
 
 nct:
   image: okibot/processors
@@ -46,6 +52,7 @@ nct:
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
+    OPENTRIALS_LOGGING_URL:
 
 pfizer:
   image: okibot/processors
@@ -53,6 +60,7 @@ pfizer:
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
+    OPENTRIALS_LOGGING_URL:
 
 takeda:
   image: okibot/processors
@@ -60,3 +68,4 @@ takeda:
   environment:
     OPENTRIALS_WAREHOUSE_URL:
     OPENTRIALS_DATABASE_URL:
+    OPENTRIALS_LOGGING_URL:
