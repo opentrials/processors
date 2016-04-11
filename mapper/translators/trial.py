@@ -40,7 +40,7 @@ class TrialTranslator(base.Translator):
         # Translate source
         source_id = self.translate_source(None)
 
-        sucess = 0
+        success = 0
         errors = 0
         for item in self.__pipeline.read(self.__extractor.table):
 
@@ -73,9 +73,12 @@ class TrialTranslator(base.Translator):
                 logger.warning('Translation error: %s [%s]' % (repr(exception), errors))
 
             else:
-                sucess += 1
+                success += 1
                 self.__pipeline.commit()
-                logger.info('Translated - trial: %s [%s]' % (trial_id, sucess))
+                logger.debug('Translated - trial: %s [%s]' % (trial_id, success))
+
+            if not success % 100:
+                logger.info('Transated %s trials [%s]' % (success, self.__extractor.table))
 
             # Sleep to avoid node overloading
             # time.sleep(0.1)
@@ -96,7 +99,7 @@ class TrialTranslator(base.Translator):
         )
 
         if not existent:
-            logger.info('Created - source: %s' % (source['name']))
+            logger.debug('Created - source: %s' % (source['name']))
 
         return entry['id']
 
@@ -167,9 +170,9 @@ class TrialTranslator(base.Translator):
             self.__pipeline.write_entity('trials', entity)
 
         if existent:
-            logger.info('Matched - trial: %s (primary:%s)' % (trial['primary_id'], primary))
+            logger.debug('Matched - trial: %s (primary:%s)' % (trial['primary_id'], primary))
         else:
-            logger.info('Created - trial: %s (primary: True)' % (trial['primary_id']))
+            logger.debug('Created - trial: %s (primary: True)' % (trial['primary_id']))
 
         return entity['id'], trial, primary
 
@@ -223,9 +226,9 @@ class TrialTranslator(base.Translator):
         )
 
         if existent:
-            logger.info('Matched - trialrecord: %s' % (entity['id']))
+            logger.debug('Matched - trialrecord: %s' % (entity['id']))
         else:
-            logger.info('Created - trialrecord: %s' % (entity['id']))
+            logger.debug('Created - trialrecord: %s' % (entity['id']))
 
     def translate_problems(self, item, trial_id):
 
@@ -256,9 +259,9 @@ class TrialTranslator(base.Translator):
             )
 
             if existent:
-                logger.info('Matched - problem: %s' % (problem['name']))
+                logger.debug('Matched - problem: %s' % (problem['name']))
             else:
-                logger.info('Created - problem: %s' % (problem['name']))
+                logger.debug('Created - problem: %s' % (problem['name']))
 
     def translate_interventions(self, item, trial_id):
 
@@ -289,9 +292,9 @@ class TrialTranslator(base.Translator):
             )
 
             if existent:
-                logger.info('Matched - intervention: %s' % (intervention['name']))
+                logger.debug('Matched - intervention: %s' % (intervention['name']))
             else:
-                logger.info('Created - intervention: %s' % (intervention['name']))
+                logger.debug('Created - intervention: %s' % (intervention['name']))
 
     def translate_locations(self, item, trial_id):
 
@@ -322,9 +325,9 @@ class TrialTranslator(base.Translator):
             )
 
             if existent:
-                logger.info('Matched - location: %s' % (location['name']))
+                logger.debug('Matched - location: %s' % (location['name']))
             else:
-                logger.info('Created - location: %s' % (location['name']))
+                logger.debug('Created - location: %s' % (location['name']))
 
     def translate_organisations(self, item, trial_id):
 
@@ -355,9 +358,9 @@ class TrialTranslator(base.Translator):
             )
 
             if existent:
-                logger.info('Matched - organisation: %s' % (organisation['name']))
+                logger.debug('Matched - organisation: %s' % (organisation['name']))
             else:
-                logger.info('Created - organisation: %s' % (organisation['name']))
+                logger.debug('Created - organisation: %s' % (organisation['name']))
 
     def translate_persons(self, item, trial_id):
 
@@ -394,6 +397,6 @@ class TrialTranslator(base.Translator):
             )
 
             if existent:
-                logger.info('Matched - person: %s' % (person['name']))
+                logger.debug('Matched - person: %s' % (person['name']))
             else:
-                logger.info('Created - person: %s' % (person['name']))
+                logger.debug('Created - person: %s' % (person['name']))

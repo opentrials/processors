@@ -22,7 +22,7 @@ def cli():
     database = dataset.connect(settings.DATABASE_URL)
 
     # Logging
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     root_logger = logging.getLogger()
     host, port = settings.LOGGING_URL.split(':')
     syslog_handler = SysLogHandler(address=(host, int(port)))
