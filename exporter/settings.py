@@ -8,6 +8,11 @@ import os
 from dotenv import load_dotenv
 load_dotenv('.env')
 
+# Storage
 
 WAREHOUSE_URL = os.environ['OPENTRIALS_WAREHOUSE_URL']
 DATABASE_URL = os.environ['OPENTRIALS_DATABASE_URL']
+
+# Logging
+
+LOGGING_URL = os.environ['OPENTRIALS_LOGGING_URL']

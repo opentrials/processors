@@ -15,5 +15,5 @@ class Exporter(object):
         self.__warehouse = warehouse
         self.__database = database
 
-    def export(self):
-        print('export')
+    def export(self, name):
+        print(name)
