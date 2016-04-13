@@ -16,7 +16,7 @@ class Translator(object):
     # Public
 
     @abstractmethod
-    def __init__(self, warehouse, database, extractor):
+    def __init__(self, warehouse, database):
         pass  # pragma: no cover
 
     @abstractmethod

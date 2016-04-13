@@ -10,6 +10,8 @@ The OpenTrials data processors set.
 ## Documentation
 
 - [Exporter](docs/exporter/exporter.md)
+  - [Translators](docs/exporter/translators)
+    - [Trial](docs/exporter/translators/contentmine.md)
 - [Mapper](docs/mapper/mapper.md)
   - [Extractors](docs/mapper/extractors)
     - [ACTRN](docs/mapper/extractors/actrn.md)
