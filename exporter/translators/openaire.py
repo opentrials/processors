@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-class OpenairTranslator(base.Translator):
+class OpenaireTranslator(base.Translator):
 
     # Public
 
@@ -31,7 +31,7 @@ class OpenairTranslator(base.Translator):
 
         # View/table
         query = """
-            create table export_openair as
+            create table export_openaire as
             select t.id, t.scientific_title,
             array_agg(distinct r.primary_id) filter(where r.primary_id is not null) as identifiers,
             array_agg(distinct p.name) filter(where p.name is not null) as problems,
@@ -46,8 +46,8 @@ class OpenairTranslator(base.Translator):
 
         # Import
         pull_datapackage(
-            descriptor='target/openair/datapackage.json', name='export',
+            descriptor='target/openaire/datapackage.json', name='export',
             backend='sql', engine=engine, prefix='export_')
 
         # Log
-        logger.info('Exported datapackage for OpenAir.')
+        logger.info('Exported datapackage for OpenAIRE.')
