@@ -5,3 +5,4 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from .contentmine import ContentmineTranslator as Contentmine
+from .openair import OpenairTranslator as Openair
