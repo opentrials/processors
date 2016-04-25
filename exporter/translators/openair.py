@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import os
 import logging
 from sqlalchemy import create_engine
 from datapackage import pull_datapackage
