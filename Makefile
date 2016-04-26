@@ -1,4 +1,4 @@
-.PHONY: all build install lint list push test
+.PHONY: all build install list push test
 
 
 all: list
@@ -8,10 +8,6 @@ build:
 
 install:
 	pip install --upgrade -r requirements.dev.txt
-
-lint:
-	pylama exporter
-	pylama mapper
 
 list:
 	@grep '^\.PHONY' Makefile | cut -d' ' -f2- | tr ' ' '\n'
@@ -26,4 +22,6 @@ push:
 	python scripts/push-stacks.py
 
 test:
+	pylama exporter
+	pylama mapper
 	py.test
