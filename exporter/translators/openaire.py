@@ -31,16 +31,17 @@ class OpenaireTranslator(base.Translator):
 
         # View/table
         query = """
-            create table export_openaire as
-            select t.id, t.scientific_title,
-            array_agg(distinct r.primary_id) filter(where r.primary_id is not null) as identifiers,
-            array_agg(distinct p.name) filter(where p.name is not null) as problems,
-            array_agg(distinct i.name) filter(where i.name is not null) as interventions
+            create table export_openaire_jp as
+            select t.id, t.primary_register, t.primary_id, t.secondary_ids,
+            t.scientific_title, t.public_title, t.description, t.brief_summary, 
+            t.registration_date, t.target_sample_size,
+            array_to_json(array_agg(json_build_object('url', r.source_url, 'sourceID', s.id, 'sourceName', s.name))) as jsonProv
             from trials as t
             left outer join trialrecords as r on t.id = r.trial_id
-            left outer join trials_problems as tp on t.id = tp.trial_id left outer join problems as p on p.id = tp.problem_id
-            left outer join trials_interventions as ti on t.id = ti.trial_id left outer join interventions as i on i.id = ti.intervention_id
-            group by t.id;
+            left outer join sources as s on r.source_id = s.id
+            group by t.id, t.primary_register, t.primary_id, t.secondary_ids,
+            t.scientific_title, t.public_title, t.description, t.brief_summary, 
+            t.registration_date, t.target_sample_size;
         """
         engine.execute(query)
 
