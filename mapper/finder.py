@@ -67,8 +67,8 @@ class Finder(object):
             entity = entities[0]
             entity['id'] = entity['id'].hex
             entity['updated_at'] = timestamp
-            entity['links'] = list(set(entity['links'] + (links or [])))
-            entity['facts'] = list(set(entity['facts'] + (facts or [])))
+            entity['links'] = list(set(entity.get('links', []) + (links or [])))
+            entity['facts'] = list(set(entity.get('facts', []) + (facts or [])))
             entity.update(filter)
 
         # Too many entities

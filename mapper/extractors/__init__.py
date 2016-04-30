@@ -12,4 +12,5 @@ from .isrctn import IsrctnExtractor as Isrctn
 from .jprn import JprnExtractor as Jprn
 from .nct import NctExtractor as Nct
 from .takeda import TakedaExtractor as Takeda
+from .pubmed import PubmedExtractor as Pubmed
 from .pfizer import PfizerExtractor as Pfizer

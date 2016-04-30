@@ -11,7 +11,8 @@ The OpenTrials data processors set.
 
 - [Exporter](docs/exporter/exporter.md)
   - [Translators](docs/exporter/translators)
-    - [Trial](docs/exporter/translators/contentmine.md)
+    - [ContencMine](docs/exporter/translators/contentmine.md)
+    - [OpenAIRE](docs/exporter/translators/openaire.md)
 - [Mapper](docs/mapper/mapper.md)
   - [Extractors](docs/mapper/extractors)
     - [ACTRN](docs/mapper/extractors/actrn.md)
@@ -22,9 +23,11 @@ The OpenTrials data processors set.
     - [JPRN](docs/mapper/extractors/jprn.md)
     - [NCT](docs/mapper/extractors/nct.md)
     - [Pfizer](docs/mapper/extractors/pfizer.md)
+    - [Pubmed](docs/mapper/extractors/pubmed.md)
     - [Takeda](docs/mapper/extractors/takeda.md)
   - [Translators](docs/mapper/translators)
     - [Trial](docs/mapper/translators/trial.md)
+    - [Publication](docs/mapper/translators/publication.md)
 
 ## Contributing
 

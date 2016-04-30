@@ -62,6 +62,14 @@ pfizer:
     OPENTRIALS_DATABASE_URL:
     OPENTRIALS_LOGGING_URL:
 
+pubmed:
+  image: okibot/processors
+  command: python -m mapper.cli publication pubmed
+  environment:
+    OPENTRIALS_WAREHOUSE_URL:
+    OPENTRIALS_DATABASE_URL:
+    OPENTRIALS_LOGGING_URL:
+
 takeda:
   image: okibot/processors
   command: python -m mapper.cli trial takeda
