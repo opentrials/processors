@@ -54,17 +54,17 @@ def write_database_record(conn, record, source_id, trial_id, trial):
         'registration_date': trial['registration_date'],
         'public_title': trial['public_title'],
         'brief_summary': trial['brief_summary'],
-        'scientific_title': trial.get('scientific_title', None),
-        'description': trial.get('description', None),
+        'scientific_title': trial['scientific_title'],
+        'description': trial['description'],
         'recruitment_status': trial['recruitment_status'],
         'eligibility_criteria': trial['eligibility_criteria'],
-        'target_sample_size': trial.get('target_sample_size', None),
-        'first_enrollment_date': trial.get('first_enrollment_date', None),
+        'target_sample_size': trial['target_sample_size'],
+        'first_enrollment_date': trial['first_enrollment_date'],
         'study_type': trial['study_type'],
         'study_design': trial['study_design'],
         'study_phase': trial['study_phase'],
-        'primary_outcomes': trial.get('primary_outcomes', None),
-        'secondary_outcomes': trial.get('primary_outcomes', None),
+        'primary_outcomes': trial['primary_outcomes'],
+        'secondary_outcomes': trial['primary_outcomes'],
     })
 
     # Write object
