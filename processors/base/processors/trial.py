@@ -64,7 +64,7 @@ def process_trial(conn, table, extractors):
                 # Extract and write locations
                 locations = extractors.extract_locations(record)
                 for location in locations:
-                    writers.write_location(conn, location, trial_id)
+                    writers.write_location(conn, location, source_id, trial_id)
 
                 # Extract and write organisations
                 organisations = extractors.extract_organisations(record)

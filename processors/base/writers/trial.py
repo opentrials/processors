@@ -28,13 +28,11 @@ def write_trial(conn, trial):
     action = 'updated'
     timestamp = datetime.datetime.utcnow()
 
-    # Get facts
-    links = []
-    facts = trial['identifiers'] + [trial['scientific_title']]
+    # Get slug/facts
+    facts = helpers.slugify_array(trial['identifiers'] + [trial['scientific_title']])
 
     # Read
     object = readers.read_objects(conn, 'trials', single=True,
-        links=None,
         facts=facts)
 
     # Create
@@ -42,7 +40,6 @@ def write_trial(conn, trial):
         object = {}
         object['id'] = uuid.uuid4().hex
         object['created_at'] = timestamp
-        object['links'] = []
         object['facts'] = []
         action = 'created'
 
@@ -65,7 +62,6 @@ def write_trial(conn, trial):
     # Update
     object.update({
         'updated_at': timestamp,
-        'links': helpers.slugify_array(object['links'] + links),
         'facts': helpers.slugify_array(object['facts'] + facts),
     })
     if is_primary:

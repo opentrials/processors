@@ -4,20 +4,18 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from .. import helpers
-
 
 # Module API
 
-def read_objects(conn, table, single=False, links=None, facts=None, **filter):
+def read_objects(conn, table, single=False, slug=None, facts=None, **filter):
     """Read objects.
 
     Args:
         conn (object): connection object
         table (str): table name
         single (bool): return one object if True
-        links (list): strings to check (will be cleaned and slugified)
-        facts (list): strings to check (will be cleaned and slugified)
+        slug (str): string to check (should be slugified)
+        facts (list): strings to check (should be slugified)
         filter (dict): additional field filter
 
     Raises:
@@ -29,7 +27,7 @@ def read_objects(conn, table, single=False, links=None, facts=None, **filter):
     """
 
     # Get objects
-    query = _make_query(table, links, facts, **filter)
+    query = _make_query(table, slug, facts, **filter)
     objects = list(conn.database.query(query))
 
     # Fix id type
@@ -44,7 +42,7 @@ def read_objects(conn, table, single=False, links=None, facts=None, **filter):
             return objects[0]
         else:
             message = 'Finding error: more than 1 en : %s - %s - %s - %s'
-            message = message % (table, links, facts, filter)
+            message = message % (table, slug, facts, filter)
             raise ValueError(message)
 
     return objects
@@ -52,27 +50,21 @@ def read_objects(conn, table, single=False, links=None, facts=None, **filter):
 
 # Internal
 
-def _make_query(table, links, facts, **filter):
+def _make_query(table, slug, facts, **filter):
     """Make filtering query.
     """
     query = []
     where = []
-    where_or = []
     query.append("SELECT * from %s" % table)
-    if filter or facts:
-        query.append("WHERE")
     if filter:
         for key, value in filter.items():
             where.append("%s = '%s'" % (key, value.replace("'", "''")))
-    if links is not None:
-        links = helpers.slugify_array(links)
-        where_or.append("links && %s" % _make_array(links))
+    if slug is not None:
+        where.append("slug = '%s'" % slug)
     if facts is not None:
-        facts = helpers.slugify_array(facts)
-        where_or.append("facts && %s" % _make_array(facts))
-    where_or = " OR ".join(where_or)
-    if where_or:
-        where.append('(%s)' % where_or)
+        where.append("facts && %s" % _make_array(facts))
+    if where:
+        query.append("WHERE")
     query.append(" AND ".join(where))
     query = ' '.join(query)
     return query

@@ -20,6 +20,7 @@ def write_person(conn, person, source_id, trial_id=None):
     Args:
         conn (object): connection object
         person (dict): normalized data
+        source_id (str): data source id
         trial_id (str): related trial id
 
     Returns:
@@ -29,14 +30,13 @@ def write_person(conn, person, source_id, trial_id=None):
     action = 'updated'
     timestamp = datetime.datetime.utcnow()
 
-    # Get facts
-    links = [trial_id]
-    facts = person['phones']
+    # Get slug/facts
+    slug = helpers.slugify_string(person['name'])
+    facts = helpers.slugify_array([trial_id] + person['phones'])
 
     # Read
     object = readers.read_objects(conn, 'persons', single=True,
-        name=person['name'],
-        links=links,
+        slug=slug,
         facts=facts)
 
     # Create
@@ -44,7 +44,7 @@ def write_person(conn, person, source_id, trial_id=None):
         object = {}
         object['id'] = uuid.uuid4().hex
         object['created_at'] = timestamp
-        object['links'] = []
+        object['slug'] = slug
         object['facts'] = []
         action = 'created'
 
@@ -52,7 +52,6 @@ def write_person(conn, person, source_id, trial_id=None):
     object.update({
         'updated_at': timestamp,
         'source_id': source_id,
-        'links': helpers.slugify_array(object['links'] + links),
         'facts': helpers.slugify_array(object['facts'] + facts),
         # ---
         'name': person['name'],
