@@ -1,3 +1,3 @@
-# OpenAIRE
+# ContentMine
 
-OpenAIRE exporting translator.
+ContentMine exporter.
