@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def write_person(conn, person, trial_id=None):
+def write_person(conn, person, source_id, trial_id=None):
     """Write person to database.
 
     Args:
@@ -51,6 +51,7 @@ def write_person(conn, person, trial_id=None):
     # Update
     object.update({
         'updated_at': timestamp,
+        'source_id': source_id,
         'links': helpers.slugify_array(object['links'] + links),
         'facts': helpers.slugify_array(object['facts'] + facts),
         # ---

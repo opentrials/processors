@@ -38,8 +38,8 @@ def write_publication(conn, publication, source_id):
 
     # Update
     object.update({
-        'source_id': source_id,
         'updated_at': timestamp,
+        'source_id': source_id,
         # ---
         'source_url': publication['source_url'],
         'title': publication['title'],

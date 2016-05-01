@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def write_database_record(conn, record, trial, trial_id, source_id):
+def write_database_record(conn, record, source_id, trial_id, trial):
     """Write record to database.
 
     Args:
@@ -42,11 +42,11 @@ def write_database_record(conn, record, trial, trial_id, source_id):
 
     # Update
     object.update({
+        'updated_at': record['meta_updated'],
         'trial_id': trial_id,
         'source_id': source_id,
         'source_url': record['meta_source'],
         'source_data': json.dumps(record, cls=helpers.JSONEncoder),
-        'updated_at': record['meta_updated'],
         # ---
         'primary_register': trial['primary_register'],
         'primary_id': trial['primary_id'],

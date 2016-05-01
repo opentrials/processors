@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def write_location(conn, location, trial_id=None):
+def write_location(conn, location, source_id, trial_id=None):
     """Write location to database.
 
     Args:
@@ -42,6 +42,7 @@ def write_location(conn, location, trial_id=None):
     # Update
     object.update({
         'updated_at': timestamp,
+        'source_id': source_id,
         # ---
         'name': location['name'],
         'type': location['type'],

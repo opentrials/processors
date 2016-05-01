@@ -39,7 +39,7 @@ def process_trial(conn, table, extractors):
             trial_id, is_primary = writers.write_trial(conn, trial)
 
             # Write record
-            writers.write_database_record(conn, record, trial, trial_id, source_id)
+            writers.write_database_record(conn, record, source_id, trial_id, trial)
 
             # Write other entities
             if is_primary:
@@ -54,12 +54,12 @@ def process_trial(conn, table, extractors):
                 # Extract and write problems
                 problems = extractors.extract_problems(record)
                 for problem in problems:
-                    writers.write_problem(conn, problem, trial_id)
+                    writers.write_problem(conn, problem, source_id, trial_id)
 
                 # Extract and write interventions
                 interventions = extractors.extract_interventions(record)
                 for intervention in interventions:
-                    writers.write_intervention(conn, intervention, trial_id)
+                    writers.write_intervention(conn, intervention, source_id, trial_id)
 
                 # Extract and write locations
                 locations = extractors.extract_locations(record)
@@ -69,12 +69,12 @@ def process_trial(conn, table, extractors):
                 # Extract and write organisations
                 organisations = extractors.extract_organisations(record)
                 for organisation in organisations:
-                    writers.write_organisation(conn, organisation, trial_id)
+                    writers.write_organisation(conn, organisation, source_id, trial_id)
 
                 # Extract and write persons
                 persons = extractors.extract_persons(record)
                 for person in persons:
-                    writers.write_person(conn, person, trial_id)
+                    writers.write_person(conn, person, source_id, trial_id)
 
         except Exception as exception:
             errors += 1
