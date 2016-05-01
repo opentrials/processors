@@ -1,4 +1,4 @@
-.PHONY: all build install list push test
+.PHONY: all build install list push start test
 
 
 all: list
@@ -21,7 +21,9 @@ push:
 	docker push okibot/processors
 	python scripts/push-stacks.py
 
+start:
+	python -m processors.base.cli $(filter-out $@,$(MAKECMDGOALS))
+
 test:
-	pylama exporter
-	pylama mapper
+	pylama processors
 	py.test

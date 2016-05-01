@@ -9,25 +9,20 @@ The OpenTrials data processors set.
 
 ## Documentation
 
-- [Exporter](docs/exporter/exporter.md)
-  - [Translators](docs/exporter/translators)
+- [Overview](docs/overview.md)
+- [Processors](docs/processors/)
+    - [ACTRN](docs/processors/actrn.md)
     - [ContencMine](docs/exporter/translators/contentmine.md)
+    - [EUCTR](docs/processors/euctr.md)
+    - [GSK](docs/processors/gsk.md)
+    - [ICTRP](docs/processors/ictrp.md)
+    - [ISRCTN](docs/processors/isrctn.md)
+    - [JPRN](docs/processors/jprn.md)
+    - [NCT](docs/processors/nct.md)
     - [OpenAIRE](docs/exporter/translators/openaire.md)
-- [Mapper](docs/mapper/mapper.md)
-  - [Extractors](docs/mapper/extractors)
-    - [ACTRN](docs/mapper/extractors/actrn.md)
-    - [EUCTR](docs/mapper/extractors/euctr.md)
-    - [GSK](docs/mapper/extractors/gsk.md)
-    - [ICTRP](docs/mapper/extractors/ictrp.md)
-    - [ISRCTN](docs/mapper/extractors/isrctn.md)
-    - [JPRN](docs/mapper/extractors/jprn.md)
-    - [NCT](docs/mapper/extractors/nct.md)
-    - [Pfizer](docs/mapper/extractors/pfizer.md)
-    - [Pubmed](docs/mapper/extractors/pubmed.md)
-    - [Takeda](docs/mapper/extractors/takeda.md)
-  - [Translators](docs/mapper/translators)
-    - [Trial](docs/mapper/translators/trial.md)
-    - [Publication](docs/mapper/translators/publication.md)
+    - [Pfizer](docs/processors/pfizer.md)
+    - [Pubmed](docs/processors/pubmed.md)
+    - [Takeda](docs/processors/takeda.md)
 
 ## Contributing
 
