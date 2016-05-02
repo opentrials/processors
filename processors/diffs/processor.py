@@ -34,7 +34,7 @@ def process(conn):
         OFFSET %s
     """
 
-    # Excecute
+    # Execute
     count = 0
     while True:
         rows = list(conn.database.query(query % (bufsize, offset)))
