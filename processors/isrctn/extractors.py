@@ -17,11 +17,24 @@ def extract_source(record):
 
 
 def extract_trial(record):
+
     # TODO: review
+    # Get target sample size
     try:
         target_sample_size = int(record['target_number_of_participants'])
     except Exception:
         target_sample_size = None
+
+    # Get gender
+    gender = None
+    if record['gender'] and record['gender'] != 'Not Specified':
+        gender = record['gender'].lower()
+
+    # Get has_published_results
+    has_published_results = False
+    if record['results_basic_reporting']:
+        has_published_results = True
+
     trial = {
         'identifiers': [record['clinicaltrialsgov_number'], record['isrctn_id']],
         'primary_register': 'isrctn',
@@ -48,6 +61,8 @@ def extract_trial(record):
         'study_phase': record['phase'] or 'N/A',  # TODO: review
         'primary_outcomes': record['primary_outcome_measures'] or [],
         'secondary_outcomes': record['secondary_outcome_measures'] or [],
+        'gender': gender,
+        'has_published_results': has_published_results,
     }
     return trial
 

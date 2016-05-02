@@ -17,6 +17,21 @@ def extract_source(record):
 
 
 def extract_trial(record):
+
+    # Get gender
+    gender = None
+    if record['gender'] == 'Male and Female':
+        gender = 'both'
+    elif record['gender'] == 'Male':
+        gender = 'male'
+    elif record['gender'] == 'Female':
+        gender = 'female'
+
+    # Get has_published_results
+    has_published_results = False
+    if record['publication_of_results'] in ['Published', 'partially published']:
+        has_published_results = True
+
     trial = {
         'identifiers': [],
         'primary_register': 'jprn',
@@ -39,6 +54,8 @@ def extract_trial(record):
         'study_phase': record['developmental_phase'] or 'N/A',  # TODO: review
         'primary_outcomes': record['primary_outcomes'] or [],
         'secondary_outcomes': record['key_secondary_outcomes'] or [],
+        'gender': gender,
+        'has_published_results': has_published_results,
     }
     return trial
 

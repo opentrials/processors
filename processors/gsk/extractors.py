@@ -19,9 +19,22 @@ def extract_source(record):
 
 
 def extract_trial(record):
+
     # TODO: fix
+    # Get registration date
     registration_date = (
         record['first_received'] or datetime.datetime.now().date())
+
+    # Get gender
+    gender = None
+    if record['gender']:
+        gender = record['gender'].lower()
+
+    # Get has_published_results
+    has_published_results = False
+    if record['protocol_id']:
+        has_published_results = True
+
     trial = {
         'identifiers': [record['clinicaltrialsgov_identifier']],
         'primary_register': 'gsk',
@@ -46,6 +59,8 @@ def extract_trial(record):
         'study_phase': record['phase'] or 'N/A',  # TODO: review
         'primary_outcomes': record['primary_outcomes'] or [],
         'secondary_outcomes': record['secondary_outcomes'] or [],
+        'gender': gender,
+        'has_published_results': has_published_results,
     }
     return trial
 

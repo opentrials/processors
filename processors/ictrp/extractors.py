@@ -19,6 +19,7 @@ def extract_source(record):
 
 
 def extract_trial(record):
+
     # Get identifiers
     nct_id = None
     euctr_id = None
@@ -29,9 +30,17 @@ def extract_trial(record):
         euctr_id = record['main_id']
     if record['register'] == 'ISRCTN':
         isrctn_id = record['main_id']
+
     # TODO: fix
     # Get registration date
     registration_date = datetime.datetime.now().date()
+
+    # Get gender
+    gender = None
+
+    # Get has_published_results
+    has_published_results = None
+
     trial = {
         'identifiers': [nct_id, euctr_id, isrctn_id],
         'primary_register': 'ictrp',
@@ -51,6 +60,8 @@ def extract_trial(record):
         'study_phase': record['study_phase'] or 'N/A',
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['secondary_outcomes'],
+        'gender': gender,
+        'has_published_results': has_published_results,
     }
     return trial
 

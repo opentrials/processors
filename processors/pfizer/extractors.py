@@ -17,6 +17,15 @@ def extract_source(record):
 
 
 def extract_trial(record):
+
+    # Get gender
+    gender = None
+    if record['gender']:
+        gender = record['gender'].lower()
+
+    # Get has_published_results
+    has_published_results = None
+
     trial = {
         'identifiers': [record['nct_id']],
         'primary_register': 'pfizer',
@@ -36,6 +45,8 @@ def extract_trial(record):
         'study_phase': 'N/A',  # TODO: review
         'primary_outcomes': None,  # TODO: review
         'secondary_outcomes': None,  # TODO: review
+        'gender': gender,
+        'has_published_results': has_published_results,
     }
     return trial
 

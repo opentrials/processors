@@ -19,9 +19,22 @@ def extract_source(record):
 
 
 def extract_trial(record):
+
     # TODO: fix
+    # Get registration date
     registration_date = (
         record['start_date'] or datetime.datetime.now().date())
+
+    # Get gender
+    gender = None
+    if record['gender']:
+        gender = record['gender'].lower()
+
+    # Get has_published_results
+    has_published_results = False
+    if record['download_the_clinical_trial_summary']:
+        has_published_results = True
+
     trial = {
         'identifiers': [record['nct_number']],
         'primary_register': 'takeda',
@@ -41,6 +54,8 @@ def extract_trial(record):
         'study_phase': record['trial_phase'] or 'N/A',  # TODO: review
         'primary_outcomes': None,  # TODO: review free text
         'secondary_outcomes': None,  # TODO: review free text
+        'gender': gender,
+        'has_published_results': has_published_results,
     }
     return trial
 

@@ -17,6 +17,21 @@ def extract_source(record):
 
 
 def extract_trial(record):
+
+    # Get gender
+    gender = None
+    if record['subject_male'] and record['subject_female']:
+        gender = 'both'
+    elif record['subject_male']:
+        gender = 'male'
+    elif record['subject_female']:
+        gender = 'female'
+
+    # Get has_published_results
+    has_published_results = False
+    if record['trial_results'] == 'View results':
+        has_published_results = True
+
     trial = {
         'identifiers': [record['eudract_number_with_country']],
         'primary_register': 'euctr',
@@ -45,6 +60,8 @@ def extract_trial(record):
         # TODO: discover on scraper level
         'primary_outcomes': [],
         'secondary_outcomes': [],
+        'gender': gender,
+        'has_published_results': has_published_results,
     }
     return trial
 

@@ -65,6 +65,8 @@ def write_database_record(conn, record, source_id, trial_id, trial):
         'study_phase': trial['study_phase'],
         'primary_outcomes': trial['primary_outcomes'],
         'secondary_outcomes': trial['primary_outcomes'],
+        'gender': trial['gender'],
+        'has_published_results': trial['has_published_results'],
     })
 
     # Write object

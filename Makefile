@@ -27,3 +27,6 @@ start:
 test:
 	pylama processors
 	py.test
+
+%:
+	@:
