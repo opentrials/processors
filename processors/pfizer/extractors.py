@@ -30,7 +30,7 @@ def extract_trial(record):
         'identifiers': [record['nct_id']],
         'primary_register': 'pfizer',
         'primary_id': record['nct_id'],
-        'secondary_ids': {'nct_id': record['nct_id'] },
+        'secondary_ids': {'nct_id': record['nct_id']},
         'registration_date': record['study_start_date'],  # TODO: review
         'public_title': record['title'] or 'N/A',  # TODO: review
         'brief_summary': '',  # TODO: review

@@ -32,7 +32,7 @@ def extract_trial(record):
         'identifiers': [record['nct_id']],
         'primary_register': 'nct',
         'primary_id': record['nct_id'],
-        'secondary_ids': {'others': record['secondary_ids'] },
+        'secondary_ids': {'others': record['secondary_ids']},
         'registration_date': record['firstreceived_date'],
         'public_title': record['brief_title'],
         'brief_summary': record['brief_summary'] or '',  # TODO: review

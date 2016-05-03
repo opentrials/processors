@@ -12,4 +12,3 @@ from . import extractors
 
 def process(conf, conn):
     base.processors.process_trial(conn, 'pfizer', extractors)
-
