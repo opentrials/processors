@@ -28,7 +28,7 @@ def read_objects(conn, table, single=False, slug=None, facts=None, **filter):
 
     # Get objects
     query = _make_query(table, slug, facts, **filter)
-    objects = list(conn.database.query(query))
+    objects = list(conn['database'].query(query))
 
     # Fix id type
     for object in objects:

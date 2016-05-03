@@ -70,7 +70,7 @@ def write_database_record(conn, record, source_id, trial_id, trial):
     })
 
     # Write object
-    conn.database['trialrecords'].upsert(object, ['id'], ensure=False)
+    conn['database']['trialrecords'].upsert(object, ['id'], ensure=False)
 
     # Log
     logger.debug('Record - %s: %s' % (action, trial['primary_id']))

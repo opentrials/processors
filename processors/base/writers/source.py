@@ -48,7 +48,7 @@ def write_source(conn, source):
     })
 
     # Write object
-    conn.database['sources'].upsert(object, ['id'], ensure=False)
+    conn['database']['sources'].upsert(object, ['id'], ensure=False)
 
     # Log
     logger.debug('Source - %s: %s' % (action, source['name']))

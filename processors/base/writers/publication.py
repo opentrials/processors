@@ -55,7 +55,7 @@ def write_publication(conn, publication, source_id):
     })
 
     # Write object
-    conn.database['publications'].upsert(object, ['id'], ensure=False)
+    conn['database']['publications'].upsert(object, ['id'], ensure=False)
 
     # Write relationship
     for identifier in publication['identifiers']:
@@ -67,7 +67,7 @@ def write_publication(conn, publication, source_id):
                 'publication_id': object['id'],
                 # ---
             }
-            conn.database['trials_publications'].upsert(
+            conn['database']['trials_publications'].upsert(
                 relathionship, ['trial_id', 'publication_id'], ensure=False)
 
     # Log

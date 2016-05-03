@@ -25,10 +25,10 @@ def read_records(conn, table, bufsize=100, orderby='meta_id'):
     offset = 0
     while True:
         query = {'_offset': offset, '_limit': bufsize, 'order_by': orderby}
-        count = conn.warehouse[table].find(return_count=True, **query)
+        count = conn['warehouse'][table].find(return_count=True, **query)
         if not count:
             break
-        items = conn.warehouse[table].find(**query)
+        items = conn['warehouse'][table].find(**query)
         offset += bufsize
         for item in items:
             item['meta_id'] = uuid.UUID(item['meta_id']).hex

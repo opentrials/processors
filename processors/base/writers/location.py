@@ -56,7 +56,7 @@ def write_location(conn, location, source_id, trial_id=None):
     })
 
     # Write object
-    conn.database['locations'].upsert(object, ['id'], ensure=False)
+    conn['database']['locations'].upsert(object, ['id'], ensure=False)
 
     # Write relationship
     if trial_id:
@@ -67,7 +67,7 @@ def write_location(conn, location, source_id, trial_id=None):
             'role': location['role'],
             'context': location['context'],
         }
-        conn.database['trials_locations'].upsert(
+        conn['database']['trials_locations'].upsert(
             relathionship, ['trial_id', 'location_id'], ensure=False)
 
     # Log

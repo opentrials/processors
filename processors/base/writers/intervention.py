@@ -56,7 +56,7 @@ def write_intervention(conn, intervention, source_id, trial_id=None):
     })
 
     # Write object
-    conn.database['interventions'].upsert(object, ['id'], ensure=False)
+    conn['database']['interventions'].upsert(object, ['id'], ensure=False)
 
     # Write relationship
     if trial_id:
@@ -67,7 +67,7 @@ def write_intervention(conn, intervention, source_id, trial_id=None):
             'role': intervention['role'],
             'context': intervention['context'],
         }
-        conn.database['trials_interventions'].upsert(
+        conn['database']['trials_interventions'].upsert(
             relathionship, ['trial_id', 'intervention_id'], ensure=False)
 
     # Log

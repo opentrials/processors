@@ -60,7 +60,7 @@ def write_person(conn, person, source_id, trial_id=None):
     })
 
     # Write object
-    conn.database['persons'].upsert(object, ['id'], ensure=False)
+    conn['database']['persons'].upsert(object, ['id'], ensure=False)
 
     # Write relationship
     if trial_id:
@@ -71,7 +71,7 @@ def write_person(conn, person, source_id, trial_id=None):
             'role': person['role'],
             'context': person['context'],
         }
-        conn.database['trials_persons'].upsert(
+        conn['database']['trials_persons'].upsert(
             relathionship, ['trial_id', 'person_id'], ensure=False)
 
     # Log

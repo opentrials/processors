@@ -56,7 +56,7 @@ def write_problem(conn, problem, source_id, trial_id=None):
     })
 
     # Write object
-    conn.database['problems'].upsert(object, ['id'], ensure=False)
+    conn['database']['problems'].upsert(object, ['id'], ensure=False)
 
     # Write relationship
     if trial_id:
@@ -67,7 +67,7 @@ def write_problem(conn, problem, source_id, trial_id=None):
             'role': problem['role'],
             'context': problem['context'],
         }
-        conn.database['trials_problems'].upsert(
+        conn['database']['trials_problems'].upsert(
             relathionship, ['trial_id', 'problem_id'], ensure=False)
 
     # Log

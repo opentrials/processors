@@ -27,7 +27,7 @@ def process(conf, conn):
 
     # Excecute
     while True:
-        rows = list(conn.database.query(query % (bufsize, offset)))
+        rows = list(conn['database'].query(query % (bufsize, offset)))
         if not rows:
             break
         for row in rows:

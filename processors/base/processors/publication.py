@@ -30,7 +30,7 @@ def process_publication(conn, table, extractors):
     success = 0
     for record in readers.read_records(conn, table):
 
-        conn.database.begin()
+        conn['database'].begin()
 
         try:
 
@@ -40,13 +40,13 @@ def process_publication(conn, table, extractors):
 
         except Exception as exception:
             errors += 1
-            conn.database.rollback()
+            conn['database'].rollback()
             logger.warning('Processing error: %s [%s]',
                 repr(exception), errors)
 
         else:
             success += 1
-            conn.database.commit()
+            conn['database'].commit()
             if not success % 100:
                 logger.info('Processed %s publications from %s',
                     success, table)

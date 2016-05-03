@@ -28,12 +28,12 @@ def process(conf, conn):
         t.scientific_title, t.public_title, t.description, t.brief_summary,
         t.registration_date, t.target_sample_size;
     """
-    conn.database.engine.execute(query)
+    conn['database'].engine.execute(query)
 
     # Import
     pull_datapackage(
         descriptor='target/openaire/datapackage.json', name='export',
-        backend='sql', engine=conn.database.engine, prefix='export_')
+        backend='sql', engine=conn['database'].engine, prefix='export_')
 
     # Log
     logger.info('Exported datapackage for OpenAIRE.')

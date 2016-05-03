@@ -30,7 +30,7 @@ def process_trial(conn, table, extractors):
     success = 0
     for record in readers.read_records(conn, table):
 
-        conn.database.begin()
+        conn['database'].begin()
 
         try:
 
@@ -45,11 +45,11 @@ def process_trial(conn, table, extractors):
             if is_primary:
 
                 # Delete existent relationships
-                conn.database['trials_problems'].delete(trial_id=trial_id)
-                conn.database['trials_interventions'].delete(trial_id=trial_id)
-                conn.database['trials_locations'].delete(trial_id=trial_id)
-                conn.database['trials_organisations'].delete(trial_id=trial_id)
-                conn.database['trials_persons'].delete(trial_id=trial_id)
+                conn['database']['trials_problems'].delete(trial_id=trial_id)
+                conn['database']['trials_interventions'].delete(trial_id=trial_id)
+                conn['database']['trials_locations'].delete(trial_id=trial_id)
+                conn['database']['trials_organisations'].delete(trial_id=trial_id)
+                conn['database']['trials_persons'].delete(trial_id=trial_id)
 
                 # Extract and write problems
                 problems = extractors.extract_problems(record)
@@ -78,7 +78,7 @@ def process_trial(conn, table, extractors):
 
         except Exception as exception:
             errors += 1
-            conn.database.rollback()
+            conn['database'].rollback()
             logger.warning('Processing error: %s [%s]',
                 repr(exception), errors)
             # TODO: remove
@@ -86,7 +86,7 @@ def process_trial(conn, table, extractors):
 
         else:
             success += 1
-            conn.database.commit()
+            conn['database'].commit()
             if not success % 100:
                 logger.info('Processed %s trials from %s',
                     success, table)

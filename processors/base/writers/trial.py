@@ -89,7 +89,7 @@ def write_trial(conn, trial):
         })
 
     # Write object
-    conn.database['trials'].upsert(object, ['id'], ensure=False)
+    conn['database']['trials'].upsert(object, ['id'], ensure=False)
 
     # Log
     logger.debug('Trial - %s: %s' % (action, trial['primary_id']))

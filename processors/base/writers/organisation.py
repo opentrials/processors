@@ -56,7 +56,7 @@ def write_organisation(conn, organisation, source_id, trial_id=None):
     })
 
     # Write object
-    conn.database['organisations'].upsert(object, ['id'], ensure=False)
+    conn['database']['organisations'].upsert(object, ['id'], ensure=False)
 
     # Write relationship
     if trial_id:
@@ -67,7 +67,7 @@ def write_organisation(conn, organisation, source_id, trial_id=None):
             'role': organisation['role'],
             'context': organisation['context'],
         }
-        conn.database['trials_organisations'].upsert(
+        conn['database']['trials_organisations'].upsert(
             relathionship, ['trial_id', 'organisation_id'], ensure=False)
 
     # Log
