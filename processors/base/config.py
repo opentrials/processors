@@ -7,7 +7,8 @@ from __future__ import unicode_literals
 import os
 import logging
 from logging.handlers import SysLogHandler
-from dotenv import load_dotenv; load_dotenv('.env')
+from dotenv import load_dotenv
+load_dotenv('.env')
 
 
 # Storage
