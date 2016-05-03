@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def process(conn):
+def process(conf, conn):
 
     # Prepare
     trials = {}

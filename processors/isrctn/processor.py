@@ -10,6 +10,6 @@ from . import extractors
 
 # Module API
 
-def process(conn):
+def process(conf, conn):
     base.processors.process_trial(conn, 'isrctn', extractors)
 

@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import sys
 from importlib import import_module
-from . import settings
+from . import config
 from .connection import Connection
 
 
@@ -14,12 +14,18 @@ from .connection import Connection
 
 def cli(argv):
 
-    # Establish connection
-    conn = Connection(settings.WAREHOUSE_URL, settings.DATABASE_URL)
+    # Prepare conf object
+    conf = {}
+    for name, value in vars(config).items():
+        if name.isupper():
+            conf[name] = value
+
+    # Prepare conn object
+    conn = Connection(config.WAREHOUSE_URL, config.DATABASE_URL)
 
     # Get and call processor
     process = import_module('processors.%s' % argv[1]).process
-    process(conn, *argv[2:])
+    process(conf, conn, *argv[2:])
 
 
 if __name__ == '__main__':

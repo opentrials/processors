@@ -14,8 +14,6 @@ class Connection(object):
     # Public
 
     def __init__(self, warehouse_url, database_url):
-        self._warehouse_url = warehouse_url
-        self._database_url = database_url
         self._warehouse = dataset.connect(warehouse_url)
         self._database = dataset.connect(database_url)
 
