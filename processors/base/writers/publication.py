@@ -18,7 +18,7 @@ def write_publication(conn, publication, source_id):
     """Write publication to database.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         publication (dict): normalized publication data
         source_id (str): data source identifier
 

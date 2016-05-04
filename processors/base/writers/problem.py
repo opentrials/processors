@@ -18,7 +18,7 @@ def write_problem(conn, problem, source_id, trial_id=None):
     """Write problem to database.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         problem (dict): normalized data
         source_id (str): data source id
         trial_id (str): related trial id

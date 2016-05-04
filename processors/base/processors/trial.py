@@ -16,14 +16,14 @@ def process_trial(conn, table, extractors):
     """Translate trial records from warehouse to database.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         table (str): table name
-        extractors (object): extractors set
+        extractors (dict): extractors dict
 
     """
 
     # Extract and write source
-    source = extractors.extract_source(None)
+    source = extractors['extract_source'](None)
     source_id = writers.write_source(conn, source)
 
     errors = 0
@@ -35,7 +35,7 @@ def process_trial(conn, table, extractors):
         try:
 
             # Extract and write trial
-            trial = extractors.extract_trial(record)
+            trial = extractors['extract_trial'](record)
             trial_id, is_primary = writers.write_trial(conn, trial)
 
             # Write record
@@ -52,27 +52,27 @@ def process_trial(conn, table, extractors):
                 conn['database']['trials_persons'].delete(trial_id=trial_id)
 
                 # Extract and write problems
-                problems = extractors.extract_problems(record)
+                problems = extractors['extract_problems'](record)
                 for problem in problems:
                     writers.write_problem(conn, problem, source_id, trial_id)
 
                 # Extract and write interventions
-                interventions = extractors.extract_interventions(record)
+                interventions = extractors['extract_interventions'](record)
                 for intervention in interventions:
                     writers.write_intervention(conn, intervention, source_id, trial_id)
 
                 # Extract and write locations
-                locations = extractors.extract_locations(record)
+                locations = extractors['extract_locations'](record)
                 for location in locations:
                     writers.write_location(conn, location, source_id, trial_id)
 
                 # Extract and write organisations
-                organisations = extractors.extract_organisations(record)
+                organisations = extractors['extract_organisations'](record)
                 for organisation in organisations:
                     writers.write_organisation(conn, organisation, source_id, trial_id)
 
                 # Extract and write persons
-                persons = extractors.extract_persons(record)
+                persons = extractors['extract_persons'](record)
                 for person in persons:
                     writers.write_person(conn, person, source_id, trial_id)
 

@@ -8,6 +8,7 @@ import sys
 import dataset
 from importlib import import_module
 from . import config
+from . import helpers
 
 
 # Module API
@@ -15,15 +16,13 @@ from . import config
 def cli(argv):
 
     # Prepare conf dict
-    conf = {}
-    for name, value in vars(config).items():
-        if name.isupper():
-            conf[name] = value
+    conf = helpers.get_variables(config, lambda x: x.isupper())
 
     # Prepare conn dict
-    conn = {}
-    conn['database'] = dataset.connect(config.DATABASE_URL)
-    conn['warehouse'] = dataset.connect(config.WAREHOUSE_URL)
+    conn = {
+        'database': dataset.connect(config.DATABASE_URL),
+        'warehouse': dataset.connect(config.WAREHOUSE_URL),
+    }
 
     # Get and call processor
     process = import_module('processors.%s' % argv[1]).process

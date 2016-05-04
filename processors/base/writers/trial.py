@@ -18,7 +18,7 @@ def write_trial(conn, trial):
     """Write trial to database.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         trial (dict): normilized trial data
 
     Returns:

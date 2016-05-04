@@ -18,7 +18,7 @@ def write_intervention(conn, intervention, source_id, trial_id=None):
     """Write intervention to database.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         intervention (dict): normalized data
         source_id (str): data source id
         trial_id (str): related trial id

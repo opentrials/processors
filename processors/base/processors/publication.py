@@ -16,14 +16,14 @@ def process_publication(conn, table, extractors):
     """Translate publication records from warehouse to database.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         table (str): table name
-        extractors (object): extractors set
+        extractors (dict): extractors dict
 
     """
 
     # Extract and write source
-    source = extractors.extract_source(None)
+    source = extractors['extract_source'](None)
     source_id = writers.write_source(conn, source)
 
     errors = 0
@@ -35,7 +35,7 @@ def process_publication(conn, table, extractors):
         try:
 
             # Extract and write publication
-            publication = extractors.extract_publication(record)
+            publication = extractors['extract_publication'](record)
             writers.write_publication(conn, publication, source_id)
 
         except Exception as exception:

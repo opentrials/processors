@@ -11,6 +11,18 @@ import datetime
 
 # Module API
 
+def get_variables(object, filter=None):
+    """Exract variables from object to dict using name filter.
+    """
+    variables = {}
+    for name, value in vars(object).items():
+        if filter is not None:
+            if not filter(name):
+                continue
+        variables[name] = value
+    return variables
+
+
 def slugify_string(string):
     """Slugify string
     """

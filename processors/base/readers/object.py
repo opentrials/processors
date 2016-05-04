@@ -11,7 +11,7 @@ def read_objects(conn, table, single=False, slug=None, facts=None, **filter):
     """Read objects.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         table (str): table name
         single (bool): return one object if True
         slug (str): string to check (should be slugified)

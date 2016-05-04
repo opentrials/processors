@@ -18,7 +18,7 @@ def write_organisation(conn, organisation, source_id, trial_id=None):
     """Write organisation to database.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         organisation (dict): normalized data
         source_id (str): data source id
         trial_id (str): related trial id

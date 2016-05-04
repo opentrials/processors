@@ -17,7 +17,7 @@ def write_source(conn, source):
     """Write source to database.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         source (dict): normalized source data
 
     Returns:

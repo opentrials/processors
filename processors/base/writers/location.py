@@ -18,7 +18,7 @@ def write_location(conn, location, source_id, trial_id=None):
     """Write location to database.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         location (dict): normalized data
         source_id (str): data source id
         trial_id (str): related trial id

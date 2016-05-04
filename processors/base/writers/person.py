@@ -18,7 +18,7 @@ def write_person(conn, person, source_id, trial_id=None):
     """Write person to database.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         person (dict): normalized data
         source_id (str): data source id
         trial_id (str): related trial id

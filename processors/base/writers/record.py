@@ -17,7 +17,7 @@ def write_database_record(conn, record, source_id, trial_id, trial):
     """Write record to database.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         record (dict): raw collected data
         trial (dict): normalized data about trial
         source_id (str): related source id

@@ -13,7 +13,7 @@ def read_records(conn, table, bufsize=100, orderby='meta_id'):
     """Read records.
 
     Args:
-        conn (object): connection object
+        conn (dict): connection dict
         table (str): table name
         bufsize (int): how many items to get per query
         order_by (str): how to order items
