@@ -1,51 +1,64 @@
 # Overview
 
-> **This document is no up-to-date!**
-
-Mapper maps data from `warehouse` to `database` (or otherwise).
-
-## Status
-
-Mapper is work in progress.
-Overall dataflow logic could be improved,
-concrete mappings to warehouse should be improved.
+This system is responsible for data processing
+in `warehouse`, `database`, `datastore` and possible other storages.
 
 ## Stacks
 
-Mapper provides the following stacks:
-- `make-initial-mapping` - map all items
-- `mapper` - map updated items (under development)
+The system provides the following stacks:
+- `make-initial-processing` - process anything initially
+- `processors` - continuous processing of updated elements
 
-## Components
+About Docker Cloud deployment see -
+https://github.com/respect31/docker-cloud-example
 
-Mapper consists of the following components.
+## Processors
 
-### Mapper
-
-> Mapper uses Translators.
-
-External interface available via cli.
-Mapper gets `translator` and `extractor` names and map the data.
+The system's processors are independent python modules
+compatible to the following signature:
 
 ```python
-mapper = Mapper(warehouse, database)
-mapper.map('trial', 'nct')
+def process(conf, conn, *args):
+    pass
 ```
 
-### Translators
+Where arguments are:
+- `conf` - config dict
+- `conn` - connections dict
+- `args` - processor arguments
 
-> Translators uses Extractors, Pipiline and Finder.
+To run one of processors from command line:
+```
+make start <name> [<args>]
+```
 
-Translator is a concrete task for mapper. For example
-`TrialTranslator` translates data related to trials from
-`warehouse` to `database`.
+This code will trigger `processors.<name>.process(conf, conn, *args)` call.
+
+## Shared library
+
+For developers convenient there are shared library of reusable
+components to write processors in a `processors.base` module.
+
+### Processors
+
+There are a few lower level processors based on
+main entity they process:
+- trial
+- publication
+- etc
+
+So if you're going to process trials from `warehouse`
+to `database` you could use this shared component.
 
 ```python
-translator = TrialTranslator(warehouse, database, 'nct')
-translator.translate()
+def process_trial(conn, table, extractors):
+    pass
 ```
 
-### Extractors
+Where `extractors` is a dictionary of functions
+getting `record` dict and returning dict of normalized
+data. For example extracting from `nct` record
+data about interventions.
 
 Extractor is a bridge between ideal entity representations
 and items stored in `warehouse`. It extracts unified
@@ -54,13 +67,12 @@ between item representation in different registers:
 
 ```python
 # NCT
-nct_item = {
+nct_record = {
     'nct_number': 'nct15',
     'main_title': 'name1',
     ...
 }
-extractor = NctExtractor()
-trial = extractor.extract('trial', item)
+trial = extract_trial(nct_record)
 print(trial)
 {
     'primary_id': 'nct15',
@@ -69,13 +81,12 @@ print(trial)
 }
 
 # EUCTR
-euctr_item = {
+euctr_record = {
     'trial_id': 'euctr2004',
     'euro_title': 'name3',
      ...
 }
-extractor = EuctrExtractor()
-trial = extractor.extract('trial', item)
+trial = extract_record(euctr_record)
 print(trial)
 {
     'primary_id': 'euctr20014',
@@ -84,93 +95,55 @@ print(trial)
 }
 ```
 
-### Pipeline
+### Readers
 
-Pipiline is a abstraction to read from source (e.g. `warehouse`)
-and write to target (e.g `databae`).
+There are storage readers:
+- record
+- object
 
-```python
-pipeline = Pipeline(source=warehouse, target=database)
-pipeline.read(table)
-pipelint.write(table, keys, **data)
-...
+`record` reader just read records from `warehouse`
+optimizing memory and network usage.
+
+`object` reader reads data from `database` based
+on filters. It's a part of deduplication system.
+
+It gets `slug` and `facts` about some object
+and finds it in `database` (also `filter` could be applied).
+
+For example trial's `facts` is slugified register identifiers
+and scientific titles:
+```
+['nct21231', 'isrct23412', 'scientific_title']
 ```
 
-### Finder
-
-Finder is a main component of deduplication system.
-
-Finder gets `filter`, `links` and `facts` about some entity
-and finds it in `database`:
-- if entity exists Finder updated search fields and returns
-- if entity doesn't exist Finder create entity draft and returns
-
-For example trial `facts` is slugified register indentifiers
-and hashed/slugified scientific titles:
-```
-['nct21231', 'isrct23412', 'sa35434525']
-```
-
-On deduplication stage finder finds trials with this facts
+On deduplication stage reader finds trials with this facts
 (we need to use GIN index here to do not have full scan in postgress)
 to associate item from some other register with one living in our database.
 
-If there is a match facts will be merged:
+If there is a match facts will be merged on a writing stage:
 ```
 ['nct21231', 'isrct23412', 'sa35434525', 'euctr2224']
 ```
 
 The same for the persons for example where facts will be
 slugified `phones`, `email` etc (not fully implemented). But for persons
-we also check `name` equality. Persons with the same name and
+we also check slugified `name` equality. Persons with the same slug and
 one of the facts equal is a one person:
 ```
-'Mr. Smith'
+'mr_smith'
 AND
-['53242345432', 'simthgailcom']
+['53242345432', 'simthgailcom', 'nct13243241']
 ```
 
-Other concept is `links` - here stored trial uuids for entities like
-persons - if no facts are match but name is the same and persons
-used to be part of the same trial - it'is a one person:
-```
-'Mr. Smith'
-AND
-['<trial_id>']
-```
+### Writers
 
-It's quite WIP but the best approack I've found for now to have
-robust and flexible dedup system for all entities we need.
+For many of entities there are ready writers:
+- trial
+- person
+- publication
+- etc
 
-```python
-finder = Finder(database)
+Writers write normalized data to `database`
+updating deduplication system elements etc.
 
-# Existent
-entity, existent = finder.find('trials', facts=['nct15'])
-print(existent)
-True
-print(entity)
-{
-    'id': 'abc'
-    'links': [],
-    'facts': ['nct15', ...],
-    'created': ...,
-    'updated': ...
-    'primary_id': 'nct15',
-    'public_title': 'name1',
-    ...
-}
-
-# Non existent
-entity, existent = finder.find('trials', facts=['nct77'])
-print(existent)
-False
-print(entity)
-{
-    'id': 'sfa'
-    'links': [],
-    'facts': ['nct77', ...]
-    'created': ...,
-    'updated': ...
-}
-```
+See documentation in source code to use it.
