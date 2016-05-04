@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def process(conn):
+def process(conf, conn):
 
     # Prepare
     offset = 0
@@ -37,7 +37,7 @@ def process(conn):
     # Execute
     count = 0
     while True:
-        rows = list(conn.database.query(query % (bufsize, offset)))
+        rows = list(conn['database'].query(query % (bufsize, offset)))
         offset += bufsize
         if not rows:
             break
@@ -74,7 +74,7 @@ def process(conn):
 
                 # Update database
                 timestamp = datetime.datetime.utcnow()
-                conn.database['diffs'].upsert({
+                conn['database']['diffs'].upsert({
                     'created_at': timestamp,
                     'updated_at': timestamp,
                     'trial_id': row['trial_id'].hex,
