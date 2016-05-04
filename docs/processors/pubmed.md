@@ -1,3 +1,3 @@
 # Pubmed
 
-Extract normilized data from Pubmed source.
+Map `pubmed` data from `warehouse` to `database`.

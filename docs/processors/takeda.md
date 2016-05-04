@@ -1,3 +1,3 @@
 # Takeda
 
-Extract normilized data from Takeda source.
+Map `takeda` data from `warehouse` to `database`.

@@ -1,3 +1,3 @@
 # Pfizer
 
-Extract normilized data from Pfizer source.
+Map `pfizer` data from `warehouse` to `database`.

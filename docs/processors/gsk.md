@@ -1,3 +1,3 @@
 # GSK
 
-Extract normilized data from GSK source.
+Map `gsk` data from `warehouse` to `database`.

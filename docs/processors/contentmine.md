@@ -1,3 +1,3 @@
 # ContentMine
 
-ContentMine exporter.
+Export data from `database` for ContentMine.

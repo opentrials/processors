@@ -1,3 +1,3 @@
 # NCT
 
-Extract normilized data from NCT source.
+Map `nct` data from `warehouse` to `database`.

@@ -1,3 +1,3 @@
 # ICTRP
 
-Extract normilized data from ICTRP source.
+Map `ictrp` data from `warehouse` to `database`.

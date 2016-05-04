@@ -1,3 +1,3 @@
 # OpenAIRE
 
-OpenAIRE exporter.
+Export data from `database` for OpenAIRE.

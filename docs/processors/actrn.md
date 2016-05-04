@@ -1,3 +1,3 @@
 # ACTRN
 
-Extract normilized data from ACTRN source.
+Map `actrn` data from `warehouse` to `database`.

@@ -1,3 +1,3 @@
 # ISRCTN
 
-Extract normilized data from ISRCTN source.
+Map `isrctn` data from `warehouse` to `database`.

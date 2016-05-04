@@ -1,3 +1,3 @@
 # EUCTR
 
-Extract normilized data from EUCTR source.
+Map `euctr` data from `warehouse` to `database`.

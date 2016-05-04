@@ -1,3 +1,3 @@
 # JPRN
 
-Extract normilized data from JPRN source.
+Map `jprn` data from `warehouse` to `database`.
