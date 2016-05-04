@@ -53,8 +53,7 @@ def process(conf, conn):
 
             # Get diff fields
             diff_fields = []
-            def not_none(value):
-                return value is not None
+            not_none = lambda x: x is not None
             for field in fields:
                 if len(set(filter(not_none, row[field]))) > 1:
                     diff_fields.append(field)
