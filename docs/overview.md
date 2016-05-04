@@ -10,7 +10,7 @@ The system provides the following stacks:
 - `processors` - continuous processing of updated elements
 
 About Docker Cloud deployment see -
-https://github.com/respect31/docker-cloud-example
+https://github.com/respect31/docker-cloud-example.
 
 ## Processors
 
@@ -34,10 +34,10 @@ make start <name> [<args>]
 
 This code will trigger `processors.<name>.process(conf, conn, *args)` call.
 
-## Shared library
+## Base library
 
-For developers convenient there are shared library of reusable
-components to write processors in a `processors.base` module.
+For developers convenient in a `processors.base` module
+there are shared library of reusable components to write processors.
 
 ### Processors
 
