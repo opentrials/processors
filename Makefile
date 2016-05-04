@@ -14,10 +14,7 @@ list:
 
 push:
 	$${CI?"Push is avaiable only on CI/CD server"}
-	docker login \
-    -e $$OPENTRIALS_DOCKER_EMAIL \
-    -u $$OPENTRIALS_DOCKER_USER \
-    -p $$OPENTRIALS_DOCKER_PASS
+	docker login -e $$DOCKER_EMAIL -u $$DOCKER_USER -p $$DOCKER_PASS
 	docker push okibot/processors
 	python scripts/push-stacks.py
 

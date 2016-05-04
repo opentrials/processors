@@ -2,102 +2,102 @@ actrn:
   image: okibot/processors
   command: make start actrn
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 contentmine:
   image: okibot/processors
   command: make start contentmine
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 diffs:
   image: okibot/processors
   command: make start diffs
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 euctr:
   image: okibot/processors
   command: make start euctr
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 gsk:
   image: okibot/processors
   command: make start gsk
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 ictrp:
   image: okibot/processors
   command: make start ictrp
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 isrctn:
   image: okibot/processors
   command: make start isrctn
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 jprn:
   image: okibot/processors
   command: make start jprn
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 nct:
   image: okibot/processors
   command: make start nct
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 openaire:
   image: okibot/processors
   command: make start nct
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 pfizer:
   image: okibot/processors
   command: make start pfizer
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 pubmed:
   image: okibot/processors
   command: make start pubmed
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
 
 takeda:
   image: okibot/processors
   command: make start takeda
   environment:
-    OPENTRIALS_WAREHOUSE_URL:
-    OPENTRIALS_DATABASE_URL:
-    OPENTRIALS_LOGGING_URL:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
