@@ -15,7 +15,7 @@ def process(conf, conn):
 
     # View/table
     query = """
-        create table export_openaire_jp as
+        create table export_openaire as
         select t.id, t.primary_register, t.primary_id, t.secondary_ids,
         t.scientific_title, t.public_title, t.description, t.brief_summary,
         t.registration_date, t.target_sample_size,
