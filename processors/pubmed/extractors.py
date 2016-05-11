@@ -11,7 +11,8 @@ import re
 
 def extract_source(record):
     source = {
-        'name': 'pubmed',
+        'id': 'pubmed',
+        'name': 'Pubmed',
         'type': 'other',
         'data': {},
     }

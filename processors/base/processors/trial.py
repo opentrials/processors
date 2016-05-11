@@ -36,7 +36,7 @@ def process_trial(conn, table, extractors):
 
             # Extract and write trial
             trial = extractors['extract_trial'](record)
-            trial_id, is_primary = writers.write_trial(conn, trial)
+            trial_id, is_primary = writers.write_trial(conn, trial, source_id)
 
             # Write record
             writers.write_database_record(conn, record, source_id, trial_id, trial)

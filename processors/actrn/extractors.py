@@ -9,7 +9,8 @@ from __future__ import unicode_literals
 
 def extract_source(record):
     source = {
-        'name': 'actrn',
+        'id': 'actrn',
+        'name': 'ANZCTR',
         'type': 'register',
         'data': {},
     }
@@ -33,7 +34,7 @@ def extract_trial(record):
 
     trial = {
         'identifiers': [],
-        'primary_register': 'actrn',
+        'primary_register': 'ANZCTR',
         'primary_id': record['trial_id'],
         'secondary_ids': {
             'others': record['secondary_ids'],

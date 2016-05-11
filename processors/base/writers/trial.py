@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def write_trial(conn, trial):
+def write_trial(conn, trial, source_id):
     """Write trial to database.
 
     Args:
@@ -47,16 +47,17 @@ def write_trial(conn, trial):
     is_primary = False
     priority = ['nct', 'euctr', 'isrctn']
     for register in priority:
-        if 'primary_register' not in object:
+        if 'source_id' not in object:
             is_primary = True
             break
-        elif object['primary_register'] == trial['primary_register']:
+        elif object['source_id'] == source_id:
             is_primary = True
             break
-        elif trial['primary_register'] == register:
+        elif source_id == register:
             is_primary = True
             break
-        elif object['primary_register'] == register:
+        elif object['source_id'] == register:
+            is_primary = False
             break
 
     # Update
@@ -66,6 +67,7 @@ def write_trial(conn, trial):
     })
     if is_primary:
         object.update({
+            'source_id': source_id,
             # ---
             'primary_register': trial['primary_register'],
             'primary_id': trial['primary_id'],

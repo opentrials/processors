@@ -11,7 +11,8 @@ import datetime
 
 def extract_source(record):
     source = {
-        'name': 'gsk',
+        'id': 'gsk',
+        'name': 'GlaxoSmithKline',
         'type': 'register',
         'data': {},
     }
@@ -37,7 +38,7 @@ def extract_trial(record):
 
     trial = {
         'identifiers': [record['clinicaltrialsgov_identifier']],
-        'primary_register': 'gsk',
+        'primary_register': 'GlaxoSmithKline',
         'primary_id': record['study_id'],
         'secondary_ids': {
             'nct': record['clinicaltrialsgov_identifier'],

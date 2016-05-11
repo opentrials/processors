@@ -9,7 +9,8 @@ from __future__ import unicode_literals
 
 def extract_source(record):
     source = {
-        'name': 'jprn',
+        'id': 'jprn',
+        'name': 'UMIN',
         'type': 'register',
         'data': {},
     }
@@ -34,7 +35,7 @@ def extract_trial(record):
 
     trial = {
         'identifiers': [],
-        'primary_register': 'jprn',
+        'primary_register': 'UMIN',
         'primary_id': record['unique_trial_number'],
         'secondary_ids': {},  # TODO: use record['secondary_study_id_*'] and record['org_issuing_secondary_study_id_*']
         'registration_date': record['date_of_registration'],

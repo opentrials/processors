@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import uuid
+
 
 # Module API
 
@@ -32,7 +34,8 @@ def read_objects(conn, table, single=False, slug=None, facts=None, **filter):
 
     # Fix id type
     for object in objects:
-        object['id'] = object['id'].hex
+        if isinstance(object['id'], uuid.UUID):
+            object['id'] = object['id'].hex
 
     # If single object requested
     if single:

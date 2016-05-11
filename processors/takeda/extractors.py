@@ -11,7 +11,8 @@ import datetime
 
 def extract_source(record):
     source = {
-        'name': 'takeda',
+        'id': 'takeda',
+        'name': 'Takeda',
         'type': 'register',
         'data': {},
     }
@@ -37,7 +38,7 @@ def extract_trial(record):
 
     trial = {
         'identifiers': [record['nct_number']],
-        'primary_register': 'takeda',
+        'primary_register': 'Takeda',
         'primary_id': record['takeda_trial_id'],
         'secondary_ids': {'nct': record['nct_number']},
         'registration_date': registration_date,  # TODO: review

@@ -29,12 +29,12 @@ def write_source(conn, source):
 
     # Read
     object = readers.read_objects(conn, 'sources', single=True,
-        name=source['name'])
+        id=source['id'])
 
     # Create
     if not object:
         object = {}
-        object['id'] = uuid.uuid4().hex
+        object['id'] = source['id']
         object['created_at'] = timestamp
         action = 'created'
 

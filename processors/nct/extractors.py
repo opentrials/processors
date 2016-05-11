@@ -9,7 +9,8 @@ from __future__ import unicode_literals
 
 def extract_source(record):
     source = {
-        'name': 'nct',
+        'id': 'nct',
+        'name': 'ClinicalTrials.gov',
         'type': 'register',
         'data': {},
     }
@@ -30,7 +31,7 @@ def extract_trial(record):
 
     trial = {
         'identifiers': [record['nct_id']],
-        'primary_register': 'nct',
+        'primary_register': 'ClinicalTrials.gov',
         'primary_id': record['nct_id'],
         'secondary_ids': {'others': record['secondary_ids']},
         'registration_date': record['firstreceived_date'],

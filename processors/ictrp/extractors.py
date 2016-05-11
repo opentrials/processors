@@ -11,7 +11,8 @@ import datetime
 
 def extract_source(record):
     source = {
-        'name': 'ictrp',
+        'id': 'ictrp',
+        'name': 'WHO ICTRP',
         'type': 'register',
         'data': {},
     }
@@ -43,7 +44,7 @@ def extract_trial(record):
 
     trial = {
         'identifiers': [nct_id, euctr_id, isrctn_id],
-        'primary_register': 'ictrp',
+        'primary_register': 'WHO ICTRP',
         'primary_id': record['main_id'],
         'secondary_ids': {},
         'registration_date': registration_date,  # TODO: text on scrap layer
