@@ -27,6 +27,7 @@ def slugify_string(string):
     """Slugify string
     """
     string = re.sub(r'[\W_]+', '_', string)
+    string = string.strip('_')
     string = string.lower()
     return string
 
