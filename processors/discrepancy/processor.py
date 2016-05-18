@@ -73,7 +73,7 @@ def process(conf, conn):
 
                 # Update database
                 timestamp = datetime.datetime.utcnow()
-                conn['database']['diffs'].upsert({
+                conn['database']['discrepancies'].upsert({
                     'created_at': timestamp,
                     'updated_at': timestamp,
                     'trial_id': row['trial_id'].hex,
@@ -83,9 +83,9 @@ def process(conf, conn):
 
                 # Write debug log
                 count += 1
-                logger.info('Diff report updated: %s/%s [%s]',
+                logger.info('Discrepancy report updated: %s/%s [%s]',
                     row['trial_id'], field, count)
 
                 # Write info log
                 if not count % 100:
-                    logger.info('Diff reports added: %s', count)
+                    logger.info('Discrepancy report added: %s', count)
