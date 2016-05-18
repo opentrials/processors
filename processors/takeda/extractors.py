@@ -71,7 +71,6 @@ def extract_conditions(record):
     conditions = []
     conditions.append({
         'name': record['condition'],
-        'type': 'condition',
         'data': {},
         'role': None,
         'context': {},

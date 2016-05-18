@@ -29,7 +29,6 @@ def extract_conditions(record):
     for name in names:
         conditions.append({
             'name': name,
-            'type': 'condition',
             'data': {},
             'role': None,
             'context': {},
