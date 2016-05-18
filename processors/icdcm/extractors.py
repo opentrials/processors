@@ -17,17 +17,17 @@ def extract_source(record):
     return source
 
 
-def extract_problems(record):
+def extract_conditions(record):
 
     # Get all names
     names = []
     names.append(record['desc'])
     names = names + record['terms']
 
-    # Extract problems
-    problems = []
+    # Extract conditions
+    conditions = []
     for name in names:
-        problems.append({
+        conditions.append({
             'name': name,
             'type': 'condition',
             'data': {},
@@ -37,4 +37,4 @@ def extract_problems(record):
             'icdcm_code': record['name'],
         })
 
-    return problems
+    return conditions

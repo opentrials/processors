@@ -45,19 +45,19 @@ def process_trial(conn, table, extractors):
             if is_primary:
 
                 # Delete existent relationships
-                conn['database']['trials_problems'].delete(trial_id=trial_id)
+                conn['database']['trials_conditions'].delete(trial_id=trial_id)
                 conn['database']['trials_interventions'].delete(trial_id=trial_id)
                 conn['database']['trials_locations'].delete(trial_id=trial_id)
                 conn['database']['trials_organisations'].delete(trial_id=trial_id)
                 conn['database']['trials_persons'].delete(trial_id=trial_id)
 
-                # Extract and write problems/relationships
-                problems = extractors['extract_problems'](record)
-                for problem in problems:
-                    problem_id = writers.write_problem(conn, problem, source_id)
-                    writers.write_trial_relationship(conn, 'problem', {
+                # Extract and write conditions/relationships
+                conditions = extractors['extract_conditions'](record)
+                for condition in conditions:
+                    condition_id = writers.write_condition(conn, condition, source_id)
+                    writers.write_trial_relationship(conn, 'condition', {
                         'trial_id': trial_id,
-                        'problem_id': problem_id,
+                        'condition_id': condition_id,
                         'context': {},
                     })
 

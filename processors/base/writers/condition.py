@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def write_problem(conn, problem, source_id, trial_id=None):
-    """Write problem to database.
+def write_condition(conn, condition, source_id, trial_id=None):
+    """Write condition to database.
 
     Args:
         conn (dict): connection dict
-        problem (dict): normalized data
+        condition (dict): normalized data
         source_id (str): data source id
         trial_id (str): related trial id
 
@@ -31,8 +31,8 @@ def write_problem(conn, problem, source_id, trial_id=None):
     timestamp = datetime.datetime.utcnow()
 
     # Get slug/read object
-    slug = helpers.slugify_string(problem['name'])
-    object = readers.read_objects(conn, 'problems', single=True, slug=slug)
+    slug = helpers.slugify_string(condition['name'])
+    object = readers.read_objects(conn, 'conditions', single=True, slug=slug)
 
     # Create object
     if not object:
@@ -50,18 +50,18 @@ def write_problem(conn, problem, source_id, trial_id=None):
             'updated_at': timestamp,
             'source_id': source_id,
             # ---
-            'name': problem['name'],
-            'type': problem['type'],
-            'data': problem['data'],
-            'description': problem['description'],
-            'icdcm_code': problem['icdcm_code'],
+            'name': condition['name'],
+            'type': condition['type'],
+            'data': condition['data'],
+            'description': condition['description'],
+            'icdcm_code': condition['icdcm_code'],
         })
 
         # Write object
-        conn['database']['problems'].upsert(object, ['id'], ensure=False)
+        conn['database']['conditions'].upsert(object, ['id'], ensure=False)
 
         # Log debug
-        logger.debug('Problem - %s: %s',
-            'created' if create else 'updated', problem['name'])
+        logger.debug('Condition - %s: %s',
+            'created' if create else 'updated', condition['name'])
 
     return object['id']
