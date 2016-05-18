@@ -22,55 +22,46 @@ def write_publication(conn, publication, source_id):
         publication (dict): normalized publication data
         source_id (str): data source identifier
 
+    Returns:
+        str: object identifier
+
     """
-    action = 'updated'
+    create = False
     timestamp = datetime.datetime.utcnow()
 
-    # Get slug/facts
+    # Get slug/read object
     slug = helpers.slugify_string(publication['source_url'])
+    object = readers.read_objects(conn, 'publications', single=True, slug=slug)
 
-    # Read
-    object = readers.read_objects(conn, 'publications', single=True,
-        slug=slug)
-
-    # Create
+    # Create object
     if not object:
         object = {}
         object['id'] = uuid.uuid4().hex
         object['created_at'] = timestamp
         object['slug'] = slug
-        action = 'created'
+        create = True
 
-    # Update
-    object.update({
-        'updated_at': timestamp,
-        'source_id': source_id,
-        # ---
-        'source_url': publication['source_url'],
-        'title': publication['title'],
-        'abstract': publication['abstract'],
-        'authors': publication['authors'],
-        'journal': publication['journal'],
-        'date': publication['date'],
-    })
+    # Write object only for high priority source
+    if create or source_id in ['pubmed']:
 
-    # Write object
-    conn['database']['publications'].upsert(object, ['id'], ensure=False)
+        # Update object
+        object.update({
+            'updated_at': timestamp,
+            'source_id': source_id,
+            # ---
+            'source_url': publication['source_url'],
+            'title': publication['title'],
+            'abstract': publication['abstract'],
+            'authors': publication['authors'],
+            'journal': publication['journal'],
+            'date': publication['date'],
+        })
 
-    # Write relationship
-    for identifier in publication['identifiers']:
-        trial_objects = readers.read_objects(conn, 'trials',
-            facts=[identifier])
-        for trial_object in trial_objects:
-            relathionship = {
-                'trial_id': trial_object['id'],
-                'publication_id': object['id'],
-                # ---
-            }
-            conn['database']['trials_publications'].upsert(
-                relathionship, ['trial_id', 'publication_id'], ensure=False)
+        # Write object
+        conn['database']['publications'].upsert(object, ['id'], ensure=False)
 
-    # Log
-    logger.debug('Publication - %s: %s' % (action, publication['title'][0:50]))
+        # Log debug
+        logger.debug('Publication - %s: %s',
+            'created' if create else 'updated', publication['title'][0:50])
 
     return object['id']

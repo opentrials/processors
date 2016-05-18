@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from .. import base
+
 
 # Module API
 
@@ -19,6 +21,11 @@ def extract_source(record):
 
 def extract_trial(record):
 
+    # Get identifiers
+    identifiers = base.helpers.clean_dict({
+        'nct': record['nct_id'],
+    })
+
     # Get gender
     gender = None
     if record['gender']:
@@ -28,10 +35,9 @@ def extract_trial(record):
     has_published_results = None
 
     trial = {
-        'identifiers': [record['nct_id']],
         'primary_register': 'Pfizer',
         'primary_id': record['nct_id'],
-        'secondary_ids': {'nct_id': record['nct_id']},
+        'identifiers': identifiers,
         'registration_date': record['study_start_date'],  # TODO: review
         'public_title': record['title'] or 'N/A',  # TODO: review
         'brief_summary': '',  # TODO: review

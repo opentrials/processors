@@ -24,53 +24,42 @@ def write_organisation(conn, organisation, source_id, trial_id=None):
         trial_id (str): related trial id
 
     Returns:
-        str: organisation identifier
+        str: object identifier
 
     """
-    action = 'updated'
+    create = False
     timestamp = datetime.datetime.utcnow()
 
-    # Get slug/facts
+    # Get slug/read object
     slug = helpers.slugify_string(organisation['name'])
+    object = readers.read_objects(conn, 'organisations', single=True, slug=slug)
 
-    # Read
-    object = readers.read_objects(conn, 'organisations', single=True,
-        slug=slug)
-
-    # Create
+    # Create object
     if not object:
         object = {}
         object['id'] = uuid.uuid4().hex
         object['created_at'] = timestamp
         object['slug'] = slug
-        action = 'created'
+        create = True
 
-    # Update
-    object.update({
-        'updated_at': timestamp,
-        'source_id': source_id,
-        # ---
-        'name': organisation['name'],
-        'type': organisation['type'],
-        'data': organisation['data'],
-    })
+    # Write object only for high priority source
+    if create or source_id:  # for now do it for any source
 
-    # Write object
-    conn['database']['organisations'].upsert(object, ['id'], ensure=False)
-
-    # Write relationship
-    if trial_id:
-        relathionship = {
-            'trial_id': trial_id,
-            'organisation_id': object['id'],
+        # Update object
+        object.update({
+            'updated_at': timestamp,
+            'source_id': source_id,
             # ---
-            'role': organisation['role'],
-            'context': organisation['context'],
-        }
-        conn['database']['trials_organisations'].upsert(
-            relathionship, ['trial_id', 'organisation_id'], ensure=False)
+            'name': organisation['name'],
+            'type': organisation['type'],
+            'data': organisation['data'],
+        })
 
-    # Log
-    logger.debug('Organisation - %s: %s' % (action, organisation['name']))
+        # Write object
+        conn['database']['organisations'].upsert(object, ['id'], ensure=False)
+
+        # Log debug
+        logger.debug('Organisation - %s: %s',
+            'created' if create else 'updated', organisation['name'])
 
     return object['id']

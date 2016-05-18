@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from .. import base
+
 
 # Module API
 
@@ -18,6 +20,13 @@ def extract_source(record):
 
 
 def extract_trial(record):
+
+    # Get identifiers
+    identifiers = base.helpers.clean_dict({
+        # TODO: use record['secondary_study_id_*']
+        # TODO: use record['org_issuing_secondary_study_id_*']
+        'jprn': record['unique_trial_number'],
+    })
 
     # Get gender
     gender = None
@@ -34,10 +43,9 @@ def extract_trial(record):
         has_published_results = True
 
     trial = {
-        'identifiers': [],
         'primary_register': 'UMIN',
         'primary_id': record['unique_trial_number'],
-        'secondary_ids': {},  # TODO: use record['secondary_study_id_*'] and record['org_issuing_secondary_study_id_*']
+        'identifiers': identifiers,
         'registration_date': record['date_of_registration'],
         'public_title': record['title_of_the_study'],
         'brief_summary': 'N/A',  # TODO: review
@@ -85,15 +93,17 @@ def extract_organisations(record):
         'name': record['name_of_primary_sponsor'],
         'type': None,
         'data': {},
-        'role': 'primary_sponsor',
         'context': {},
+        # ---
+        'trial_role': 'primary_sponsor',
     })
     organisations.append({
         'name': record['source_of_funding'],
         'type': None,
         'data': {},
-        'role': 'funder',
         'context': {},
+        # ---
+        'trial_role': 'funder',
     })
     return organisations
 
@@ -105,7 +115,6 @@ def extract_persons(record):
             'name': record['research_name_of_lead_principal_investigator'],
             'type': None,
             'data': {},
-            'role': 'principal_investigator',
             'context': {
                 'research_name_of_lead_principal_investigator': record['research_name_of_lead_principal_investigator'],
                 'research_organization': record['research_organization'],
@@ -116,11 +125,13 @@ def extract_persons(record):
                 'research_email': record['research_email'],
             },
             'phones': [],
+            # ---
+            'trial_id': record['unique_trial_number'],
+            'trial_role': 'principal_investigator',
         })
     if record['public_name_of_contact_person']:
         persons.append({
             'name': record['public_name_of_contact_person'],
-            'role': 'public_queries',
             'type': None,
             'data': {},
             'context': {
@@ -133,5 +144,8 @@ def extract_persons(record):
                 'public_email': record['public_email'],
             },
             'phones': [],
+            # ---
+            'trial_id': record['unique_trial_number'],
+            'trial_role': 'public_queries',
         })
     return persons

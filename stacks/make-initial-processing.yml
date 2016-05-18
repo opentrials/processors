@@ -14,14 +14,6 @@ contentmine:
     DATABASE_URL:
     LOGGING_URL:
 
-diffs:
-  image: okibot/processors
-  command: make start diffs
-  environment:
-    WAREHOUSE_URL:
-    DATABASE_URL:
-    LOGGING_URL:
-
 euctr:
   image: okibot/processors
   command: make start euctr
@@ -30,9 +22,33 @@ euctr:
     DATABASE_URL:
     LOGGING_URL:
 
+fdadl:
+  image: okibot/processors
+  command: make start fdadl
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
+
 gsk:
   image: okibot/processors
   command: make start gsk
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
+
+icdcm:
+  image: okibot/processors
+  command: make start icdcm
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
+
+icdpcs:
+  image: okibot/processors
+  command: make start icdpcs
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:

@@ -22,15 +22,13 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
-    nct_id = None
-    euctr_id = None
-    isrctn_id = None
+    identifiers = {}
     if record['register'] == 'ClinicalTrials.gov':
-        nct_id = record['main_id']
+        identifiers['nct'] = record['main_id']
     if record['register'] == 'EUCTR':
-        euctr_id = record['main_id']
+        identifiers['euctr'] = record['main_id']
     if record['register'] == 'ISRCTN':
-        isrctn_id = record['main_id']
+        identifiers['isrctn'] = record['main_id']
 
     # TODO: fix
     # Get registration date
@@ -43,10 +41,9 @@ def extract_trial(record):
     has_published_results = None
 
     trial = {
-        'identifiers': [nct_id, euctr_id, isrctn_id],
         'primary_register': 'WHO ICTRP',
         'primary_id': record['main_id'],
-        'secondary_ids': {},
+        'identifiers': identifiers,
         'registration_date': registration_date,  # TODO: text on scrap layer
         'public_title': record['public_title'],
         'brief_summary': '',  # TODO: review
@@ -76,6 +73,8 @@ def extract_problems(record):
             'data': {},
             'role': None,
             'context': {},
+            'description': None,
+            'icdcm_code': None,
         })
     return problems
 
@@ -90,6 +89,9 @@ def extract_interventions(record):
             'data': {},
             'role': None,
             'context': {},
+            'description': None,
+            'icdpcs_code': None,
+            'ndc_code': None,
         })
     return interventions
 
@@ -101,8 +103,9 @@ def extract_locations(record):
             'name': element,
             'type': 'country',
             'data': {},
-            'role': 'recruitment_countries',
             'context': {},
+            # ---
+            'trial_role': 'recruitment_countries',
         })
     return locations
 

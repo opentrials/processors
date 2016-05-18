@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from .. import base
+
 
 # Module API
 
@@ -19,6 +21,11 @@ def extract_source(record):
 
 def extract_trial(record):
 
+    # Get identifiers
+    identifiers = base.helpers.clean_dict({
+        'nct': record['nct_id'],
+    })
+
     # Get gender
     gender = None
     if record['eligibility'].get('gender', None):
@@ -30,10 +37,9 @@ def extract_trial(record):
         has_published_results = True
 
     trial = {
-        'identifiers': [record['nct_id']],
         'primary_register': 'ClinicalTrials.gov',
         'primary_id': record['nct_id'],
-        'secondary_ids': {'others': record['secondary_ids']},
+        'identifiers': identifiers,
         'registration_date': record['firstreceived_date'],
         'public_title': record['brief_title'],
         'brief_summary': record['brief_summary'] or '',  # TODO: review
@@ -63,6 +69,8 @@ def extract_problems(record):
             'data': {},
             'role': None,
             'context': {},
+            'description': None,
+            'icdcm_code': None,
         })
     return problems
 
@@ -76,6 +84,9 @@ def extract_interventions(record):
             'data': {},
             'role': None,
             'context': element,
+            'description': None,
+            'icdpcs_code': None,
+            'ndc_code': None,
         })
     return interventions
 
@@ -87,8 +98,9 @@ def extract_locations(record):
             'name': element,
             'type': 'country',
             'data': {},
-            'role': 'recruitment_countries',
             'context': {},
+            # ---
+            'trial_role': 'recruitment_countries',
         })
     return locations
 
@@ -104,8 +116,9 @@ def extract_organisations(record):
             'name': element['agency'],
             'type': None,
             'data': {},
-            'role': 'primary_sponsor',
             'context': {},
+            # ---
+            'trial_role': 'primary_sponsor',
         })
     return organisations
 
@@ -120,8 +133,10 @@ def extract_persons(record):
             'name': element['last_name'],
             'type': None,
             'data': {},
-            'role': 'principal_investigator',
             'context': {},
             'phones': [],
+            # ---
+            'trial_id': record['nct_id'],
+            'trial_role': 'principal_investigator',
         })
     return persons

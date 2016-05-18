@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def process_publication(conn, table, extractors):
-    """Translate publication records from warehouse to database.
+def process_intervention(conn, table, extractors):
+    """Translate intervention records from warehouse to database.
 
     Args:
         conn (dict): connection dict
@@ -34,21 +34,10 @@ def process_publication(conn, table, extractors):
 
         try:
 
-            # Extract and write publication/relationships
-            publications = extractors['extract_publications'](record)
-            for publication in publications:
-
-                # Write publication
-                publication_id = writers.write_publication(conn, publication, source_id)
-
-                # Write relationships
-                for id in publication['trial_identifiers']:
-                    trial_objects = readers.read_objects(conn, 'trials', facts=[id])
-                    for trial_object in trial_objects:
-                        writers.write_trial_relationship(conn, 'publication', {
-                            'trial_id': trial_object['id'],
-                            'publication_id': publication_id,
-                        })
+            # Extract and write intervention
+            interventions = extractors['extract_interventions'](record)
+            for intervention in interventions:
+                writers.write_intervention(conn, intervention, source_id)
 
         except Exception as exception:
             errors += 1
@@ -60,5 +49,5 @@ def process_publication(conn, table, extractors):
             success += 1
             conn['database'].commit()
             if not success % 100:
-                logger.info('Processed %s publications from %s',
+                logger.info('Processed %s interventions from %s',
                     success, table)

@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from .. import base
+
 
 # Module API
 
@@ -18,6 +20,12 @@ def extract_source(record):
 
 
 def extract_trial(record):
+
+    # Get identifiers
+    identifiers = base.helpers.clean_dict({
+        'nct': record['clinicaltrialsgov_number'],
+        'isrctn': record['isrctn_id'],
+    })
 
     # TODO: review
     # Get target sample size
@@ -37,14 +45,9 @@ def extract_trial(record):
         has_published_results = True
 
     trial = {
-        'identifiers': [record['clinicaltrialsgov_number'], record['isrctn_id']],
         'primary_register': 'ISRCTN',
         'primary_id': record['isrctn_id'],
-        'secondary_ids': {
-            'doi_isrctn': record['doi_isrctn_id'],  # TODO: remove isrct part
-            'euctr': record['eudract_number'],
-            'nct': record['clinicaltrialsgov_number'],
-        },
+        'identifiers': identifiers,
         'registration_date': record['date_applied'],  # TODO: review
         'public_title': record['title'],
         'brief_summary': record['plain_english_summary'],
@@ -89,8 +92,9 @@ def extract_locations(record):
             'name': element,
             'type': 'country',
             'data': {},
-            'role': 'recruitment_countries',
             'context': {},
+            # ---
+            'trial_role': 'recruitment_countries',
         })
     return locations
 
@@ -102,16 +106,18 @@ def extract_organisations(record):
             'name': element['organisation'],
             'type': None,
             'data': element,
-            'role': 'sponsor',
             'context': {},
+            # ---
+            'trial_role': 'sponsor',
         })
     for element in record['funders'] or []:
         organisations.append({
             'name': element['funder_name'],
             'type': None,
             'data': element,
-            'role': 'funder',
             'context': {},
+            # ---
+            'trial_role': 'funder',
         })
     return organisations
 
@@ -127,8 +133,10 @@ def extract_persons(record):
             'name': name,
             'type': None,
             'data': {},
-            'role': None,
             'context': element,
             'phones': [],
+            # ---
+            'trial_id': record['isrctn_id'],
+            'trial_role': None,
         })
     return persons

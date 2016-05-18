@@ -25,23 +25,21 @@ def write_trial(conn, trial, source_id):
         (str, bool): trial id and is primary flag
 
     """
-    action = 'updated'
+    create = False
     timestamp = datetime.datetime.utcnow()
 
-    # Get slug/facts
-    facts = helpers.slugify_array(trial['identifiers'] + [trial['scientific_title']])
+    # Get facts/read object
+    facts = helpers.slugify_array(
+        list(trial['identifiers'].values()) + [trial['scientific_title']])
+    object = readers.read_objects(conn, 'trials', single=True, facts=facts)
 
-    # Read
-    object = readers.read_objects(conn, 'trials', single=True,
-        facts=facts)
-
-    # Create
+    # Create object
     if not object:
         object = {}
         object['id'] = uuid.uuid4().hex
         object['created_at'] = timestamp
         object['facts'] = []
-        action = 'created'
+        create = True
 
     # Decide primary
     is_primary = False
@@ -60,18 +58,22 @@ def write_trial(conn, trial, source_id):
             is_primary = False
             break
 
-    # Update
+    # Update meta
     object.update({
         'updated_at': timestamp,
         'facts': helpers.slugify_array(object['facts'] + facts),
     })
+
+    # Update data only if it's primary
     if is_primary:
+
+        # Update object
         object.update({
             'source_id': source_id,
             # ---
             'primary_register': trial['primary_register'],
             'primary_id': trial['primary_id'],
-            'secondary_ids': trial['secondary_ids'],
+            'identifiers': trial['identifiers'],
             'registration_date': trial['registration_date'],
             'public_title': trial['public_title'],
             'brief_summary': trial['brief_summary'],
@@ -93,7 +95,8 @@ def write_trial(conn, trial, source_id):
     # Write object
     conn['database']['trials'].upsert(object, ['id'], ensure=False)
 
-    # Log
-    logger.debug('Trial - %s: %s' % (action, trial['primary_id']))
+    # Log debug
+    logger.debug('Trial - %s: %s',
+        'created' if create else 'updated', trial['primary_id'])
 
     return object['id'], is_primary

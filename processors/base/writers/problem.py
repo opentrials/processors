@@ -24,53 +24,44 @@ def write_problem(conn, problem, source_id, trial_id=None):
         trial_id (str): related trial id
 
     Returns:
-        str: problem identifier
+        str: object identifier
 
     """
-    action = 'updated'
+    create = False
     timestamp = datetime.datetime.utcnow()
 
-    # Get slug/facts
+    # Get slug/read object
     slug = helpers.slugify_string(problem['name'])
+    object = readers.read_objects(conn, 'problems', single=True, slug=slug)
 
-    # Read
-    object = readers.read_objects(conn, 'problems', single=True,
-        slug=slug)
-
-    # Create
+    # Create object
     if not object:
         object = {}
         object['id'] = uuid.uuid4().hex
         object['created_at'] = timestamp
         object['slug'] = slug
-        action = 'created'
+        create = True
 
-    # Update
-    object.update({
-        'updated_at': timestamp,
-        'source_id': source_id,
-        # ---
-        'name': problem['name'],
-        'type': problem['type'],
-        'data': problem['data'],
-    })
+    # Write object only for high priority source
+    if create or source_id in ['icdcm']:
 
-    # Write object
-    conn['database']['problems'].upsert(object, ['id'], ensure=False)
-
-    # Write relationship
-    if trial_id:
-        relathionship = {
-            'trial_id': trial_id,
-            'problem_id': object['id'],
+        # Update object
+        object.update({
+            'updated_at': timestamp,
+            'source_id': source_id,
             # ---
-            'role': problem['role'],
-            'context': problem['context'],
-        }
-        conn['database']['trials_problems'].upsert(
-            relathionship, ['trial_id', 'problem_id'], ensure=False)
+            'name': problem['name'],
+            'type': problem['type'],
+            'data': problem['data'],
+            'description': problem['description'],
+            'icdcm_code': problem['icdcm_code'],
+        })
 
-    # Log
-    logger.debug('Problem - %s: %s' % (action, problem['name']))
+        # Write object
+        conn['database']['problems'].upsert(object, ['id'], ensure=False)
+
+        # Log debug
+        logger.debug('Problem - %s: %s',
+            'created' if create else 'updated', problem['name'])
 
     return object['id']

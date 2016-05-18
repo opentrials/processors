@@ -19,7 +19,7 @@ def extract_source(record):
     return source
 
 
-def extract_publication(record):
+def extract_publications(record):
 
     # Extract identifiers
     # TODO: find other identifiers
@@ -27,15 +27,17 @@ def extract_publication(record):
     contents = record['article_title'] + record['article_abstract']
     identifiers = re.findall(pattern, contents)
 
-    # Extract publication
-    publication = {
-        'identifiers': identifiers,
+    # Extract publications
+    publications = []
+    publications.append({
         'source_url': record['meta_source'],
         'title': record['article_title'],
         'abstract': record['article_abstract'],
         'authors': record.get('article_authors', None),
         'journal': record.get('journal_title', None),
         'date': record.get('article_date', None),
-    }
+        # ---
+        'trial_identifiers': identifiers,
+    })
 
-    return publication
+    return publications

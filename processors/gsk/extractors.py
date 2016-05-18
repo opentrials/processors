@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import datetime
+from .. import base
 
 
 # Module API
@@ -20,6 +21,12 @@ def extract_source(record):
 
 
 def extract_trial(record):
+
+    # Get identifiers
+    identifiers = base.helpers.clean_dict({
+        'nct': record['clinicaltrialsgov_identifier'],
+        'gsk': record['study_id'],
+    })
 
     # TODO: fix
     # Get registration date
@@ -37,13 +44,9 @@ def extract_trial(record):
         has_published_results = True
 
     trial = {
-        'identifiers': [record['clinicaltrialsgov_identifier']],
         'primary_register': 'GlaxoSmithKline',
         'primary_id': record['study_id'],
-        'secondary_ids': {
-            'nct': record['clinicaltrialsgov_identifier'],
-            'others': record['secondary_ids'],
-        },
+        'identifiers': identifiers,
         'registration_date': registration_date,  # TODO: review
         'public_title': record['study_title'],
         'brief_summary': record['brief_summary'] or '',  # TODO: review
@@ -75,6 +78,8 @@ def extract_problems(record):
             'data': {},
             'role': None,
             'context': {},
+            'description': None,
+            'icdcm_code': None,
         })
     return problems
 

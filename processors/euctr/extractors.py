@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from .. import base
+
 
 # Module API
 
@@ -18,6 +20,14 @@ def extract_source(record):
 
 
 def extract_trial(record):
+
+    # Get identifiers
+    identifiers = base.helpers.clean_dict({
+        'who': record['who_universal_trial_reference_number_utrn'],
+        'nct': record['us_nct_clinicaltrialsgov_registry_number'],
+        'euctr': record['eudract_number_with_country'],
+        'isrctn': record['isrctn_international_standard_randomised_controlled_trial_numbe']  # TODO: fix on scraper level,
+    })
 
     # Get gender
     gender = None
@@ -34,20 +44,15 @@ def extract_trial(record):
         has_published_results = True
 
     trial = {
-        'identifiers': [record['eudract_number_with_country']],
         'primary_register': 'EU Clinical Trials Register',
         'primary_id': record['eudract_number_with_country'],  # TODO: review
-        'secondary_ids': {
-            'nct': record['us_nct_clinicaltrialsgov_registry_number'],
-            'who': record['who_universal_trial_reference_number_utrn'],
-            'isrctn': record['isrctn_international_standard_randomised_controlled_trial_numbe'],  # TODO: why number, scraper has number
-        },
+        'identifiers': identifiers,
         'registration_date': record['date_on_which_this_record_was_first_entered'],
         'public_title': record['title_of_the_trial_for_lay_people_in'] or '',  # TODO: review
         'brief_summary': record['trial_main_objective_of_the_trial'] or '',  # TODO: review
         'scientific_title': record['full_title_of_the_trial'],
         'description': None,  # TODO: review
-        'recruitment_status': record['trial_status'],  # TODO: review
+        'recruitment_status': record['trial_status'] or 'N/A',  # TODO: review
         'eligibility_criteria': {
             'inclusion': record['trial_principal_inclusion_criteria'],
             'exclusion': record['trial_principal_exclusion_criteria'],
@@ -84,6 +89,9 @@ def extract_interventions(record):
             'data': {},
             'role': None,
             'context': element,
+            'description': None,
+            'icdpcs_code': None,
+            'ndc_code': None,
         })
     return interventions
 
@@ -103,8 +111,9 @@ def extract_organisations(record):
             'name': element['name_of_sponsor'],
             'type': None,
             'data': {},
-            'role': 'sponsor',
-            'context': element
+            'context': element,
+            # ---
+            'trial_role': 'sponsor',
         })
     return organisations
 

@@ -51,38 +51,64 @@ def process_trial(conn, table, extractors):
                 conn['database']['trials_organisations'].delete(trial_id=trial_id)
                 conn['database']['trials_persons'].delete(trial_id=trial_id)
 
-                # Extract and write problems
+                # Extract and write problems/relationships
                 problems = extractors['extract_problems'](record)
                 for problem in problems:
-                    writers.write_problem(conn, problem, source_id, trial_id)
+                    problem_id = writers.write_problem(conn, problem, source_id)
+                    writers.write_trial_relationship(conn, 'problem', {
+                        'trial_id': trial_id,
+                        'problem_id': problem_id,
+                        'context': {},
+                    })
 
-                # Extract and write interventions
+                # Extract and write interventions/relationships
                 interventions = extractors['extract_interventions'](record)
                 for intervention in interventions:
-                    writers.write_intervention(conn, intervention, source_id, trial_id)
+                    int_id = writers.write_intervention(conn, intervention, source_id)
+                    writers.write_trial_relationship(conn, 'intervention', {
+                        'trial_id': trial_id,
+                        'intervention_id': int_id,
+                        'context': {},
+                    })
 
-                # Extract and write locations
+                # Extract and write locations/relationships
                 locations = extractors['extract_locations'](record)
                 for location in locations:
-                    writers.write_location(conn, location, source_id, trial_id)
+                    location_id = writers.write_location(conn, location, source_id)
+                    writers.write_trial_relationship(conn, 'location', {
+                        'trial_id': trial_id,
+                        'location_id': location_id,
+                        'role': location['trial_role'],
+                        'context': {},
+                    })
 
-                # Extract and write organisations
+                # Extract and write organisations/relationships
                 organisations = extractors['extract_organisations'](record)
                 for organisation in organisations:
-                    writers.write_organisation(conn, organisation, source_id, trial_id)
+                    org_id = writers.write_organisation(conn, organisation, source_id)
+                    writers.write_trial_relationship(conn, 'organisation', {
+                        'trial_id': trial_id,
+                        'organisation_id': org_id,
+                        'role': organisation['trial_role'],
+                        'context': {},
+                    })
 
-                # Extract and write persons
+                # Extract and write persons/relationships
                 persons = extractors['extract_persons'](record)
                 for person in persons:
-                    writers.write_person(conn, person, source_id, trial_id)
+                    person_id = writers.write_person(conn, person, source_id)
+                    writers.write_trial_relationship(conn, 'person', {
+                        'trial_id': trial_id,
+                        'person_id': person_id,
+                        'role': person['trial_role'],
+                        'context': {},
+                    })
 
         except Exception as exception:
             errors += 1
             conn['database'].rollback()
             logger.warning('Processing error: %s [%s]',
                 repr(exception), errors)
-            # TODO: remove
-            raise
 
         else:
             success += 1

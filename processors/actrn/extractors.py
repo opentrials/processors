@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from .. import base
+
 
 # Module API
 
@@ -19,6 +21,11 @@ def extract_source(record):
 
 def extract_trial(record):
 
+    # Get identifiers
+    identifiers = base.helpers.clean_dict({
+        'actrn': record['trial_id'],
+    })
+
     # Get gender
     gender = None
     if record['gender']:
@@ -33,12 +40,9 @@ def extract_trial(record):
     has_published_results = None
 
     trial = {
-        'identifiers': [],
         'primary_register': 'ANZCTR',
         'primary_id': record['trial_id'],
-        'secondary_ids': {
-            'others': record['secondary_ids'],
-        },
+        'identifiers': identifiers,
         'registration_date': record['date_registered'],
         'public_title': record['public_title'],
         'brief_summary': record['brief_summary'],
@@ -90,8 +94,9 @@ def extract_organisations(record):
             'name': element['name'],
             'type': None,
             'data': {},
-            'role': 'sponsor',  # TODO: review
             'context': element,
+            # ---
+            'trial_role': 'sponsor',  # TODO: review
         })
     return organisations
 
@@ -104,8 +109,10 @@ def extract_persons(record):
             'name': record[role]['name'],
             'type': None,
             'data': {},
-            'role': role,
             'context': record[role],
             'phones': [],
+            # ---
+            'trial_id': record['trial_id'],
+            'trial_role': role,
         })
     return persons

@@ -24,53 +24,42 @@ def write_location(conn, location, source_id, trial_id=None):
         trial_id (str): related trial id
 
     Returns:
-        str: location identifier
+        str: object identifier
 
     """
-    action = 'updated'
+    create = False
     timestamp = datetime.datetime.utcnow()
 
-    # Get slug/facts
+    # Get slug/read object
     slug = helpers.slugify_string(location['name'])
+    object = readers.read_objects(conn, 'locations', single=True, slug=slug)
 
-    # Read
-    object = readers.read_objects(conn, 'locations', single=True,
-        slug=slug)
-
-    # Create
+    # Create object
     if not object:
         object = {}
         object['id'] = uuid.uuid4().hex
         object['created_at'] = timestamp
         object['slug'] = slug
-        action = 'created'
+        create = True
 
-    # Update
-    object.update({
-        'updated_at': timestamp,
-        'source_id': source_id,
-        # ---
-        'name': location['name'],
-        'type': location['type'],
-        'data': location['data'],
-    })
+    # Write object only for high priority source
+    if create or source_id:  # for now do it for any source
 
-    # Write object
-    conn['database']['locations'].upsert(object, ['id'], ensure=False)
-
-    # Write relationship
-    if trial_id:
-        relathionship = {
-            'trial_id': trial_id,
-            'location_id': object['id'],
+        # Update object
+        object.update({
+            'updated_at': timestamp,
+            'source_id': source_id,
             # ---
-            'role': location['role'],
-            'context': location['context'],
-        }
-        conn['database']['trials_locations'].upsert(
-            relathionship, ['trial_id', 'location_id'], ensure=False)
+            'name': location['name'],
+            'type': location['type'],
+            'data': location['data'],
+        })
 
-    # Log
-    logger.debug('Location - %s: %s' % (action, location['name']))
+        # Write object
+        conn['database']['locations'].upsert(object, ['id'], ensure=False)
+
+        # Log debug
+        logger.debug('Location - %s: %s',
+            'created' if create else 'updated', location['name'])
 
     return object['id']

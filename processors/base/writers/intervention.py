@@ -14,63 +14,54 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def write_intervention(conn, intervention, source_id, trial_id=None):
+def write_intervention(conn, intervention, source_id):
     """Write intervention to database.
 
     Args:
         conn (dict): connection dict
         intervention (dict): normalized data
         source_id (str): data source id
-        trial_id (str): related trial id
 
     Returns:
-        str: intervention identifier
+        str: object identifier
 
     """
-    action = 'updated'
+    create = False
     timestamp = datetime.datetime.utcnow()
 
-    # Get slug/facts
+    # Get slug/read object
     slug = helpers.slugify_string(intervention['name'])
+    object = readers.read_objects(conn, 'interventions', single=True, slug=slug)
 
-    # Read
-    object = readers.read_objects(conn, 'interventions', single=True,
-        slug=slug)
-
-    # Create
+    # Create object
     if not object:
         object = {}
         object['id'] = uuid.uuid4().hex
         object['created_at'] = timestamp
         object['slug'] = slug
-        action = 'created'
+        create = True
 
-    # Update
-    object.update({
-        'updated_at': timestamp,
-        'source_id': source_id,
-        # ---
-        'name': intervention['name'],
-        'type': intervention['type'],
-        'data': intervention['data'],
-    })
+    # Write object only for high priority source
+    if create or source_id in ['icdpcs', 'fdadl']:
 
-    # Write object
-    conn['database']['interventions'].upsert(object, ['id'], ensure=False)
-
-    # Write relationship
-    if trial_id:
-        relathionship = {
-            'trial_id': trial_id,
-            'intervention_id': object['id'],
+        # Update object
+        object.update({
+            'updated_at': timestamp,
+            'source_id': source_id,
             # ---
-            'role': intervention['role'],
-            'context': intervention['context'],
-        }
-        conn['database']['trials_interventions'].upsert(
-            relathionship, ['trial_id', 'intervention_id'], ensure=False)
+            'name': intervention['name'],
+            'type': intervention['type'],
+            'data': intervention['data'],
+            'description': intervention['description'],
+            'icdpcs_code': intervention['icdpcs_code'],
+            'ndc_code': intervention['ndc_code'],
+        })
 
-    # Log
-    logger.debug('Intervention - %s: %s' % (action, intervention['name']))
+        # Write object
+        conn['database']['interventions'].upsert(object, ['id'], ensure=False)
+
+        # Log debug
+        logger.debug('Intervention - %s: %s',
+            'created' if create else 'updated', intervention['name'])
 
     return object['id']

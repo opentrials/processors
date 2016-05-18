@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import uuid
 import logging
 import datetime
 from .. import readers
@@ -24,21 +23,20 @@ def write_source(conn, source):
         str: source identifier
 
     """
-    action = 'updated'
+    create = False
     timestamp = datetime.datetime.utcnow()
 
-    # Read
-    object = readers.read_objects(conn, 'sources', single=True,
-        id=source['id'])
+    # Read object
+    object = readers.read_objects(conn, 'sources', single=True, id=source['id'])
 
-    # Create
+    # Create object
     if not object:
         object = {}
         object['id'] = source['id']
         object['created_at'] = timestamp
-        action = 'created'
+        create = True
 
-    # Update
+    # Update object
     object.update({
         'updated_at': timestamp,
         # ---
@@ -50,7 +48,8 @@ def write_source(conn, source):
     # Write object
     conn['database']['sources'].upsert(object, ['id'], ensure=False)
 
-    # Log
-    logger.debug('Source - %s: %s' % (action, source['name']))
+    # Log debug
+    logger.debug('Source - %s: %s',
+        'created' if create else 'updated', source['name'])
 
     return object['id']

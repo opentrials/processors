@@ -55,3 +55,13 @@ class JSONEncoder(json.JSONEncoder):
         elif isinstance(obj, set):
             return list(obj)
         return json.JSONEncoder.default(self, obj)
+
+
+def clean_dict(raw_dict):
+    """Remove False values from dict.
+    """
+    cleaned_dict = {}
+    for key, value in raw_dict.items():
+        if value:
+            cleaned_dict[key] = value
+    return cleaned_dict

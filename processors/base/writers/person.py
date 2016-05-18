@@ -24,57 +24,42 @@ def write_person(conn, person, source_id, trial_id=None):
         trial_id (str): related trial id
 
     Returns:
-        str: person identifier
+        str: object identifier
 
     """
-    action = 'updated'
+    create = False
     timestamp = datetime.datetime.utcnow()
 
-    # Get slug/facts
-    slug = helpers.slugify_string(person['name'])
-    facts = helpers.slugify_array([trial_id] + person['phones'])
+    # Get slug/read object
+    slug = helpers.slugify_string('{name}_{trial_id}'.format(**person))
+    object = readers.read_objects(conn, 'persons', single=True, slug=slug)
 
-    # Read
-    object = readers.read_objects(conn, 'persons', single=True,
-        slug=slug,
-        facts=facts)
-
-    # Create
+    # Create object
     if not object:
         object = {}
         object['id'] = uuid.uuid4().hex
         object['created_at'] = timestamp
         object['slug'] = slug
-        object['facts'] = []
-        action = 'created'
+        create = True
 
-    # Update
-    object.update({
-        'updated_at': timestamp,
-        'source_id': source_id,
-        'facts': helpers.slugify_array(object['facts'] + facts),
-        # ---
-        'name': person['name'],
-        'type': person['type'],
-        'data': person['data'],
-    })
+    # Write object only for high priority source
+    if create or source_id:  # for now do it for any source
 
-    # Write object
-    conn['database']['persons'].upsert(object, ['id'], ensure=False)
-
-    # Write relationship
-    if trial_id:
-        relathionship = {
-            'trial_id': trial_id,
-            'person_id': object['id'],
+        # Update object
+        object.update({
+            'updated_at': timestamp,
+            'source_id': source_id,
             # ---
-            'role': person['role'],
-            'context': person['context'],
-        }
-        conn['database']['trials_persons'].upsert(
-            relathionship, ['trial_id', 'person_id'], ensure=False)
+            'name': person['name'],
+            'type': person['type'],
+            'data': person['data'],
+        })
 
-    # Log
-    logger.debug('Person - %s: %s' % (action, person['name']))
+        # Write object
+        conn['database']['persons'].upsert(object, ['id'], ensure=False)
+
+        # Log debug
+        logger.debug('Person - %s: %s',
+            'created' if create else 'updated', person['name'])
 
     return object['id']
