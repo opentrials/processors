@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def process_problem(conn, table, extractors):
-    """Translate problem records from warehouse to database.
+def process_condition(conn, table, extractors):
+    """Translate condition records from warehouse to database.
 
     Args:
         conn (dict): connection dict
@@ -34,10 +34,10 @@ def process_problem(conn, table, extractors):
 
         try:
 
-            # Extract and write problem
-            problems = extractors['extract_problems'](record)
-            for problem in problems:
-                writers.write_problem(conn, problem, source_id)
+            # Extract and write condition
+            conditions = extractors['extract_conditions'](record)
+            for condition in conditions:
+                writers.write_condition(conn, condition, source_id)
 
         except Exception as exception:
             errors += 1
@@ -49,5 +49,5 @@ def process_problem(conn, table, extractors):
             success += 1
             conn['database'].commit()
             if not success % 100:
-                logger.info('Processed %s problems from %s',
+                logger.info('Processed %s conditions from %s',
                     success, table)

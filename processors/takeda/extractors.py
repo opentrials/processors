@@ -67,18 +67,17 @@ def extract_trial(record):
     return trial
 
 
-def extract_problems(record):
-    problems = []
-    problems.append({
+def extract_conditions(record):
+    conditions = []
+    conditions.append({
         'name': record['condition'],
-        'type': 'condition',
         'data': {},
         'role': None,
         'context': {},
         'description': None,
         'icdcm_code': None,
     })
-    return problems
+    return conditions
 
 
 def extract_interventions(record):

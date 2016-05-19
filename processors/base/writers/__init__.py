@@ -8,7 +8,7 @@ from .intervention import write_intervention
 from .location import write_location
 from .organisation import write_organisation
 from .person import write_person
-from .problem import write_problem
+from .condition import write_condition
 from .publication import write_publication
 from .record import write_database_record
 from .source import write_source

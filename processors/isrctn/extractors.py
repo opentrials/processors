@@ -71,10 +71,10 @@ def extract_trial(record):
     return trial
 
 
-def extract_problems(record):
+def extract_conditions(record):
     # TODO: record['condition'] - free text
-    problems = []
-    return problems
+    conditions = []
+    return conditions
 
 
 def extract_interventions(record):
