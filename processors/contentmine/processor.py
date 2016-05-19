@@ -21,7 +21,7 @@ def process(conf, conn):
     query = """
         SELECT t.id, t.public_title, t.brief_summary, r.primary_id, r.scientific_title
         FROM trials as t
-        JOIN trialrecords as r ON r.trial_id = t.id
+        JOIN records as r ON r.trial_id = t.id
         ORDER BY trial_id LIMIT %s OFFSET %s
     """
 

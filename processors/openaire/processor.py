@@ -22,7 +22,7 @@ def process(conf, conn):
         array_agg(distinct r.primary_id) filter(where r.primary_id is not null) as identifiers,
         array_to_json(array_agg(json_build_object('url', r.source_url, 'sourceID', s.id, 'sourceName', s.name))) as jsonProv
         from trials as t
-        left outer join trialrecords as r on t.id = r.trial_id
+        left outer join records as r on t.id = r.trial_id
         left outer join sources as s on r.source_id = s.id
         group by t.id, t.primary_register, t.primary_id, t.secondary_ids,
         t.scientific_title, t.public_title, t.description, t.brief_summary,

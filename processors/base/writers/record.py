@@ -30,7 +30,7 @@ def write_database_record(conn, record, source_id, trial_id, trial):
     create = False
 
     # Read object
-    object = readers.read_objects(conn, 'trialrecords', single=True, id=record['meta_id'])
+    object = readers.read_objects(conn, 'records', single=True, id=record['meta_id'])
 
     # Create
     if not object:
@@ -72,7 +72,7 @@ def write_database_record(conn, record, source_id, trial_id, trial):
         })
 
         # Write object
-        conn['database']['trialrecords'].upsert(object, ['id'], ensure=False)
+        conn['database']['records'].upsert(object, ['id'], ensure=False)
 
         # Log debug
         logger.debug('Record - %s: %s',
