@@ -16,7 +16,8 @@ push:
 	$${CI?"Push is avaiable only on CI/CD server"}
 	docker login -e $$DOCKER_EMAIL -u $$DOCKER_USER -p $$DOCKER_PASS
 	docker push okibot/processors
-	python scripts/push-stacks.py
+	docker-cloud stack inspect processors || docker-cloud stack create --sync -n processors
+	docker-cloud stack update --sync processors
 
 start:
 	python -m processors.base.cli $(filter-out $@,$(MAKECMDGOALS))
@@ -24,6 +25,9 @@ start:
 test:
 	pylama processors
 	py.test
+
+up:
+	docker-compose up
 
 %:
 	@:

@@ -19,7 +19,7 @@ DATABASE_URL = os.environ['DATABASE_URL']
 # Logging
 
 logging.basicConfig(level=logging.DEBUG)
-if 'LOGGING_URL' in os.environ:
+if os.environ.get('LOGGING_URL', None):
     root_logger = logging.getLogger()
     host, port = os.environ['LOGGING_URL'].split(':')
     syslog_handler = SysLogHandler(address=(host, int(port)))

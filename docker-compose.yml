@@ -1,0 +1,44 @@
+actrn:
+  extends:
+    service: actrn
+    file: docker-cloud.yml
+
+euctr:
+  extends:
+    service: euctr
+    file: docker-cloud.yml
+
+gsk:
+  extends:
+    service: gsk
+    file: docker-cloud.yml
+
+ictrp:
+  extends:
+    service: ictrp
+    file: docker-cloud.yml
+
+isrctn:
+  extends:
+    service: isrctn
+    file: docker-cloud.yml
+
+jprn:
+  extends:
+    service: jprn
+    file: docker-cloud.yml
+
+nct:
+  extends:
+    service: nct
+    file: docker-cloud.yml
+
+pfizer:
+  extends:
+    service: pfizer
+    file: docker-cloud.yml
+
+takeda:
+  extends:
+    service: takeda
+    file: docker-cloud.yml

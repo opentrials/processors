@@ -36,3 +36,9 @@ To run a processor:
 ```
 $ make start <name>
 ```
+
+To run all services:
+
+```
+$ make up
+```
