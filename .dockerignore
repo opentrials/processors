@@ -1,3 +1,4 @@
 *
 !processors/
+!Makefile
 !requirements.txt
