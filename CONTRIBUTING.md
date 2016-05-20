@@ -42,3 +42,7 @@ To run all services:
 ```
 $ make up
 ```
+
+> To work with docker compose localhost database urls can't be used.
+Contributor should to config database to accept non localhost connections and
+to use `$ ip route | awk '/docker0/ { print $NF }'` output as host.
