@@ -26,6 +26,11 @@ def extract_trial(record):
         'nct': record['nct_id'],
     })
 
+    # Get public title
+    public_title = base.helpers.get_optimal_title(
+        record['title'],
+        record['nct_id'])
+
     # Get recruitment status
     statuses = {
         'Active, not recruiting': 'other',
@@ -53,7 +58,7 @@ def extract_trial(record):
         'primary_id': record['nct_id'],
         'identifiers': identifiers,
         'registration_date': record['study_start_date'],  # TODO: review
-        'public_title': record['title'] or 'N/A',  # TODO: review
+        'public_title': public_title,
         'brief_summary': '',  # TODO: review
         'scientific_title': None,  # TODO: review
         'description': None,  # TODO: review

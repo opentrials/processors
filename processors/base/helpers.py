@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import re
 import json
+import string
 import datetime
 
 
@@ -58,10 +59,23 @@ class JSONEncoder(json.JSONEncoder):
 
 
 def clean_dict(raw_dict):
-    """Remove False values from dict.
+    """Remove falsy values from dict.
     """
     cleaned_dict = {}
     for key, value in raw_dict.items():
         if value:
             cleaned_dict[key] = value
     return cleaned_dict
+
+
+def get_optimal_title(*titles):
+    """Return first striped title with enough length or last striped title.
+    """
+    MIN_LENGTH = 10
+    for title in titles:
+        if title is None:
+            continue
+        title = title.strip(string.whitespace + '.')
+        if len(title) >= MIN_LENGTH:
+            return title
+    return title

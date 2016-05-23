@@ -29,6 +29,12 @@ def extract_trial(record):
         'isrctn': record['isrctn_international_standard_randomised_controlled_trial_numbe']  # TODO: fix on scraper level,
     })
 
+    # Get public title
+    public_title = base.helpers.get_optimal_title(
+        record['title_of_the_trial_for_lay_people_in'],
+        record['full_title_of_the_trial'],
+        record['eudract_number_with_country'])
+
     # Get recruitment status
     statuses = {
         'Completed': 'complete',
@@ -62,7 +68,7 @@ def extract_trial(record):
         'primary_id': record['eudract_number_with_country'],  # TODO: review
         'identifiers': identifiers,
         'registration_date': record['date_on_which_this_record_was_first_entered'],
-        'public_title': record['title_of_the_trial_for_lay_people_in'] or '',  # TODO: review
+        'public_title': public_title,
         'brief_summary': record['trial_main_objective_of_the_trial'] or '',  # TODO: review
         'scientific_title': record['full_title_of_the_trial'],
         'description': None,  # TODO: review

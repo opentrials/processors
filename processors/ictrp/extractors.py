@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import datetime
+from .. import base
 
 
 # Module API
@@ -33,6 +34,12 @@ def extract_trial(record):
     # TODO: fix
     # Get registration date
     registration_date = datetime.datetime.now().date()
+
+    # Get public title
+    public_title = base.helpers.get_optimal_title(
+        record['public_title'],
+        record['scientific_title'],
+        record['main_id'])
 
     # Get recruitment status
     # (keys are striped and lower-cased)
@@ -88,7 +95,7 @@ def extract_trial(record):
         'primary_id': record['main_id'],
         'identifiers': identifiers,
         'registration_date': registration_date,  # TODO: text on scrap layer
-        'public_title': record['public_title'],
+        'public_title': public_title,
         'brief_summary': '',  # TODO: review
         'scientific_title': record['scientific_title'],  # TODO: review
         'description': None,  # TODO: review

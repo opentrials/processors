@@ -33,6 +33,12 @@ def extract_trial(record):
     registration_date = (
         record['first_received'] or datetime.datetime.now().date())
 
+    # Get public title
+    public_title = base.helpers.get_optimal_title(
+        record['study_title'],
+        record['official_study_title'],
+        record['study_id'])
+
     # Get recruitment status
     statuses = {
         'Active, not recruiting': 'other',
@@ -61,7 +67,7 @@ def extract_trial(record):
         'primary_id': record['study_id'],
         'identifiers': identifiers,
         'registration_date': registration_date,  # TODO: review
-        'public_title': record['study_title'],
+        'public_title': public_title,
         'brief_summary': record['brief_summary'] or '',  # TODO: review
         'scientific_title': record['official_study_title'],  # TODO: review
         'description': record['detailed_description'],

@@ -28,6 +28,11 @@ def extract_trial(record):
         'takeda': record['takeda_trial_id'],
     })
 
+    # Get public title
+    public_title = base.helpers.get_optimal_title(
+        record['official_title'],
+        record['takeda_trial_id'])
+
     # TODO: fix
     # Get registration date
     registration_date = (
@@ -61,7 +66,7 @@ def extract_trial(record):
         'primary_id': record['takeda_trial_id'],
         'identifiers': identifiers,
         'registration_date': registration_date,  # TODO: review
-        'public_title': record['official_title'],  # TODO: review
+        'public_title': public_title,
         'brief_summary': record['brief_summary'] or '',  # TODO: review
         'scientific_title': record['official_title'],
         'description': record['detailed_description'],

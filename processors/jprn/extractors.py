@@ -28,6 +28,12 @@ def extract_trial(record):
         'jprn': record['unique_trial_number'],
     })
 
+    # Get public title
+    public_title = base.helpers.get_optimal_title(
+        record['title_of_the_study'],
+        record['official_scientific_title_of_the_study'],
+        record['unique_trial_number'])
+
     # Get recruitment status
     statuses = {
         'Completed': 'complete',
@@ -61,7 +67,7 @@ def extract_trial(record):
         'primary_id': record['unique_trial_number'],
         'identifiers': identifiers,
         'registration_date': record['date_of_registration'],
-        'public_title': record['title_of_the_study'],
+        'public_title': public_title,
         'brief_summary': 'N/A',  # TODO: review
         'scientific_title': record['official_scientific_title_of_the_study'],
         'description': None,  # TODO: review
