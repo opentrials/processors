@@ -63,7 +63,7 @@ def extract_trial(record):
         'primary_register': 'ISRCTN',
         'primary_id': record['isrctn_id'],
         'identifiers': identifiers,
-        'registration_date': record['date_applied'],  # TODO: review
+        'registration_date': record['date_applied'],
         'public_title': public_title,
         'brief_summary': record['plain_english_summary'],
         'scientific_title': record['scientific_title'],

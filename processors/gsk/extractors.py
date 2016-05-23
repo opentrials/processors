@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import datetime
 from .. import base
 
 
@@ -27,11 +26,6 @@ def extract_trial(record):
         'nct': record['clinicaltrialsgov_identifier'],
         'gsk': record['study_id'],
     })
-
-    # TODO: fix
-    # Get registration date
-    registration_date = (
-        record['first_received'] or datetime.datetime.now().date())
 
     # Get public title
     public_title = base.helpers.get_optimal_title(
@@ -66,7 +60,7 @@ def extract_trial(record):
         'primary_register': 'GlaxoSmithKline',
         'primary_id': record['study_id'],
         'identifiers': identifiers,
-        'registration_date': registration_date,  # TODO: review
+        'registration_date': record['first_received'],
         'public_title': public_title,
         'brief_summary': record['brief_summary'] or '',  # TODO: review
         'scientific_title': record['official_study_title'],  # TODO: review

@@ -57,7 +57,7 @@ def extract_trial(record):
         'primary_register': 'Pfizer',
         'primary_id': record['nct_id'],
         'identifiers': identifiers,
-        'registration_date': record['study_start_date'],  # TODO: review
+        'registration_date': None,  # TODO: review
         'public_title': public_title,
         'brief_summary': '',  # TODO: review
         'scientific_title': None,  # TODO: review
