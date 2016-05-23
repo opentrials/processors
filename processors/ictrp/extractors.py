@@ -34,6 +34,49 @@ def extract_trial(record):
     # Get registration date
     registration_date = datetime.datetime.now().date()
 
+    # Get recruitment status
+    # (keys are striped and lower-cased)
+    statuses = {
+        'active, not recruiting': 'pending',
+        'approved for marketing': 'other',
+        'authorised-recruitment may be ongoing or finished': 'other',
+        'available': 'recruiting',
+        'closed: follow-up complete': 'other',
+        'closed: follow-up continuing': 'other',
+        'closed to recruitment: follow up complete': 'other',
+        'closed to recruitment: follow up continuing': 'other',
+        'complete': 'complete',
+        'completed': 'complete',
+        'completed: recruitment & data analysis complete': 'complete',
+        'complete: follow-up complete': 'complete',
+        'complete: follow-up continuing': 'complete',
+        'data analysis completed': 'other',
+        'enrolling by invitation': 'recruiting',
+        'main results already published': 'other',
+        'no longer available': 'other',
+        'no longer recruiting': 'other',
+        'not recruiting': 'other',
+        'not yet recruiting': 'pending',
+        'open public recruiting': 'recruiting',
+        'open to recruitment: actively recruiting participa': 'recruiting',
+        '': 'other',
+        'other': 'other',
+        'pending (not yet recruiting)': 'pending',
+        'pending': 'pending',
+        'recruiting': 'recruiting',
+        'recruitment completed': 'complete',
+        'suspended': 'suspended',
+        'temporarily closed': 'suspended',
+        'temporarily not available': 'suspended',
+        'temporary halt or suspension': 'suspended',
+        'temporary halt': 'suspended',
+        'terminated': 'other',
+        'withdrawn': 'other',
+        'withheld': 'other',
+    }
+    recruitment_status = statuses[
+        record['recruitment_status'].strip().lower()]
+
     # Get gender
     gender = None
 
@@ -49,7 +92,7 @@ def extract_trial(record):
         'brief_summary': '',  # TODO: review
         'scientific_title': record['scientific_title'],  # TODO: review
         'description': None,  # TODO: review
-        'recruitment_status': record['recruitment_status'],
+        'recruitment_status': recruitment_status,
         'eligibility_criteria': {'criteria': record['key_inclusion_exclusion_criteria']},
         'target_sample_size': record['target_sample_size'],
         'first_enrollment_date': None,  # TODO: text on scraper layer

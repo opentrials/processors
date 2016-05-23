@@ -29,6 +29,20 @@ def extract_trial(record):
         'isrctn': record['isrctn_international_standard_randomised_controlled_trial_numbe']  # TODO: fix on scraper level,
     })
 
+    # Get recruitment status
+    statuses = {
+        'Completed': 'complete',
+        'Not Authorised': 'other',
+        'Ongoing': 'recruiting',
+        '': 'other',
+        'Prematurely Ended': 'other',
+        'Prohibited by CA': 'other',
+        'Restarted': 'recruiting',
+        'Suspended by CA': 'suspended',
+        'Temporarily Halted': 'suspended',
+    }
+    recruitment_status = statuses[record['trial_status']]
+
     # Get gender
     gender = None
     if record['subject_male'] and record['subject_female']:
@@ -52,7 +66,7 @@ def extract_trial(record):
         'brief_summary': record['trial_main_objective_of_the_trial'] or '',  # TODO: review
         'scientific_title': record['full_title_of_the_trial'],
         'description': None,  # TODO: review
-        'recruitment_status': record['trial_status'] or 'N/A',  # TODO: review
+        'recruitment_status': recruitment_status,
         'eligibility_criteria': {
             'inclusion': record['trial_principal_inclusion_criteria'],
             'exclusion': record['trial_principal_exclusion_criteria'],

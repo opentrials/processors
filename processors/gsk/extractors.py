@@ -33,6 +33,19 @@ def extract_trial(record):
     registration_date = (
         record['first_received'] or datetime.datetime.now().date())
 
+    # Get recruitment status
+    statuses = {
+        'Active, not recruiting': 'other',
+        'Active not recruiting': 'other',
+        'Completed': 'complete',
+        'Not yet recruiting': 'pending',
+        'Recruiting': 'recruiting',
+        'Suspended': 'suspended',
+        'Terminated': 'other',
+        'Withdrawn': 'other',
+    }
+    recruitment_status = statuses[record['study_recruitment_status']]
+
     # Get gender
     gender = None
     if record['gender']:
@@ -52,7 +65,7 @@ def extract_trial(record):
         'brief_summary': record['brief_summary'] or '',  # TODO: review
         'scientific_title': record['official_study_title'],  # TODO: review
         'description': record['detailed_description'],
-        'recruitment_status': record['study_recruitment_status'],
+        'recruitment_status': recruitment_status,
         'eligibility_criteria': {
             'criteria': record['eligibility_criteria'],  # TODO: bad text - fix on scraper
         },

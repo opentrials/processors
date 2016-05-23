@@ -26,6 +26,22 @@ def extract_trial(record):
         'actrn': record['trial_id'],
     })
 
+    # Get recruitment status
+    statuses = {
+        'Active, not recruiting': 'pending',
+        'Closed: follow-up complete': 'complete',
+        'Closed: follow-up continuing': 'other',
+        'Completed': 'complete',
+        'Enrolling by invitation': 'recruiting',
+        'Not yet recruiting': 'pending',
+        '': 'other',
+        'Recruiting': 'recruiting',
+        'Suspended': 'suspended',
+        'Terminated': 'other',
+        'Withdrawn': 'other',
+    }
+    recruitment_status = statuses[record['recruitment_status']]
+
     # Get gender
     gender = None
     if record['gender']:
@@ -48,7 +64,7 @@ def extract_trial(record):
         'brief_summary': record['brief_summary'],
         'scientific_title': record['scientific_title'],
         'description': None,  # TODO: review
-        'recruitment_status': record['recruitment_status'],
+        'recruitment_status': recruitment_status,
         'eligibility_criteria': {
             'inclusion': record['key_inclusion_criteria'],
             'exclusion': record['key_exclusion_criteria'],

@@ -26,6 +26,24 @@ def extract_trial(record):
         'nct': record['nct_id'],
     })
 
+    # Get recruitment status
+    statuses = {
+        'Active, not recruiting': 'other',
+        'Approved for marketing': 'other',
+        'Available': 'recruiting',
+        'Completed': 'complete',
+        'Enrolling by invitation': 'recruiting',
+        'No longer available': 'other',
+        'Not yet recruiting': 'pending',
+        'Recruiting': 'recruiting',
+        'Suspended': 'suspended',
+        'Temporarily not available': 'suspended',
+        'Terminated': 'other',
+        'Withdrawn': 'other',
+        'Withheld': 'other',
+    }
+    recruitment_status = statuses[record['overall_status']]
+
     # Get gender
     gender = None
     if record['eligibility'].get('gender', None):
@@ -45,7 +63,7 @@ def extract_trial(record):
         'brief_summary': record['brief_summary'] or '',  # TODO: review
         'scientific_title': record['official_title'],
         'description': record['detailed_description'],
-        'recruitment_status': record['overall_status'],
+        'recruitment_status': recruitment_status,
         'eligibility_criteria': record['eligibility'],
         'target_sample_size': record['enrollment_anticipated'],
         'first_enrollment_date': record['start_date'],
