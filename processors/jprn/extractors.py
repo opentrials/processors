@@ -14,7 +14,6 @@ def extract_source(record):
         'id': 'jprn',
         'name': 'UMIN',
         'type': 'register',
-        'data': {},
     }
     return source
 
@@ -111,17 +110,11 @@ def extract_organisations(record):
     organisations = []
     organisations.append({
         'name': record['name_of_primary_sponsor'],
-        'type': None,
-        'data': {},
-        'context': {},
         # ---
         'trial_role': 'primary_sponsor',
     })
     organisations.append({
         'name': record['source_of_funding'],
-        'type': None,
-        'data': {},
-        'context': {},
         # ---
         'trial_role': 'funder',
     })
@@ -133,17 +126,6 @@ def extract_persons(record):
     if record['research_name_of_lead_principal_investigator']:
         persons.append({
             'name': record['research_name_of_lead_principal_investigator'],
-            'type': None,
-            'data': {},
-            'context': {
-                'research_name_of_lead_principal_investigator': record['research_name_of_lead_principal_investigator'],
-                'research_organization': record['research_organization'],
-                'research_division_name': record['research_division_name'],
-                'research_address': record['research_address'],
-                'research_tel': record['research_tel'],
-                'research_homepage_url': record['research_homepage_url'],
-                'research_email': record['research_email'],
-            },
             'phones': [],
             # ---
             'trial_id': record['unique_trial_number'],
@@ -152,17 +134,6 @@ def extract_persons(record):
     if record['public_name_of_contact_person']:
         persons.append({
             'name': record['public_name_of_contact_person'],
-            'type': None,
-            'data': {},
-            'context': {
-                'public_name_of_contact_person': record['public_name_of_contact_person'],
-                'public_organization': record['public_organization'],
-                'public_division_name': record['public_division_name'],
-                'public_address': record['public_address'],
-                'public_tel': record['public_tel'],
-                'public_homepage_url': record['public_homepage_url'],
-                'public_email': record['public_email'],
-            },
             'phones': [],
             # ---
             'trial_id': record['unique_trial_number'],

@@ -51,8 +51,6 @@ def write_organisation(conn, organisation, source_id, trial_id=None):
             'source_id': source_id,
             # ---
             'name': organisation['name'],
-            'type': organisation['type'],
-            'data': organisation['data'],
         })
 
         # Write object

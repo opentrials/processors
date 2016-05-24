@@ -12,7 +12,6 @@ def extract_source(record):
         'id': 'fdadl',
         'name': 'FDA Drug Labels',
         'type': 'other',
-        'data': {},
     }
     return source
 
@@ -30,9 +29,6 @@ def extract_interventions(record):
         interventions.append({
             'name': name,
             'type': 'drug',
-            'data': {},
-            'role': None,
-            'context': {},
             'description': record['product_type'],
             'icdpcs_code': None,
             'ndc_code': record['product_ndc'],

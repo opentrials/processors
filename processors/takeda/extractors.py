@@ -14,7 +14,6 @@ def extract_source(record):
         'id': 'takeda',
         'name': 'Takeda',
         'type': 'register',
-        'data': {},
     }
     return source
 
@@ -83,9 +82,6 @@ def extract_conditions(record):
     conditions = []
     conditions.append({
         'name': record['condition'],
-        'data': {},
-        'role': None,
-        'context': {},
         'description': None,
         'icdcm_code': None,
     })
@@ -98,9 +94,6 @@ def extract_interventions(record):
         interventions.append({
             'name': element,
             'type': None,
-            'data': {},
-            'role': None,
-            'context': {},
             'description': None,
             'icdpcs_code': None,
             'ndc_code': None,
@@ -114,8 +107,6 @@ def extract_locations(record):
         locations.append({
             'name': element,
             'type': 'country',
-            'data': {},
-            'context': {},
             # ---
             'trial_role': 'recruitment_countries',
         })

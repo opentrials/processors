@@ -14,7 +14,6 @@ def extract_source(record):
         'id': 'isrctn',
         'name': 'ISRCTN',
         'type': 'register',
-        'data': {},
     }
     return source
 
@@ -106,8 +105,6 @@ def extract_locations(record):
         locations.append({
             'name': element,
             'type': 'country',
-            'data': {},
-            'context': {},
             # ---
             'trial_role': 'recruitment_countries',
         })
@@ -119,18 +116,12 @@ def extract_organisations(record):
     for element in record['sponsors'] or []:
         organisations.append({
             'name': element['organisation'],
-            'type': None,
-            'data': element,
-            'context': {},
             # ---
             'trial_role': 'sponsor',
         })
     for element in record['funders'] or []:
         organisations.append({
             'name': element['funder_name'],
-            'type': None,
-            'data': element,
-            'context': {},
             # ---
             'trial_role': 'funder',
         })
@@ -146,9 +137,6 @@ def extract_persons(record):
             continue
         persons.append({
             'name': name,
-            'type': None,
-            'data': {},
-            'context': element,
             'phones': [],
             # ---
             'trial_id': record['isrctn_id'],

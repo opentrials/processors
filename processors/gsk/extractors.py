@@ -14,7 +14,6 @@ def extract_source(record):
         'id': 'gsk',
         'name': 'GlaxoSmithKline',
         'type': 'register',
-        'data': {},
     }
     return source
 
@@ -88,9 +87,6 @@ def extract_conditions(record):
         conditions.append({
             'name': element,
             'type': None,
-            'data': {},
-            'role': None,
-            'context': {},
             'description': None,
             'icdcm_code': None,
         })

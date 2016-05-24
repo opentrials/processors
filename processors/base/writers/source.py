@@ -42,7 +42,6 @@ def write_source(conn, source):
         # ---
         'name': source['name'],
         'type': source['type'],
-        'data': source['data'],
     })
 
     # Write object

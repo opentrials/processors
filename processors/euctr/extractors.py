@@ -14,7 +14,6 @@ def extract_source(record):
         'id': 'euctr',
         'name': 'EU Clinical Trials Register',
         'type': 'register',
-        'data': {},
     }
     return source
 
@@ -106,9 +105,6 @@ def extract_interventions(record):
         interventions.append({
             'name': element['product_name'],
             'type': None,
-            'data': {},
-            'role': None,
-            'context': element,
             'description': None,
             'icdpcs_code': None,
             'ndc_code': None,
@@ -129,9 +125,6 @@ def extract_organisations(record):
             continue
         organisations.append({
             'name': element['name_of_sponsor'],
-            'type': None,
-            'data': {},
-            'context': element,
             # ---
             'trial_role': 'sponsor',
         })

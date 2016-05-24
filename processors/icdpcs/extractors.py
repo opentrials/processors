@@ -12,7 +12,6 @@ def extract_source(record):
         'id': 'icdpcs',
         'name': 'ICD-PCS',
         'type': 'other',
-        'data': {},
     }
     return source
 
@@ -30,9 +29,6 @@ def extract_interventions(record):
         interventions.append({
             'name': name,
             'type': 'procedure',
-            'data': {},
-            'role': None,
-            'context': {},
             'description': None,
             'icdpcs_code': record['code'],
             'ndc_code': None,

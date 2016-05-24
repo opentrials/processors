@@ -14,7 +14,6 @@ def extract_source(record):
         'id': 'pfizer',
         'name': 'Pfizer',
         'type': 'register',
-        'data': {},
     }
     return source
 

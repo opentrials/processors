@@ -58,7 +58,6 @@ def process_trial(conn, table, extractors):
                     writers.write_trial_relationship(conn, 'condition', {
                         'trial_id': trial_id,
                         'condition_id': condition_id,
-                        'context': {},
                     })
 
                 # Extract and write interventions/relationships
@@ -68,7 +67,6 @@ def process_trial(conn, table, extractors):
                     writers.write_trial_relationship(conn, 'intervention', {
                         'trial_id': trial_id,
                         'intervention_id': int_id,
-                        'context': {},
                     })
 
                 # Extract and write locations/relationships
@@ -79,7 +77,6 @@ def process_trial(conn, table, extractors):
                         'trial_id': trial_id,
                         'location_id': location_id,
                         'role': location['trial_role'],
-                        'context': {},
                     })
 
                 # Extract and write organisations/relationships
@@ -90,7 +87,6 @@ def process_trial(conn, table, extractors):
                         'trial_id': trial_id,
                         'organisation_id': org_id,
                         'role': organisation['trial_role'],
-                        'context': {},
                     })
 
                 # Extract and write persons/relationships
@@ -101,7 +97,6 @@ def process_trial(conn, table, extractors):
                         'trial_id': trial_id,
                         'person_id': person_id,
                         'role': person['trial_role'],
-                        'context': {},
                     })
 
         except Exception as exception:

@@ -51,8 +51,6 @@ def write_person(conn, person, source_id, trial_id=None):
             'source_id': source_id,
             # ---
             'name': person['name'],
-            'type': person['type'],
-            'data': person['data'],
         })
 
         # Write object

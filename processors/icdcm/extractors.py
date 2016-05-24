@@ -12,7 +12,6 @@ def extract_source(record):
         'id': 'icdcm',
         'name': 'ICD-CM',
         'type': 'other',
-        'data': {},
     }
     return source
 
@@ -29,9 +28,6 @@ def extract_conditions(record):
     for name in names:
         conditions.append({
             'name': name,
-            'data': {},
-            'role': None,
-            'context': {},
             'description': None,
             'icdcm_code': record['name'],
         })

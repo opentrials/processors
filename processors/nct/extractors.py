@@ -14,7 +14,6 @@ def extract_source(record):
         'id': 'nct',
         'name': 'ClinicalTrials.gov',
         'type': 'register',
-        'data': {},
     }
     return source
 
@@ -90,9 +89,6 @@ def extract_conditions(record):
         conditions.append({
             'name': element,
             'type': None,
-            'data': {},
-            'role': None,
-            'context': {},
             'description': None,
             'icdcm_code': None,
         })
@@ -105,9 +101,6 @@ def extract_interventions(record):
         interventions.append({
             'name': element['intervention_name'],
             'type': None,
-            'data': {},
-            'role': None,
-            'context': element,
             'description': None,
             'icdpcs_code': None,
             'ndc_code': None,
@@ -121,8 +114,6 @@ def extract_locations(record):
         locations.append({
             'name': element,
             'type': 'country',
-            'data': {},
-            'context': {},
             # ---
             'trial_role': 'recruitment_countries',
         })
@@ -138,9 +129,6 @@ def extract_organisations(record):
             continue
         organisations.append({
             'name': element['agency'],
-            'type': None,
-            'data': {},
-            'context': {},
             # ---
             'trial_role': 'primary_sponsor',
         })
@@ -155,9 +143,6 @@ def extract_persons(record):
             continue
         persons.append({
             'name': element['last_name'],
-            'type': None,
-            'data': {},
-            'context': {},
             'phones': [],
             # ---
             'trial_id': record['nct_id'],

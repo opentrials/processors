@@ -14,7 +14,6 @@ def extract_source(record):
         'id': 'pubmed',
         'name': 'Pubmed',
         'type': 'other',
-        'data': {},
     }
     return source
 

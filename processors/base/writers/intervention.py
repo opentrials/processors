@@ -51,7 +51,6 @@ def write_intervention(conn, intervention, source_id):
             # ---
             'name': intervention['name'],
             'type': intervention['type'],
-            'data': intervention['data'],
             'description': intervention['description'],
             'icdpcs_code': intervention['icdpcs_code'],
             'ndc_code': intervention['ndc_code'],

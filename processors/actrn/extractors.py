@@ -14,7 +14,6 @@ def extract_source(record):
         'id': 'actrn',
         'name': 'ANZCTR',
         'type': 'register',
-        'data': {},
     }
     return source
 
@@ -114,9 +113,6 @@ def extract_organisations(record):
             continue
         organisations.append({
             'name': element['name'],
-            'type': None,
-            'data': {},
-            'context': element,
             # ---
             'trial_role': 'sponsor',  # TODO: review
         })
@@ -129,9 +125,6 @@ def extract_persons(record):
     for role in ['public_queries', 'scientific_queries']:
         persons.append({
             'name': record[role]['name'],
-            'type': None,
-            'data': {},
-            'context': record[role],
             'phones': [],
             # ---
             'trial_id': record['trial_id'],
