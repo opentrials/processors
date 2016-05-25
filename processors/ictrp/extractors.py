@@ -88,15 +88,15 @@ def extract_trial(record):
         'primary_register': 'WHO ICTRP',
         'primary_id': record['main_id'],
         'identifiers': identifiers,
-        'registration_date': None,  # TODO: text on scrap layer
+        'registration_date': None,
         'public_title': public_title,
-        'brief_summary': '',  # TODO: review
-        'scientific_title': record['scientific_title'],  # TODO: review
-        'description': None,  # TODO: review
+        'brief_summary': None,
+        'scientific_title': record['scientific_title'],
+        'description': None,
         'recruitment_status': recruitment_status,
         'eligibility_criteria': {'criteria': record['key_inclusion_exclusion_criteria']},
         'target_sample_size': record['target_sample_size'],
-        'first_enrollment_date': None,  # TODO: text on scraper layer
+        'first_enrollment_date': None,
         'study_type': record['study_type'],
         'study_design': record['study_design'],
         'study_phase': record['study_phase'] or 'N/A',
@@ -122,7 +122,6 @@ def extract_conditions(record):
 def extract_interventions(record):
     interventions = []
     for element in record['interventions'] or []:
-        # TODO: parse "drug: name"
         interventions.append({
             'name': element,
             'type': None,
@@ -146,12 +145,10 @@ def extract_locations(record):
 
 
 def extract_organisations(record):
-    # TODO: check on scraper level
     organisations = []
     return organisations
 
 
 def extract_persons(record):
-    # TODO: check on scraper level
     persons = []
     return persons
