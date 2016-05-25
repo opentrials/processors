@@ -20,11 +20,25 @@ def extract_source(record):
 
 def extract_publications(record):
 
+    # Id prefixes
+    PREFIXES = [
+        'ACTRN',
+        'EUCTR',
+        'GSK',
+        'ISRCTN',
+        'JPRN',
+        'NCT',
+        'TAKEDA',
+        'UMIN',
+    ]
+
     # Extract identifiers
-    # TODO: find other identifiers
-    pattern = r'((?:NCT\d{3,})|(?:ISRCTN\d{3,}))'
+    pattern = r'({prefix}\d{3,})'
     contents = record['article_title'] + record['article_abstract']
-    identifiers = re.findall(pattern, contents)
+    identifiers = []
+    for prefix in PREFIXES:
+        identifiers.append(
+            re.findall(pattern.format(prefix=prefix), contents))
 
     # Extract publications
     publications = []
