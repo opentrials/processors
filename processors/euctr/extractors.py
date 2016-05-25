@@ -90,7 +90,11 @@ def extract_trial(record):
 
 
 def extract_conditions(record):
-    conditions = [record['trial_medical_conditions_being_investigated']]
+    conditions = [{
+        'name': record['trial_medical_conditions_being_investigated'],
+        'description': None,
+        'icdcm_code': None,
+    }]
     return conditions
 
 

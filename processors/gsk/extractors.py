@@ -86,7 +86,6 @@ def extract_conditions(record):
     for element in record['conditions'] or []:
         conditions.append({
             'name': element,
-            'type': None,
             'description': None,
             'icdcm_code': None,
         })

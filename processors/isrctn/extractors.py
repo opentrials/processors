@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import re
 from .. import base
 
 
@@ -41,7 +42,6 @@ def extract_trial(record):
     }
     recruitment_status = statuses[record['recruitment_status']]
 
-    # TODO: review
     # Get target sample size
     try:
         target_sample_size = int(record['target_number_of_participants'])
@@ -66,7 +66,7 @@ def extract_trial(record):
         'public_title': public_title,
         'brief_summary': record['plain_english_summary'],
         'scientific_title': record['scientific_title'],
-        'description': None,  # TODO: review
+        'description': record['plain_english_summary'],
         'recruitment_status': recruitment_status,
         'eligibility_criteria': {
             'inclusion': record['participant_inclusion_criteria'],
@@ -76,7 +76,7 @@ def extract_trial(record):
         'first_enrollment_date': record['overall_trial_start_date'],
         'study_type': record['primary_study_design'],
         'study_design': record['study_design'],
-        'study_phase': record['phase'] or 'N/A',  # TODO: review
+        'study_phase': record['phase'],
         'primary_outcomes': record['primary_outcome_measures'] or [],
         'secondary_outcomes': record['secondary_outcome_measures'] or [],
         'gender': gender,
@@ -86,21 +86,34 @@ def extract_trial(record):
 
 
 def extract_conditions(record):
-    # TODO: record['condition'] - free text
-    conditions = []
+    conditions = [{
+        'name': record['condition'],
+        'description': None,
+        'icdcm_code': None,
+    }]
     return conditions
 
 
 def extract_interventions(record):
-    # TODO: record['interventions'] - free text
-    # TODO: record['drug_names'] - free text
     interventions = []
+    if record['drug_names']:
+        pattern = r'(?:,)|(?:\d+\.)'
+        for drug in re.split(pattern, record['drug_names']):
+            drug = drug.strip()
+            if not drug:
+                continue
+            interventions.append({
+                'name': drug,
+                'type': 'drug',
+                'description': None,
+                'icdpcs_code': None,
+                'ndc_code': None,
+            })
     return interventions
 
 
 def extract_locations(record):
     locations = []
-    # TODO: move split to scraper
     for element in (record['countries_of_recruitment'] or '').split(',') or []:
         locations.append({
             'name': element,
@@ -131,7 +144,6 @@ def extract_organisations(record):
 def extract_persons(record):
     persons = []
     for element in record['contacts'] or []:
-        # TODO: review
         name = element.get('primary_contact', element.get('additional_contact'))
         if not name:
             continue
