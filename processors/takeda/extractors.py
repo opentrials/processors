@@ -58,20 +58,20 @@ def extract_trial(record):
         'primary_register': 'Takeda',
         'primary_id': record['takeda_trial_id'],
         'identifiers': identifiers,
-        'registration_date': None,  # TODO: review
+        'registration_date': None,
         'public_title': public_title,
-        'brief_summary': record['brief_summary'] or '',  # TODO: review
+        'brief_summary': record['brief_summary'],
         'scientific_title': record['official_title'],
         'description': record['detailed_description'],
         'recruitment_status': recruitment_status,
         'eligibility_criteria': {'criteria': record['eligibility_criteria']},
         'target_sample_size': None,
         'first_enrollment_date': record['start_date'],
-        'study_type': record['trial_type'] or 'N/A',  # TODO: review
-        'study_design': record['trial_design'] or 'N/A',  # TODO: review
-        'study_phase': record['trial_phase'] or 'N/A',  # TODO: review
-        'primary_outcomes': None,  # TODO: review free text
-        'secondary_outcomes': None,  # TODO: review free text
+        'study_type': record['trial_type'],
+        'study_design': record['trial_design'],
+        'study_phase': record['trial_phase'],
+        'primary_outcomes': None,
+        'secondary_outcomes': None,
         'gender': gender,
         'has_published_results': has_published_results,
     }
@@ -114,12 +114,10 @@ def extract_locations(record):
 
 
 def extract_organisations(record):
-    # TODO: review on scraper level
     organisations = []
     return organisations
 
 
 def extract_persons(record):
-    # TODO: review on scraper level
     persons = []
     return persons
