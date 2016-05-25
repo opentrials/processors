@@ -61,18 +61,18 @@ def extract_trial(record):
         'identifiers': identifiers,
         'registration_date': record['first_received'],
         'public_title': public_title,
-        'brief_summary': record['brief_summary'] or '',  # TODO: review
-        'scientific_title': record['official_study_title'],  # TODO: review
+        'brief_summary': record['brief_summary'],
+        'scientific_title': record['official_study_title'],
         'description': record['detailed_description'],
         'recruitment_status': recruitment_status,
         'eligibility_criteria': {
-            'criteria': record['eligibility_criteria'],  # TODO: bad text - fix on scraper
+            'criteria': record['eligibility_criteria'],
         },
-        'target_sample_size': record['enrollment'],  # TODO: review
+        'target_sample_size': record['enrollment'],
         'first_enrollment_date': record['study_start_date'],
-        'study_type': record['study_type'] or 'N/A',  # TODO: review
-        'study_design': record['study_design'] or 'N/A',  # TODO: review
-        'study_phase': record['phase'] or 'N/A',  # TODO: review
+        'study_type': record['study_type'],
+        'study_design': record['study_design'],
+        'study_phase': record['phase'],
         'primary_outcomes': record['primary_outcomes'] or [],
         'secondary_outcomes': record['secondary_outcomes'] or [],
         'gender': gender,
@@ -93,24 +93,20 @@ def extract_conditions(record):
 
 
 def extract_interventions(record):
-    # TODO: record['interventions'] - reimplement on scraper - array -> dict
     interventions = []
     return interventions
 
 
 def extract_locations(record):
-    # TODO: no recruitment countries field
     locations = []
     return locations
 
 
 def extract_organisations(record):
-    # TODO: discover how to get it/fix it on scraper
     organisations = []
     return organisations
 
 
 def extract_persons(record):
-    # TODO: discover how to get it/fix it on scraper
     persons = []
     return persons
