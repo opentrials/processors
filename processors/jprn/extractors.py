@@ -22,8 +22,6 @@ def extract_trial(record):
 
     # Get identifiers
     identifiers = base.helpers.clean_dict({
-        # TODO: use record['secondary_study_id_*']
-        # TODO: use record['org_issuing_secondary_study_id_*']
         'jprn': record['unique_trial_number'],
     })
 
@@ -67,19 +65,19 @@ def extract_trial(record):
         'identifiers': identifiers,
         'registration_date': record['date_of_registration'],
         'public_title': public_title,
-        'brief_summary': 'N/A',  # TODO: review
+        'brief_summary': record['narrative_objectives1'],
         'scientific_title': record['official_scientific_title_of_the_study'],
-        'description': None,  # TODO: review
+        'description': record['narrative_objectives1'],
         'recruitment_status': recruitment_status,
         'eligibility_criteria': {
             'inclusion': record['key_inclusion_criteria'],
             'exclusion': record['key_exclusion_criteria'],
         },
         'target_sample_size': record['target_sample_size'],
-        'first_enrollment_date': record['anticipated_trial_start_date'],  # TODO: review
-        'study_type': record['study_type'] or 'N/A',  # TODO: review
-        'study_design': record['basic_design'] or 'N/A',  # TODO: review
-        'study_phase': record['developmental_phase'] or 'N/A',  # TODO: review
+        'first_enrollment_date': record['anticipated_trial_start_date'],
+        'study_type': record['study_type'],
+        'study_design': record['basic_design'],
+        'study_phase': record['developmental_phase'],
         'primary_outcomes': record['primary_outcomes'] or [],
         'secondary_outcomes': record['key_secondary_outcomes'] or [],
         'gender': gender,
@@ -89,19 +87,16 @@ def extract_trial(record):
 
 
 def extract_conditions(record):
-    # TODO: record['condition'] - free text some time
-    conditions = []
+    conditions = [record['condition']]
     return conditions
 
 
 def extract_interventions(record):
-    # TODO: record['interventions'] - array of free texts
     interventions = []
     return interventions
 
 
 def extract_locations(record):
-    # TODO: fix on scraper record['region'] when possible
     locations = []
     return locations
 
