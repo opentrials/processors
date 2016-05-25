@@ -7,9 +7,19 @@ from __future__ import unicode_literals
 
 # Module API
 
-def write_trial_relationship(conn, entity, relathionship):
+def write_trial_relationship(conn, entity_name, entity_data, entity_id, trial_id):
     """Write trial relathionship to database.
     """
-    table = 'trials_{entity}s'.format(entity=entity)
-    keys = ['trial_id', '{entity}_id'.format(entity=entity)]
-    conn['database'][table].upsert(relathionship, keys, ensure=False)
+    data = {}
+    entity_id_field = '%s_id' % entity_name
+    table = 'trials_%ss' % entity_name
+    keys = ['trial_id', entity_id_field]
+    data = {
+        'trial_id': trial_id,
+        entity_id_field: entity_id,
+    }
+    if entity in ['intervention', 'location', 'condition', 'person']:
+        data.update({
+            'role': entity_data['trial_role'],
+        })
+    conn['database'][table].upsert(data, keys, ensure=False)

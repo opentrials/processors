@@ -55,49 +55,36 @@ def process_trial(conn, table, extractors):
                 conditions = extractors['extract_conditions'](record)
                 for condition in conditions:
                     condition_id = writers.write_condition(conn, condition, source_id)
-                    writers.write_trial_relationship(conn, 'condition', {
-                        'trial_id': trial_id,
-                        'condition_id': condition_id,
-                    })
+                    writers.write_trial_relationship(
+                        conn, 'condition', condition, condition_id, trial_id)
 
                 # Extract and write interventions/relationships
                 interventions = extractors['extract_interventions'](record)
                 for intervention in interventions:
                     int_id = writers.write_intervention(conn, intervention, source_id)
-                    writers.write_trial_relationship(conn, 'intervention', {
-                        'trial_id': trial_id,
-                        'intervention_id': int_id,
-                    })
+                    writers.write_trial_relationship(
+                        conn, 'intervention', intervention, intervention_id, trial_id)
 
                 # Extract and write locations/relationships
                 locations = extractors['extract_locations'](record)
                 for location in locations:
                     location_id = writers.write_location(conn, location, source_id)
-                    writers.write_trial_relationship(conn, 'location', {
-                        'trial_id': trial_id,
-                        'location_id': location_id,
-                        'role': location['trial_role'],
-                    })
+                    writers.write_trial_relationship(
+                        conn, 'location', location, location_id, trial_id)
 
                 # Extract and write organisations/relationships
                 organisations = extractors['extract_organisations'](record)
                 for organisation in organisations:
                     org_id = writers.write_organisation(conn, organisation, source_id)
-                    writers.write_trial_relationship(conn, 'organisation', {
-                        'trial_id': trial_id,
-                        'organisation_id': org_id,
-                        'role': organisation['trial_role'],
-                    })
+                    writers.write_trial_relationship(
+                        conn, 'organisation', organisation, organisation_id, trial_id)
 
                 # Extract and write persons/relationships
                 persons = extractors['extract_persons'](record)
                 for person in persons:
                     person_id = writers.write_person(conn, person, source_id)
-                    writers.write_trial_relationship(conn, 'person', {
-                        'trial_id': trial_id,
-                        'person_id': person_id,
-                        'role': person['trial_role'],
-                    })
+                    writers.write_trial_relationship(
+                        conn, 'person', person, person_id, trial_id)
 
         except Exception as exception:
             errors += 1
