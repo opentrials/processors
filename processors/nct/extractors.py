@@ -65,7 +65,7 @@ def extract_trial(record):
         'identifiers': identifiers,
         'registration_date': record['firstreceived_date'],
         'public_title': public_title,
-        'brief_summary': record['brief_summary'] or '',  # TODO: review
+        'brief_summary': record['brief_summary'],
         'scientific_title': record['official_title'],
         'description': record['detailed_description'],
         'recruitment_status': recruitment_status,
@@ -123,7 +123,6 @@ def extract_locations(record):
 def extract_organisations(record):
     organisations = []
     for element in record['sponsors'] or []:
-        # TODO: get more information
         element = element.get('lead_sponsor', None)
         if element is None:
             continue
@@ -138,7 +137,6 @@ def extract_organisations(record):
 def extract_persons(record):
     persons = []
     for element in record['overall_officials'] or []:
-        # TODO: get more information
         if element.get('role', None) != 'Principal Investigator':
             continue
         persons.append({
