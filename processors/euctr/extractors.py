@@ -25,7 +25,7 @@ def extract_trial(record):
         'who': record['who_universal_trial_reference_number_utrn'],
         'nct': record['us_nct_clinicaltrialsgov_registry_number'],
         'euctr': record['eudract_number_with_country'],
-        'isrctn': record['isrctn_international_standard_randomised_controlled_trial_numbe']  # TODO: fix on scraper level,
+        'isrctn': record['isrctn_international_standard_randomised_controlled_trial_numbe'],
     })
 
     # Get public title
@@ -64,25 +64,23 @@ def extract_trial(record):
 
     trial = {
         'primary_register': 'EU Clinical Trials Register',
-        'primary_id': record['eudract_number_with_country'],  # TODO: review
+        'primary_id': record['eudract_number_with_country'],
         'identifiers': identifiers,
         'registration_date': record['date_on_which_this_record_was_first_entered'],
         'public_title': public_title,
-        'brief_summary': record['trial_main_objective_of_the_trial'] or '',  # TODO: review
+        'brief_summary': record['trial_main_objective_of_the_trial'],
         'scientific_title': record['full_title_of_the_trial'],
-        'description': None,  # TODO: review
+        'description': record['trial_main_objective_of_the_trial'],
         'recruitment_status': recruitment_status,
         'eligibility_criteria': {
             'inclusion': record['trial_principal_inclusion_criteria'],
             'exclusion': record['trial_principal_exclusion_criteria'],
         },
-        'target_sample_size': record['subject_in_the_whole_clinical_trial'],  # TODO: review
-        'first_enrollment_date': record['date_on_which_this_record_was_first_entered'],  # TODO: fix on scraper level
-        # TODO: discover on scraper level
-        'study_type': 'N/A',
-        'study_design': 'N/A',
-        'study_phase': 'N/A',
-        # TODO: discover on scraper level
+        'target_sample_size': record['subject_in_the_whole_clinical_trial'],
+        'first_enrollment_date': record['date_on_which_this_record_was_first_entered'],
+        'study_type': None,
+        'study_design': None,
+        'study_phase': None,
         'primary_outcomes': [],
         'secondary_outcomes': [],
         'gender': gender,
@@ -92,8 +90,7 @@ def extract_trial(record):
 
 
 def extract_conditions(record):
-    # TODO: discover record['trial_medical_conditions_being_investigated']
-    conditions = []
+    conditions = [record['trial_medical_conditions_being_investigated']]
     return conditions
 
 
@@ -113,7 +110,6 @@ def extract_interventions(record):
 
 
 def extract_locations(record):
-    # TODO: discover on scraper level
     locations = []
     return locations
 
@@ -132,6 +128,5 @@ def extract_organisations(record):
 
 
 def extract_persons(record):
-    # TODO: discover on scraper level
     persons = []
     return persons
