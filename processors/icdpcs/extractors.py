@@ -29,9 +29,7 @@ def extract_interventions(record):
         interventions.append({
             'name': name,
             'type': 'procedure',
-            'description': None,
             'icdpcs_code': record['code'],
-            'ndc_code': None,
         })
 
     return interventions

@@ -50,10 +50,10 @@ def write_intervention(conn, intervention, source_id):
             'source_id': source_id,
             # ---
             'name': intervention['name'],
-            'type': intervention['type'],
-            'description': intervention['description'],
-            'icdpcs_code': intervention['icdpcs_code'],
-            'ndc_code': intervention['ndc_code'],
+            'type': intervention.get('type', None),
+            'description': intervention.get('description', None),
+            'icdpcs_code': intervention.get('icdpcs_code', None),
+            'ndc_code': intervention.get('ndc_code', None),
         })
 
         # Write object

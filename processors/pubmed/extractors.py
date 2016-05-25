@@ -46,9 +46,9 @@ def extract_publications(record):
         'source_url': record['meta_source'],
         'title': record['article_title'],
         'abstract': record['article_abstract'],
-        'authors': record.get('article_authors', None),
-        'journal': record.get('journal_title', None),
-        'date': record.get('article_date', None),
+        'authors': record['article_authors'],
+        'journal': record['journal_title'],
+        'date': record['article_date'],
         # ---
         'trial_identifiers': identifiers,
     })

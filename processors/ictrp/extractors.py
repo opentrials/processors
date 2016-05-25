@@ -88,18 +88,14 @@ def extract_trial(record):
         'primary_register': 'WHO ICTRP',
         'primary_id': record['main_id'],
         'identifiers': identifiers,
-        'registration_date': None,
         'public_title': public_title,
-        'brief_summary': None,
         'scientific_title': record['scientific_title'],
-        'description': None,
         'recruitment_status': recruitment_status,
         'eligibility_criteria': {'criteria': record['key_inclusion_exclusion_criteria']},
         'target_sample_size': record['target_sample_size'],
-        'first_enrollment_date': None,
         'study_type': record['study_type'],
         'study_design': record['study_design'],
-        'study_phase': record['study_phase'] or 'N/A',
+        'study_phase': record['study_phase'],
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
@@ -113,8 +109,6 @@ def extract_conditions(record):
     for element in record['health_conditions_or_problems_studied'] or []:
         conditions.append({
             'name': element,
-            'description': None,
-            'icdcm_code': None,
         })
     return conditions
 
@@ -124,10 +118,6 @@ def extract_interventions(record):
     for element in record['interventions'] or []:
         interventions.append({
             'name': element,
-            'type': None,
-            'description': None,
-            'icdpcs_code': None,
-            'ndc_code': None,
         })
     return interventions
 

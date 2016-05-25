@@ -51,7 +51,7 @@ def write_location(conn, location, source_id, trial_id=None):
             'source_id': source_id,
             # ---
             'name': location['name'],
-            'type': location['type'],
+            'type': location.get('type', None),
         })
 
         # Write object

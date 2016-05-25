@@ -52,9 +52,9 @@ def write_publication(conn, publication, source_id):
             'source_url': publication['source_url'],
             'title': publication['title'],
             'abstract': publication['abstract'],
-            'authors': publication['authors'],
-            'journal': publication['journal'],
-            'date': publication['date'],
+            'authors': publication.get('authors', None),
+            'journal': publication.get('journal', None),
+            'date': publication.get('date', None),
         })
 
         # Write object

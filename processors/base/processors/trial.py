@@ -63,7 +63,7 @@ def process_trial(conn, table, extractors):
                 for intervention in interventions:
                     int_id = writers.write_intervention(conn, intervention, source_id)
                     writers.write_trial_relationship(
-                        conn, 'intervention', intervention, intervention_id, trial_id)
+                        conn, 'intervention', intervention, int_id, trial_id)
 
                 # Extract and write locations/relationships
                 locations = extractors['extract_locations'](record)
@@ -77,7 +77,7 @@ def process_trial(conn, table, extractors):
                 for organisation in organisations:
                     org_id = writers.write_organisation(conn, organisation, source_id)
                     writers.write_trial_relationship(
-                        conn, 'organisation', organisation, organisation_id, trial_id)
+                        conn, 'organisation', organisation, org_id, trial_id)
 
                 # Extract and write persons/relationships
                 persons = extractors['extract_persons'](record)

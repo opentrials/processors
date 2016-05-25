@@ -18,8 +18,8 @@ def write_trial_relationship(conn, entity_name, entity_data, entity_id, trial_id
         'trial_id': trial_id,
         entity_id_field: entity_id,
     }
-    if entity in ['intervention', 'location', 'condition', 'person']:
+    if entity_name in ['intervention', 'location', 'condition', 'person']:
         data.update({
-            'role': entity_data['trial_role'],
+            'role': entity_data.get('trial_role', None),
         })
     conn['database'][table].upsert(data, keys, ensure=False)

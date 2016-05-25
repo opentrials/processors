@@ -73,8 +73,8 @@ def extract_trial(record):
         'study_type': record['study_type'],
         'study_design': record['study_design'],
         'study_phase': record['phase'],
-        'primary_outcomes': record['primary_outcomes'] or [],
-        'secondary_outcomes': record['secondary_outcomes'] or [],
+        'primary_outcomes': record['primary_outcomes'],
+        'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
         'has_published_results': has_published_results,
     }
@@ -86,8 +86,6 @@ def extract_conditions(record):
     for element in record['conditions'] or []:
         conditions.append({
             'name': element,
-            'description': None,
-            'icdcm_code': None,
         })
     return conditions
 

@@ -51,8 +51,8 @@ def write_condition(conn, condition, source_id, trial_id=None):
             'source_id': source_id,
             # ---
             'name': condition['name'],
-            'description': condition['description'],
-            'icdcm_code': condition['icdcm_code'],
+            'description': condition.get('description', None),
+            'icdcm_code': condition.get('icdcm_code', None),
         })
 
         # Write object

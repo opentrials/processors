@@ -30,7 +30,6 @@ def extract_interventions(record):
             'name': name,
             'type': 'drug',
             'description': record['product_type'],
-            'icdpcs_code': None,
             'ndc_code': record['product_ndc'],
         })
 

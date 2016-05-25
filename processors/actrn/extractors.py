@@ -77,10 +77,9 @@ def extract_trial(record):
         'target_sample_size': record['target_sample_size'],
         'first_enrollment_date': record['anticipated_date_of_first_participant_enrolment'],
         'study_type': record['study_type'],
-        'study_design': None,
         'study_phase': record['phase'],
-        'primary_outcomes': record['primary_outcomes'] or [],
-        'secondary_outcomes': record['secondary_outcomes'] or [],
+        'primary_outcomes': record['primary_outcomes'],
+        'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
         'has_published_results': has_published_results,
     }
@@ -90,8 +89,6 @@ def extract_trial(record):
 def extract_conditions(record):
     conditions = [{
         'name': record['health_conditions_or_problems_studied'],
-        'description': None,
-        'icdcm_code': None,
     }]
     return conditions
 
@@ -124,7 +121,6 @@ def extract_persons(record):
     for role in ['public_queries', 'scientific_queries']:
         persons.append({
             'name': record[role]['name'],
-            'phones': [],
             # ---
             'trial_id': record['trial_id'],
             'trial_role': role,

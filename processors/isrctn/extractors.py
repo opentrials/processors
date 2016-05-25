@@ -77,8 +77,8 @@ def extract_trial(record):
         'study_type': record['primary_study_design'],
         'study_design': record['study_design'],
         'study_phase': record['phase'],
-        'primary_outcomes': record['primary_outcome_measures'] or [],
-        'secondary_outcomes': record['secondary_outcome_measures'] or [],
+        'primary_outcomes': record['primary_outcome_measures'],
+        'secondary_outcomes': record['secondary_outcome_measures'],
         'gender': gender,
         'has_published_results': has_published_results,
     }
@@ -88,8 +88,6 @@ def extract_trial(record):
 def extract_conditions(record):
     conditions = [{
         'name': record['condition'],
-        'description': None,
-        'icdcm_code': None,
     }]
     return conditions
 
@@ -105,9 +103,6 @@ def extract_interventions(record):
             interventions.append({
                 'name': drug,
                 'type': 'drug',
-                'description': None,
-                'icdpcs_code': None,
-                'ndc_code': None,
             })
     return interventions
 
@@ -149,9 +144,7 @@ def extract_persons(record):
             continue
         persons.append({
             'name': name,
-            'phones': [],
             # ---
             'trial_id': record['isrctn_id'],
-            'trial_role': None,
         })
     return persons

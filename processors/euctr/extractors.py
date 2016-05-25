@@ -78,11 +78,6 @@ def extract_trial(record):
         },
         'target_sample_size': record['subject_in_the_whole_clinical_trial'],
         'first_enrollment_date': record['date_on_which_this_record_was_first_entered'],
-        'study_type': None,
-        'study_design': None,
-        'study_phase': None,
-        'primary_outcomes': [],
-        'secondary_outcomes': [],
         'gender': gender,
         'has_published_results': has_published_results,
     }
@@ -92,8 +87,6 @@ def extract_trial(record):
 def extract_conditions(record):
     conditions = [{
         'name': record['trial_medical_conditions_being_investigated'],
-        'description': None,
-        'icdcm_code': None,
     }]
     return conditions
 
@@ -105,10 +98,6 @@ def extract_interventions(record):
             continue
         interventions.append({
             'name': element['product_name'],
-            'type': None,
-            'description': None,
-            'icdpcs_code': None,
-            'ndc_code': None,
         })
     return interventions
 

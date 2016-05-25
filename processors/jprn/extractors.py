@@ -78,8 +78,8 @@ def extract_trial(record):
         'study_type': record['study_type'],
         'study_design': record['basic_design'],
         'study_phase': record['developmental_phase'],
-        'primary_outcomes': record['primary_outcomes'] or [],
-        'secondary_outcomes': record['key_secondary_outcomes'] or [],
+        'primary_outcomes': record['primary_outcomes'],
+        'secondary_outcomes': record['key_secondary_outcomes'],
         'gender': gender,
         'has_published_results': has_published_results,
     }
@@ -121,7 +121,6 @@ def extract_persons(record):
     if record['research_name_of_lead_principal_investigator']:
         persons.append({
             'name': record['research_name_of_lead_principal_investigator'],
-            'phones': [],
             # ---
             'trial_id': record['unique_trial_number'],
             'trial_role': 'principal_investigator',
@@ -129,7 +128,6 @@ def extract_persons(record):
     if record['public_name_of_contact_person']:
         persons.append({
             'name': record['public_name_of_contact_person'],
-            'phones': [],
             # ---
             'trial_id': record['unique_trial_number'],
             'trial_role': 'public_queries',
