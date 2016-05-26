@@ -23,7 +23,7 @@ def extract_trial(record):
 
     # Get identifiers
     identifiers = base.helpers.clean_dict({
-        'nct': record['clinicaltrialsgov_number'],
+        'nct': record['clinicaltrials_gov_number'],
         'isrctn': record['isrctn_id'],
     })
 
