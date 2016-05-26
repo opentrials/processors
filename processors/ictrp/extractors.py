@@ -50,47 +50,49 @@ def extract_trial(record):
         record['main_id'])
 
     # Get recruitment status
-    # (keys are striped and lower-cased)
-    statuses = {
-        'active, not recruiting': 'pending',
-        'approved for marketing': 'other',
-        'authorised-recruitment may be ongoing or finished': 'other',
-        'available': 'recruiting',
-        'closed: follow-up complete': 'other',
-        'closed: follow-up continuing': 'other',
-        'closed to recruitment: follow up complete': 'other',
-        'closed to recruitment: follow up continuing': 'other',
-        'complete': 'complete',
-        'completed': 'complete',
-        'completed: recruitment & data analysis complete': 'complete',
-        'complete: follow-up complete': 'complete',
-        'complete: follow-up continuing': 'complete',
-        'data analysis completed': 'other',
-        'enrolling by invitation': 'recruiting',
-        'main results already published': 'other',
-        'no longer available': 'other',
-        'no longer recruiting': 'other',
-        'not recruiting': 'other',
-        'not yet recruiting': 'pending',
-        'open public recruiting': 'recruiting',
-        'open to recruitment: actively recruiting participa': 'recruiting',
-        '': 'other',
-        'other': 'other',
-        'pending (not yet recruiting)': 'pending',
-        'pending': 'pending',
-        'recruiting': 'recruiting',
-        'recruitment completed': 'complete',
-        'suspended': 'suspended',
-        'temporarily closed': 'suspended',
-        'temporarily not available': 'suspended',
-        'temporary halt or suspension': 'suspended',
-        'temporary halt': 'suspended',
-        'terminated': 'other',
-        'withdrawn': 'other',
-        'withheld': 'other',
-    }
-    recruitment_status = statuses[
-        record['recruitment_status'].strip().lower()]
+    recruitment_status = None
+    if record['recruitment_status']:
+        # Keys are striped and lower-cased
+        key = record['recruitment_status'].strip().lower()
+        statuses = {
+            'active, not recruiting': 'pending',
+            'approved for marketing': 'other',
+            'authorised-recruitment may be ongoing or finished': 'other',
+            'available': 'recruiting',
+            'closed: follow-up complete': 'other',
+            'closed: follow-up continuing': 'other',
+            'closed to recruitment: follow up complete': 'other',
+            'closed to recruitment: follow up continuing': 'other',
+            'complete': 'complete',
+            'completed': 'complete',
+            'completed: recruitment & data analysis complete': 'complete',
+            'complete: follow-up complete': 'complete',
+            'complete: follow-up continuing': 'complete',
+            'data analysis completed': 'other',
+            'enrolling by invitation': 'recruiting',
+            'main results already published': 'other',
+            'no longer available': 'other',
+            'no longer recruiting': 'other',
+            'not recruiting': 'other',
+            'not yet recruiting': 'pending',
+            'open public recruiting': 'recruiting',
+            'open to recruitment: actively recruiting participa': 'recruiting',
+            '': 'other',
+            'other': 'other',
+            'pending (not yet recruiting)': 'pending',
+            'pending': 'pending',
+            'recruiting': 'recruiting',
+            'recruitment completed': 'complete',
+            'suspended': 'suspended',
+            'temporarily closed': 'suspended',
+            'temporarily not available': 'suspended',
+            'temporary halt or suspension': 'suspended',
+            'temporary halt': 'suspended',
+            'terminated': 'other',
+            'withdrawn': 'other',
+            'withheld': 'other',
+        }
+        recruitment_status = statuses[key]
 
     # Get gender
     gender = None
