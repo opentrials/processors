@@ -18,7 +18,7 @@ def write_trial_relationship(conn, entity_name, entity_data, entity_id, trial_id
         'trial_id': trial_id,
         entity_id_field: entity_id,
     }
-    if entity_name in ['intervention', 'location', 'condition', 'person']:
+    if entity_name in ['location', 'organisation', 'person']:
         data.update({
             'role': entity_data.get('trial_role', None),
         })
