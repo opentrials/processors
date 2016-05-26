@@ -112,41 +112,47 @@ def extract_interventions(record):
 def extract_locations(record):
     locations = []
     for element in (record['countries_of_recruitment'] or '').split(',') or []:
-        locations.append({
-            'name': element,
-            'type': 'country',
-            # ---
-            'trial_role': 'recruitment_countries',
-        })
+        name = base.helpers.clean_string(element)
+        if name:
+            locations.append({
+                'name': name,
+                'type': 'country',
+                # ---
+                'trial_role': 'recruitment_countries',
+            })
     return locations
 
 
 def extract_organisations(record):
     organisations = []
     for element in record['sponsors'] or []:
-        organisations.append({
-            'name': element['organisation'],
-            # ---
-            'trial_role': 'sponsor',
-        })
+        name = base.helpers.clean_string(element.get('organisation', ''))
+        if name:
+            organisations.append({
+                'name': name,
+                # ---
+                'trial_role': 'sponsor',
+            })
     for element in record['funders'] or []:
-        organisations.append({
-            'name': element['funder_name'],
-            # ---
-            'trial_role': 'funder',
-        })
+        name = base.helpers.clean_string(element.get('funder_name', ''))
+        if name:
+            organisations.append({
+                'name': name,
+                # ---
+                'trial_role': 'funder',
+            })
     return organisations
 
 
 def extract_persons(record):
     persons = []
     for element in record['contacts'] or []:
-        name = element.get('primary_contact', element.get('additional_contact'))
-        if not name:
-            continue
-        persons.append({
-            'name': name,
-            # ---
-            'trial_id': record['isrctn_id'],
-        })
+        name = base.helpers.clean_string(
+            element.get('primary_contact', element.get('additional_contact')))
+        if name:
+            persons.append({
+                'name': name,
+                # ---
+                'trial_id': record['isrctn_id'],
+            })
     return persons

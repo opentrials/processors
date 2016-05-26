@@ -98,12 +98,14 @@ def extract_interventions(record):
 def extract_locations(record):
     locations = []
     for element in record['locations'] or []:
-        locations.append({
-            'name': element,
-            'type': 'country',
-            # ---
-            'trial_role': 'recruitment_countries',
-        })
+        name = base.helpers.clean_string(element)
+        if name:
+            locations.append({
+                'name': name,
+                'type': 'country',
+                # ---
+                'trial_role': 'recruitment_countries',
+            })
     return locations
 
 

@@ -109,22 +109,23 @@ def extract_locations(record):
 def extract_organisations(record):
     organisations = []
     for element in record['sponsors'] or []:
-        if 'name' not in element:
-            continue
-        organisations.append({
-            'name': element['name'],
-            # ---
-            'trial_role': 'sponsor',
-        })
+        name = base.helpers.clean_string(element.get('name', ''))
+        if name:
+            organisations.append({
+                'name': name,
+                # ---
+                'trial_role': 'sponsor',
+            })
     return organisations
 
 
 def extract_persons(record):
     persons = []
     for role in ['public_queries', 'scientific_queries']:
-        if 'name' in record[role]:
+        name = base.helpers.clean_string(record[role].get('name', ''))
+        if name:
             persons.append({
-                'name': record[role]['name'],
+                'name': name,
                 # ---
                 'trial_id': record['trial_id'],
                 'trial_role': role,

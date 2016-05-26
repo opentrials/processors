@@ -108,26 +108,28 @@ def extract_interventions(record):
 def extract_locations(record):
     locations = []
     for element in record['location_countries'] or []:
-        locations.append({
-            'name': element,
-            'type': 'country',
-            # ---
-            'trial_role': 'recruitment_countries',
-        })
+        name = base.helpers.clean_string(element)
+        if name:
+            locations.append({
+                'name': name,
+                'type': 'country',
+                # ---
+                'trial_role': 'recruitment_countries',
+            })
     return locations
 
 
 def extract_organisations(record):
     organisations = []
     for element in record['sponsors'] or []:
-        element = element.get('lead_sponsor', None)
-        if element is None:
-            continue
-        organisations.append({
-            'name': element['agency'],
-            # ---
-            'trial_role': 'primary_sponsor',
-        })
+        name = base.helpers.clean_string(
+            element.get('lead_spondor', {}).get('agency', ''))
+        if name:
+            organisations.append({
+                'name': name,
+                # ---
+                'trial_role': 'primary_sponsor',
+            })
     return organisations
 
 
@@ -136,10 +138,12 @@ def extract_persons(record):
     for element in record['overall_officials'] or []:
         if element.get('role', None) != 'Principal Investigator':
             continue
-        persons.append({
-            'name': element['last_name'],
-            # ---
-            'trial_id': record['nct_id'],
-            'trial_role': 'principal_investigator',
-        })
+        name = base.helpers.clean_string(element.get('last_name', ''))
+        if name:
+            persons.append({
+                'name': name,
+                # ---
+                'trial_id': record['nct_id'],
+                'trial_role': 'principal_investigator',
+            })
     return persons
