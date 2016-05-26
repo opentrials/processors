@@ -22,12 +22,26 @@ def extract_trial(record):
 
     # Get identifiers
     identifiers = {}
-    if record['register'] == 'ClinicalTrials.gov':
-        identifiers['nct'] = record['main_id']
-    if record['register'] == 'EUCTR':
-        identifiers['euctr'] = record['main_id']
-    if record['register'] == 'ISRCTN':
-        identifiers['isrctn'] = record['main_id']
+    registries = {
+        'ANZCTR': 'actrn',  # Australia
+        'ChiCTR': 'chictr',  # China
+        'ClinicalTrials.gov': 'nct',
+        'EUCTR': 'euctr',
+        'German Clinical Trials Register': 'drks',  # German
+        'IRCT': 'irct',  # Iran
+        'ISRCTN': 'isrctn',
+        'JPRN': 'jprn',  # Japan
+        'KCT': 'kct',  # Korea
+        'Netherlands Trial Register': 'ntr',  # Netherlands
+        'PACTR': 'pactr',  # Pan Africa
+        'REBEC': 'rbr',  # Brazil
+        'RPCEC': 'rpcec',  # Cuba
+        'TCTR': 'tctr',  # Thai
+    }
+    if record['register'] in registries:
+        identifiers[registries[record['register']]] = record['main_id']
+    else:
+        raise ValueError('Unknown register: "%s"' % record['register'])
 
     # Get public title
     public_title = base.helpers.get_optimal_title(
@@ -85,7 +99,7 @@ def extract_trial(record):
     has_published_results = None
 
     trial = {
-        'primary_register': 'WHO ICTRP',
+        'primary_register': record['register'],
         'primary_id': record['main_id'],
         'identifiers': identifiers,
         'public_title': public_title,
