@@ -23,14 +23,14 @@ def extract_trial(record):
     # Get identifiers
     identifiers = base.helpers.clean_dict({
         'who': record['who_universal_trial_reference_number_utrn'],
-        'nct': record['us_nct_clinicaltrialsgov_registry_number'],
+        'nct': record['us_nct_clinicaltrials_gov_registry_number'],
         'euctr': record['eudract_number_with_country'],
         'isrctn': record['isrctn_international_standard_randomised_controlled_trial_numbe'],
     })
 
     # Get public title
     public_title = base.helpers.get_optimal_title(
-        record['title_of_the_trial_for_lay_people_in'],
+        record['title_of_the_trial_for_lay_people_in_easily_understood_i_e_non_'],
         record['full_title_of_the_trial'],
         record['eudract_number_with_country'])
 
@@ -66,7 +66,7 @@ def extract_trial(record):
         'primary_register': 'EU Clinical Trials Register',
         'primary_id': record['eudract_number_with_country'],
         'identifiers': identifiers,
-        'registration_date': record['date_on_which_this_record_was_first_entered'],
+        'registration_date': record['date_on_which_this_record_was_first_entered_in_the_eudract_data'],
         'public_title': public_title,
         'brief_summary': record['trial_main_objective_of_the_trial'],
         'scientific_title': record['full_title_of_the_trial'],
@@ -77,7 +77,7 @@ def extract_trial(record):
             'exclusion': record['trial_principal_exclusion_criteria'],
         },
         'target_sample_size': record['subject_in_the_whole_clinical_trial'],
-        'first_enrollment_date': record['date_on_which_this_record_was_first_entered'],
+        'first_enrollment_date': None,
         'gender': gender,
         'has_published_results': has_published_results,
     }
@@ -86,7 +86,7 @@ def extract_trial(record):
 
 def extract_conditions(record):
     conditions = [{
-        'name': record['trial_medical_conditions_being_investigated'],
+        'name': record['trial_medical_condition_s_being_investigated'],
     }]
     return conditions
 
