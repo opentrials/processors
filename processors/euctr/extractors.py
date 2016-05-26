@@ -35,18 +35,20 @@ def extract_trial(record):
         record['eudract_number_with_country'])
 
     # Get recruitment status
-    statuses = {
-        'Completed': 'complete',
-        'Not Authorised': 'other',
-        'Ongoing': 'recruiting',
-        '': 'other',
-        'Prematurely Ended': 'other',
-        'Prohibited by CA': 'other',
-        'Restarted': 'recruiting',
-        'Suspended by CA': 'suspended',
-        'Temporarily Halted': 'suspended',
-    }
-    recruitment_status = statuses[record['trial_status']]
+    recruitment_status = None
+    if record['trial_status']:
+        statuses = {
+            'Completed': 'complete',
+            'Not Authorised': 'other',
+            'Ongoing': 'recruiting',
+            '': 'other',
+            'Prematurely Ended': 'other',
+            'Prohibited by CA': 'other',
+            'Restarted': 'recruiting',
+            'Suspended by CA': 'suspended',
+            'Temporarily Halted': 'suspended',
+        }
+        recruitment_status = statuses[record['trial_status']]
 
     # Get gender
     gender = None

@@ -122,10 +122,11 @@ def extract_organisations(record):
 def extract_persons(record):
     persons = []
     for role in ['public_queries', 'scientific_queries']:
-        persons.append({
-            'name': record[role]['name'],
-            # ---
-            'trial_id': record['trial_id'],
-            'trial_role': role,
-        })
+        if 'name' in record[role]:
+            persons.append({
+                'name': record[role]['name'],
+                # ---
+                'trial_id': record['trial_id'],
+                'trial_role': role,
+            })
     return persons
