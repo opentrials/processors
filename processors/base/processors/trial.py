@@ -89,7 +89,7 @@ def process_trial(conn, table, extractors):
         except Exception as exception:
             errors += 1
             conn['database'].rollback()
-            logger.warning('Processing error: %s [%s]',
+            logger.exception('Processing error: %s [%s]',
                 repr(exception), errors)
 
         else:
