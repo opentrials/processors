@@ -99,11 +99,11 @@ def extract_conditions(record):
 def extract_interventions(record):
     interventions = []
     for element in record['imps'] or []:
-        if 'product_name' not in element:
-            continue
-        interventions.append({
-            'name': element['product_name'],
-        })
+        name = base.helpers.clean_string(element.get('product_name', ''))
+        if name:
+            interventions.append({
+                'name': name,
+            })
     return interventions
 
 

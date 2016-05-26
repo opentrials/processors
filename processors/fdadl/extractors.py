@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from .. import base
+
 
 # Module API
 
@@ -26,11 +28,13 @@ def extract_interventions(record):
     # Extract interventions
     interventions = []
     for name in names:
-        interventions.append({
-            'name': name,
-            'type': 'drug',
-            'description': record['product_type'],
-            'ndc_code': record['product_ndc'],
-        })
+        name = base.helpers.clean_string(name)
+        if name:
+            interventions.append({
+                'name': name,
+                'type': 'drug',
+                'description': record['product_type'],
+                'ndc_code': record['product_ndc'],
+            })
 
     return interventions

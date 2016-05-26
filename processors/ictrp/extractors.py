@@ -134,9 +134,11 @@ def extract_conditions(record):
 def extract_interventions(record):
     interventions = []
     for element in record['interventions'] or []:
-        interventions.append({
-            'name': element,
-        })
+        name = base.helpers.clean_string(element)
+        if name:
+            interventions.append({
+                'name': name,
+            })
     return interventions
 
 

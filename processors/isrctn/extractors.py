@@ -99,14 +99,13 @@ def extract_interventions(record):
     interventions = []
     if record['drug_names']:
         pattern = r'(?:,)|(?:\d+\.)'
-        for drug in re.split(pattern, record['drug_names']):
-            drug = drug.strip()
-            if not drug:
-                continue
-            interventions.append({
-                'name': drug,
-                'type': 'drug',
-            })
+        for element in re.split(pattern, record['drug_names']):
+            name = base.helpers.clean_string(element)
+            if name:
+                interventions.append({
+                    'name': name,
+                    'type': 'drug',
+                })
     return interventions
 
 

@@ -52,6 +52,7 @@ def process_publication(conn, table, extractors):
                 for id in publication['trial_identifiers']:
                     trial_objects = readers.read_objects(conn, 'trials', facts=[id])
                     for trial_object in trial_objects:
+                        trial_id = trial_object['id']
                         writers.write_trial_relationship(
                             conn, 'publication', publication, publication_id, trial_id)
 
