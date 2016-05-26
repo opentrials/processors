@@ -41,14 +41,19 @@ def process_publication(conn, table, extractors):
                 # Write publication
                 publication_id = writers.write_publication(conn, publication, source_id)
 
+                # Following code could be moved to separete linking processor:
+                # https://github.com/opentrials/opentrials/issues/115
+
+                # Delete existent relationships
+                conn['database']['trials_publications'].delete(
+                    publication_id=publication_id)
+
                 # Write relationships
                 for id in publication['trial_identifiers']:
                     trial_objects = readers.read_objects(conn, 'trials', facts=[id])
                     for trial_object in trial_objects:
-                        writers.write_trial_relationship(conn, 'publication', {
-                            'trial_id': trial_object['id'],
-                            'publication_id': publication_id,
-                        })
+                        writers.write_trial_relationship(
+                            conn, 'publication', publication, publication_id, trial_id)
 
         except Exception as exception:
             errors += 1

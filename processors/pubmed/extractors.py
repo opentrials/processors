@@ -20,16 +20,21 @@ def extract_source(record):
 
 def extract_publications(record):
 
+    # Get article abstract
+    article_abstract = record['article_title']
+    if record['article_abstract']:
+        article_abstract = record['article_abstract']
+
     # Find identifiers
     identifiers = _find_identifiers(
-        record['article_title'] + record['article_abstract'])
+        record['article_title'] + article_abstract)
 
     # Extract publications
     publications = []
     publications.append({
         'source_url': record['meta_source'],
         'title': record['article_title'],
-        'abstract': record['article_abstract'],
+        'abstract': article_abstract,
         'authors': record['article_authors'],
         'journal': record['journal_title'],
         'date': record['article_date'],
