@@ -20,25 +20,9 @@ def extract_source(record):
 
 def extract_publications(record):
 
-    # Id prefixes
-    PREFIXES = [
-        'ACTRN',
-        'EUCTR',
-        'GSK',
-        'ISRCTN',
-        'JPRN',
-        'NCT',
-        'TAKEDA',
-        'UMIN',
-    ]
-
-    # Extract identifiers
-    pattern = r'({prefix}\d{3,})'
-    contents = record['article_title'] + record['article_abstract']
-    identifiers = []
-    for prefix in PREFIXES:
-        identifiers.append(
-            re.findall(pattern.format(prefix=prefix), contents))
+    # Find identifiers
+    identifiers = _find_identifiers(
+        record['article_title'] + record['article_abstract'])
 
     # Extract publications
     publications = []
@@ -54,3 +38,29 @@ def extract_publications(record):
     })
 
     return publications
+
+
+# Internal
+
+def _find_identifiers(text):
+    # Pattern could be improved based on a extended
+    # clinical trial identifiers format analysis
+    PATTERN = r'(%s\d{3,})'
+    PREFIXES = [
+        'ACTRN',
+        'EUCTR',
+        'GSK',
+        'ISRCTN',
+        'JPRN',
+        'NCT',
+        'TAKEDA',
+        'UMIN',
+    ]
+
+    # Find identifiers
+    identifiers = []
+    for prefix in PREFIXES:
+        pattern = PATTERN % prefix
+        identifiers.extend(re.findall(pattern, text))
+
+    return identifiers
