@@ -29,8 +29,10 @@ def write_trial(conn, trial, source_id):
     timestamp = datetime.datetime.utcnow()
 
     # Get facts/read object
-    facts = helpers.slugify_array(
-        list(trial['identifiers'].values()) + [trial['scientific_title']])
+    facts = list(trial['identifiers'].values())
+    if 'scientific_title' in trial:
+        facts = facts.append(trial['scientific_title'])
+    facts = helpers.slugify_array(facts)
     object = readers.read_objects(conn, 'trials', single=True, facts=facts)
 
     # Create object
