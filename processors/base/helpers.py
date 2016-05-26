@@ -73,9 +73,16 @@ def get_optimal_title(*titles):
     """
     MIN_LENGTH = 10
     for title in titles:
-        if title is None:
-            continue
-        title = title.strip(string.whitespace + '.')
+        title = clean_string(title)
         if len(title) >= MIN_LENGTH:
             return title
     return title
+
+
+def clean_string(value):
+    """Cast falsy value to sring and strip whitespeces and other unwanted chars.
+    """
+    if not value:
+        value = ''
+    value = value.strip(string.whitespace + '.')
+    return value

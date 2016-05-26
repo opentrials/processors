@@ -84,9 +84,11 @@ def extract_trial(record):
 def extract_conditions(record):
     conditions = []
     for element in record['conditions'] or []:
-        conditions.append({
-            'name': element,
-        })
+        name = base.helpers.clean_string(element)
+        if name:
+            conditions.append({
+                'name': element,
+            })
     return conditions
 
 

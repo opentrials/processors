@@ -76,9 +76,10 @@ def extract_trial(record):
 
 def extract_conditions(record):
     conditions = []
-    if record['condition']:
+    name = base.helpers.clean_string(record['condition'])
+    if name:
         conditions.append({
-            'name': record['condition'],
+            'name': name,
         })
     return conditions
 
