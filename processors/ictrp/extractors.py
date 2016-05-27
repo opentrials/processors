@@ -36,6 +36,7 @@ def extract_trial(record):
         'PACTR': 'pactr',  # Pan Africa
         'REBEC': 'rbr',  # Brazil
         'RPCEC': 'rpcec',  # Cuba
+        'RPEC': 'per', # Peru
         'TCTR': 'tctr',  # Thai
     }
     if record['register'] in registries:
@@ -70,6 +71,7 @@ def extract_trial(record):
             'complete: follow-up continuing': 'complete',
             'data analysis completed': 'other',
             'enrolling by invitation': 'recruiting',
+            'interrupted': 'other',
             'main results already published': 'other',
             'no longer available': 'other',
             'no longer recruiting': 'other',
