@@ -36,7 +36,7 @@ def extract_trial(record):
         'PACTR': 'pactr',  # Pan Africa
         'REBEC': 'rbr',  # Brazil
         'RPCEC': 'rpcec',  # Cuba
-        'RPEC': 'per', # Peru
+        'RPEC': 'per',  # Peru
         'TCTR': 'tctr',  # Thai
     }
     if record['register'] in registries:
