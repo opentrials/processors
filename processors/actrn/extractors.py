@@ -88,11 +88,9 @@ def extract_trial(record):
 
 def extract_conditions(record):
     conditions = []
-    name = base.helpers.clean_string(record['health_conditions_or_problems_studied'])
-    if name:
-        conditions.append({
-            'name': name,
-        })
+    conditions.append({
+        'name': record['health_conditions_or_problems_studied'],
+    })
     return conditions
 
 
@@ -109,25 +107,21 @@ def extract_locations(record):
 def extract_organisations(record):
     organisations = []
     for element in record['sponsors'] or []:
-        name = base.helpers.clean_string(element.get('name', ''))
-        if name:
-            organisations.append({
-                'name': name,
-                # ---
-                'trial_role': 'sponsor',
-            })
+        organisations.append({
+            'name': element.get('name', None),
+            # ---
+            'trial_role': 'sponsor',
+        })
     return organisations
 
 
 def extract_persons(record):
     persons = []
     for role in ['public_queries', 'scientific_queries']:
-        name = base.helpers.clean_string(record[role].get('name', ''))
-        if name:
-            persons.append({
-                'name': name,
-                # ---
-                'trial_id': record['trial_id'],
-                'trial_role': role,
-            })
+        persons.append({
+            'name': record[role].get('name', None),
+            # ---
+            'trial_id': record['trial_id'],
+            'trial_role': role,
+        })
     return persons

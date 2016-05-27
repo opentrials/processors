@@ -40,6 +40,8 @@ def process_publication(conn, table, extractors):
 
                 # Write publication
                 publication_id = writers.write_publication(conn, publication, source_id)
+                if publication_id is None:
+                    continue
 
                 # Following code could be moved to separete linking processor:
                 # https://github.com/opentrials/opentrials/issues/115

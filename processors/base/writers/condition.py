@@ -23,15 +23,23 @@ def write_condition(conn, condition, source_id, trial_id=None):
         source_id (str): data source id
         trial_id (str): related trial id
 
+    Raises:
+        KeyError: if schema is not valid
+
     Returns:
-        str: object identifier
+        str/None: object identifier/if data is not valid
 
     """
     create = False
     timestamp = datetime.datetime.utcnow()
 
+    # Get name
+    name = helpers.clean_string(condition['name'])
+    if not name:
+        return None
+
     # Get slug/read object
-    slug = helpers.slugify_string(condition['name'])
+    slug = helpers.slugify_string(name)
     object = readers.read_objects(conn, 'conditions', single=True, slug=slug)
 
     # Create object
@@ -50,7 +58,7 @@ def write_condition(conn, condition, source_id, trial_id=None):
             'updated_at': timestamp,
             'source_id': source_id,
             # ---
-            'name': condition['name'],
+            'name': name,
             'description': condition.get('description', None),
             'icdcm_code': condition.get('icdcm_code', None),
         })
@@ -60,6 +68,6 @@ def write_condition(conn, condition, source_id, trial_id=None):
 
         # Log debug
         logger.debug('Condition - %s: %s',
-            'created' if create else 'updated', condition['name'])
+            'created' if create else 'updated', name)
 
     return object['id']

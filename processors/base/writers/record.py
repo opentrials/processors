@@ -23,8 +23,11 @@ def write_database_record(conn, record, source_id, trial_id, trial):
         source_id (str): related source id
         primary (bool): if record primary
 
+    Raises:
+        KeyError: if data structure is not valid
+
     Returns:
-        str: object identifier
+        str/None: object identifier/if not written (skipped)
 
     """
     create = False

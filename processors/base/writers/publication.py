@@ -22,8 +22,11 @@ def write_publication(conn, publication, source_id):
         publication (dict): normalized publication data
         source_id (str): data source identifier
 
+    Raises:
+        KeyError: if data structure is not valid
+
     Returns:
-        str: object identifier
+        str/None: object identifier/if not written (skipped)
 
     """
     create = False

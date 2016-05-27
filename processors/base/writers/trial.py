@@ -21,8 +21,11 @@ def write_trial(conn, trial, source_id):
         conn (dict): connection dict
         trial (dict): normilized trial data
 
+    Raises:
+        KeyError: if data structure is not valid
+
     Returns:
-        (str, bool): trial id and is primary flag
+        (str, bool)/(None, None): trial id and is primary flag/if not written (skipped)
 
     """
     create = False

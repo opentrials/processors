@@ -23,15 +23,23 @@ def write_location(conn, location, source_id, trial_id=None):
         source_id (str): data source id
         trial_id (str): related trial id
 
+    Raises:
+        KeyError: if data structure is not valid
+
     Returns:
-        str: object identifier
+        str/None: object identifier/if not written (skipped)
 
     """
     create = False
     timestamp = datetime.datetime.utcnow()
 
+    # Get name
+    name = helpers.clean_string(location['name'])
+    if not name:
+        return None
+
     # Get slug/read object
-    slug = helpers.slugify_string(location['name'])
+    slug = helpers.slugify_string(name)
     object = readers.read_objects(conn, 'locations', single=True, slug=slug)
 
     # Create object
@@ -50,7 +58,7 @@ def write_location(conn, location, source_id, trial_id=None):
             'updated_at': timestamp,
             'source_id': source_id,
             # ---
-            'name': location['name'],
+            'name': name,
             'type': location.get('type', None),
         })
 
@@ -59,6 +67,6 @@ def write_location(conn, location, source_id, trial_id=None):
 
         # Log debug
         logger.debug('Location - %s: %s',
-            'created' if create else 'updated', location['name'])
+            'created' if create else 'updated', name)
 
     return object['id']

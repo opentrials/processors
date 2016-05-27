@@ -23,15 +23,24 @@ def write_person(conn, person, source_id, trial_id=None):
         source_id (str): data source id
         trial_id (str): related trial id
 
+    Raises:
+        KeyError: if data structure is not valid
+
     Returns:
-        str: object identifier
+        str/None: object identifier/if not written (skipped)
 
     """
     create = False
     timestamp = datetime.datetime.utcnow()
 
+    # Get name
+    name = helpers.clean_string(person['name'])
+    if not name:
+        return None
+
     # Get slug/read object
-    slug = helpers.slugify_string('{name}_{trial_id}'.format(**person))
+    slug = helpers.slugify_string(
+        '{name}_{trial_id}'.format(name=name, trial_id=person['trial_id']))
     object = readers.read_objects(conn, 'persons', single=True, slug=slug)
 
     # Create object
@@ -50,7 +59,7 @@ def write_person(conn, person, source_id, trial_id=None):
             'updated_at': timestamp,
             'source_id': source_id,
             # ---
-            'name': person['name'],
+            'name': name,
         })
 
         # Write object
@@ -58,6 +67,6 @@ def write_person(conn, person, source_id, trial_id=None):
 
         # Log debug
         logger.debug('Person - %s: %s',
-            'created' if create else 'updated', person['name'])
+            'created' if create else 'updated', name)
 
     return object['id']

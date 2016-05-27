@@ -88,11 +88,9 @@ def extract_trial(record):
 
 def extract_conditions(record):
     conditions = []
-    name = base.helpers.clean_string(record['condition'])
-    if name:
-        conditions.append({
-            'name': name,
-        })
+    conditions.append({
+        'name': record['condition'],
+    })
     return conditions
 
 
@@ -108,41 +106,31 @@ def extract_locations(record):
 
 def extract_organisations(record):
     organisations = []
-    name = base.helpers.clean_string(record['name_of_primary_sponsor'])
-    if name:
-        organisations.append({
-            'name': name,
-            # ---
-            'trial_role': 'primary_sponsor',
-        })
-    name = base.helpers.clean_string(record['source_of_funding'])
-    if name:
-        organisations.append({
-            'name': name,
-            # ---
-            'trial_role': 'funder',
-        })
+    organisations.append({
+        'name': record['name_of_primary_sponsor'],
+        # ---
+        'trial_role': 'primary_sponsor',
+    })
+    organisations.append({
+        'name': record['source_of_funding'],
+        # ---
+        'trial_role': 'funder',
+    })
     return organisations
 
 
 def extract_persons(record):
     persons = []
-    name = base.helpers.clean_string(
-        record.get('research_name_of_lead_principal_investigator', ''))
-    if name:
-        persons.append({
-            'name': name,
-            # ---
-            'trial_id': record['unique_trial_number'],
-            'trial_role': 'principal_investigator',
-        })
-    name = base.helpers.clean_string(
-        record.get('public_name_of_contact_person', ''))
-    if name:
-        persons.append({
-            'name': name,
-            # ---
-            'trial_id': record['unique_trial_number'],
-            'trial_role': 'public_queries',
-        })
+    persons.append({
+        'name': record.get('research_name_of_lead_principal_investigator', None),
+        # ---
+        'trial_id': record['unique_trial_number'],
+        'trial_role': 'principal_investigator',
+    })
+    persons.append({
+        'name': record.get('public_name_of_contact_person', None),
+        # ---
+        'trial_id': record['unique_trial_number'],
+        'trial_role': 'public_queries',
+    })
     return persons

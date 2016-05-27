@@ -4,8 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from .. import base
-
 
 # Module API
 
@@ -28,11 +26,9 @@ def extract_conditions(record):
     # Extract conditions
     conditions = []
     for name in names:
-        name = base.helpers.clean_string(name)
-        if name:
-            conditions.append({
-                'name': name,
-                'icdcm_code': record['name'],
-            })
+        conditions.append({
+            'name': name,
+            'icdcm_code': record['name'],
+        })
 
     return conditions

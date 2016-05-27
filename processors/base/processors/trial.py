@@ -37,6 +37,8 @@ def process_trial(conn, table, extractors):
             # Extract and write trial
             trial = extractors['extract_trial'](record)
             trial_id, is_primary = writers.write_trial(conn, trial, source_id)
+            if trial_id is None:
+                continue
 
             # Write record
             writers.write_database_record(conn, record, source_id, trial_id, trial)
@@ -55,6 +57,8 @@ def process_trial(conn, table, extractors):
                 conditions = extractors['extract_conditions'](record)
                 for condition in conditions:
                     condition_id = writers.write_condition(conn, condition, source_id)
+                    if condition_id is None:
+                        continue
                     writers.write_trial_relationship(
                         conn, 'condition', condition, condition_id, trial_id)
 
@@ -62,6 +66,8 @@ def process_trial(conn, table, extractors):
                 interventions = extractors['extract_interventions'](record)
                 for intervention in interventions:
                     int_id = writers.write_intervention(conn, intervention, source_id)
+                    if int_id is None:
+                        continue
                     writers.write_trial_relationship(
                         conn, 'intervention', intervention, int_id, trial_id)
 
@@ -69,6 +75,8 @@ def process_trial(conn, table, extractors):
                 locations = extractors['extract_locations'](record)
                 for location in locations:
                     location_id = writers.write_location(conn, location, source_id)
+                    if location_id is None:
+                        continue
                     writers.write_trial_relationship(
                         conn, 'location', location, location_id, trial_id)
 
@@ -76,6 +84,8 @@ def process_trial(conn, table, extractors):
                 organisations = extractors['extract_organisations'](record)
                 for organisation in organisations:
                     org_id = writers.write_organisation(conn, organisation, source_id)
+                    if org_id is None:
+                        continue
                     writers.write_trial_relationship(
                         conn, 'organisation', organisation, org_id, trial_id)
 
@@ -83,6 +93,8 @@ def process_trial(conn, table, extractors):
                 persons = extractors['extract_persons'](record)
                 for person in persons:
                     person_id = writers.write_person(conn, person, source_id)
+                    if person_id is None:
+                        continue
                     writers.write_trial_relationship(
                         conn, 'person', person, person_id, trial_id)
 

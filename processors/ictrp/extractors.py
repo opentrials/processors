@@ -125,36 +125,30 @@ def extract_trial(record):
 def extract_conditions(record):
     conditions = []
     for element in record['health_conditions_or_problems_studied'] or []:
-        name = base.helpers.clean_string(element)
-        if name:
-            conditions.append({
-                'name': name,
-            })
+        conditions.append({
+            'name': element,
+        })
     return conditions
 
 
 def extract_interventions(record):
     interventions = []
     for element in record['interventions'] or []:
-        name = base.helpers.clean_string(element)
-        if name:
-            interventions.append({
-                'name': name,
-            })
+        interventions.append({
+            'name': element,
+        })
     return interventions
 
 
 def extract_locations(record):
     locations = []
     for element in record['countries_of_recruitment'] or []:
-        name = base.helpers.clean_string(element)
-        if name:
-            locations.append({
-                'name': name,
-                'type': 'country',
-                # ---
-                'trial_role': 'recruitment_countries',
-            })
+        locations.append({
+            'name': element,
+            'type': 'country',
+            # ---
+            'trial_role': 'recruitment_countries',
+        })
     return locations
 
 

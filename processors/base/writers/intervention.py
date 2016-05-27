@@ -22,15 +22,23 @@ def write_intervention(conn, intervention, source_id):
         intervention (dict): normalized data
         source_id (str): data source id
 
+    Raises:
+        KeyError: if data structure is not valid
+
     Returns:
-        str: object identifier
+        str/None: object identifier/if not written (skipped)
 
     """
     create = False
     timestamp = datetime.datetime.utcnow()
 
+    # Get name
+    name = helpers.clean_string(intervention['name'])
+    if not name:
+        return None
+
     # Get slug/read object
-    slug = helpers.slugify_string(intervention['name'])
+    slug = helpers.slugify_string(name)
     object = readers.read_objects(conn, 'interventions', single=True, slug=slug)
 
     # Create object
@@ -49,7 +57,7 @@ def write_intervention(conn, intervention, source_id):
             'updated_at': timestamp,
             'source_id': source_id,
             # ---
-            'name': intervention['name'],
+            'name': name,
             'type': intervention.get('type', None),
             'description': intervention.get('description', None),
             'icdpcs_code': intervention.get('icdpcs_code', None),
@@ -61,6 +69,6 @@ def write_intervention(conn, intervention, source_id):
 
         # Log debug
         logger.debug('Intervention - %s: %s',
-            'created' if create else 'updated', intervention['name'])
+            'created' if create else 'updated', name)
 
     return object['id']

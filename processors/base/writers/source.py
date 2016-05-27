@@ -19,8 +19,11 @@ def write_source(conn, source):
         conn (dict): connection dict
         source (dict): normalized source data
 
+    Raises:
+        KeyError: if data structure is not valid
+
     Returns:
-        str: source identifier
+        str/None: object identifier/if not written (skipped)
 
     """
     create = False

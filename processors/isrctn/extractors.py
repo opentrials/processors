@@ -87,11 +87,9 @@ def extract_trial(record):
 
 def extract_conditions(record):
     conditions = []
-    name = base.helpers.clean_string(record['condition'])
-    if name:
-        conditions.append({
-            'name': name,
-        })
+    conditions.append({
+        'name': record['condition'],
+    })
     return conditions
 
 
@@ -100,59 +98,48 @@ def extract_interventions(record):
     if record['drug_names']:
         pattern = r'(?:,)|(?:\d+\.)'
         for element in re.split(pattern, record['drug_names']):
-            name = base.helpers.clean_string(element)
-            if name:
-                interventions.append({
-                    'name': name,
-                    'type': 'drug',
-                })
+            interventions.append({
+                'name': element,
+                'type': 'drug',
+            })
     return interventions
 
 
 def extract_locations(record):
     locations = []
     for element in (record['countries_of_recruitment'] or '').split(',') or []:
-        name = base.helpers.clean_string(element)
-        if name:
-            locations.append({
-                'name': name,
-                'type': 'country',
-                # ---
-                'trial_role': 'recruitment_countries',
-            })
+        locations.append({
+            'name': element,
+            'type': 'country',
+            # ---
+            'trial_role': 'recruitment_countries',
+        })
     return locations
 
 
 def extract_organisations(record):
     organisations = []
     for element in record['sponsors'] or []:
-        name = base.helpers.clean_string(element.get('organisation', ''))
-        if name:
-            organisations.append({
-                'name': name,
-                # ---
-                'trial_role': 'sponsor',
-            })
+        organisations.append({
+            'name': element['organisation'],
+            # ---
+            'trial_role': 'sponsor',
+        })
     for element in record['funders'] or []:
-        name = base.helpers.clean_string(element.get('funder_name', ''))
-        if name:
-            organisations.append({
-                'name': name,
-                # ---
-                'trial_role': 'funder',
-            })
+        organisations.append({
+            'name': element['funder_name'],
+            # ---
+            'trial_role': 'funder',
+        })
     return organisations
 
 
 def extract_persons(record):
     persons = []
     for element in record['contacts'] or []:
-        name = base.helpers.clean_string(
-            element.get('primary_contact', element.get('additional_contact')))
-        if name:
-            persons.append({
-                'name': name,
-                # ---
-                'trial_id': record['isrctn_id'],
-            })
+        persons.append({
+            'name': element.get('primary_contact', element.get('additional_contact')),
+            # ---
+            'trial_id': record['isrctn_id'],
+        })
     return persons

@@ -86,62 +86,50 @@ def extract_trial(record):
 def extract_conditions(record):
     conditions = []
     for element in record['conditions'] or []:
-        name = base.helpers.clean_string(element)
-        if name:
-            conditions.append({
-                'name': name,
-            })
+        conditions.append({
+            'name': element,
+        })
     return conditions
 
 
 def extract_interventions(record):
     interventions = []
     for element in record['interventions'] or []:
-        name = base.helpers.clean_string(element['intervention_name'])
-        if name:
-            interventions.append({
-                'name': name,
-            })
+        interventions.append({
+            'name': element['intervention_name'],
+        })
     return interventions
 
 
 def extract_locations(record):
     locations = []
     for element in record['location_countries'] or []:
-        name = base.helpers.clean_string(element)
-        if name:
-            locations.append({
-                'name': name,
-                'type': 'country',
-                # ---
-                'trial_role': 'recruitment_countries',
-            })
+        locations.append({
+            'name': element,
+            'type': 'country',
+            # ---
+            'trial_role': 'recruitment_countries',
+        })
     return locations
 
 
 def extract_organisations(record):
     organisations = []
     for element in record['sponsors'] or []:
-        name = base.helpers.clean_string(
-            element.get('lead_spondor', {}).get('agency', ''))
-        if name:
-            organisations.append({
-                'name': name,
-                # ---
-                'trial_role': 'primary_sponsor',
-            })
+        organisations.append({
+            'name': element.get('lead_spondor', {}).get('agency', ''),
+            # ---
+            'trial_role': 'primary_sponsor',
+        })
     return organisations
 
 
 def extract_persons(record):
     persons = []
     for element in record['overall_officials'] or []:
-        if element.get('role', None) != 'Principal Investigator':
-            continue
-        name = base.helpers.clean_string(element.get('last_name', ''))
-        if name:
+        if element.get('role', None) == 'Principal Investigator':
             persons.append({
-                'name': name,
+                'name': element['last_name'],
                 # ---
                 'trial_id': record['nct_id'],
                 'trial_role': 'principal_investigator',
