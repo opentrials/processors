@@ -40,10 +40,7 @@ def extract_trial(record):
         'RPEC': 'per',  # Peru
         'TCTR': 'tctr',  # Thai
     }
-    if record['register'] in registries:
-        identifiers[registries[record['register']]] = record['main_id']
-    else:
-        raise ValueError('Unknown register: "%s"' % record['register'])
+    identifiers[registries[record['register']]] = record['main_id']
 
     # Get public title
     public_title = base.helpers.get_optimal_title(
