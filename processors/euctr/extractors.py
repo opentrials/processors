@@ -88,9 +88,11 @@ def extract_trial(record):
 
 def extract_conditions(record):
     conditions = []
-    conditions.append({
-        'name': record['trial_medical_condition_s_being_investigated'],
-    })
+    key = 'trial_medical_condition_s_being_investigated'
+    for name in (record[key] or '').split('\n'):
+        conditions.append({
+            'name': name,
+        })
     return conditions
 
 

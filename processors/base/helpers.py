@@ -84,5 +84,5 @@ def clean_string(value):
     """
     if not value:
         value = ''
-    value = value.strip(string.whitespace + '.')
+    value = value.strip(string.whitespace + '."')
     return value
