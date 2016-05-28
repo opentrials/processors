@@ -9,22 +9,19 @@ import uuid
 
 # Module API
 
-def read_objects(conn, table, single=False, slug=None, facts=None, **filter):
+def read_objects(conn, table, first=False, slug=None, facts=None, **filter):
     """Read objects.
 
     Args:
         conn (dict): connection dict
         table (str): table name
-        single (bool): return one object if True
+        first (bool): return first object if True
         slug (str): string to check (should be slugified)
         facts (list): strings to check (should be slugified)
         filter (dict): additional field filter
 
-    Raises:
-        ValueError: when single is True and more than one object found
-
     Returns:
-        [dict]/dict: list of objects/object
+        dict[]/dict/None: list of objects/object/None if not object
 
     """
 
@@ -37,16 +34,11 @@ def read_objects(conn, table, single=False, slug=None, facts=None, **filter):
         if isinstance(object['id'], uuid.UUID):
             object['id'] = object['id'].hex
 
-    # If single object requested
-    if single:
+    # If first object requested
+    if first:
         if not objects:
             return None
-        elif len(objects) == 1:
-            return objects[0]
-        else:
-            message = 'Finding error: more than 1 en : %s - %s - %s - %s'
-            message = message % (table, slug, facts, filter)
-            raise ValueError(message)
+        return objects[0]
 
     return objects
 

@@ -40,7 +40,7 @@ def write_organisation(conn, organisation, source_id, trial_id=None):
 
     # Get slug/read object
     slug = helpers.slugify_string(name)
-    object = readers.read_objects(conn, 'organisations', single=True, slug=slug)
+    object = readers.read_objects(conn, 'organisations', first=True, slug=slug)
 
     # Create object
     if not object:

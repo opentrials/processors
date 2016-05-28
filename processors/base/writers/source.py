@@ -30,7 +30,7 @@ def write_source(conn, source):
     timestamp = datetime.datetime.utcnow()
 
     # Read object
-    object = readers.read_objects(conn, 'sources', single=True, id=source['id'])
+    object = readers.read_objects(conn, 'sources', first=True, id=source['id'])
 
     # Create object
     if not object:

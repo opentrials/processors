@@ -40,7 +40,7 @@ def write_location(conn, location, source_id, trial_id=None):
 
     # Get slug/read object
     slug = helpers.slugify_string(name)
-    object = readers.read_objects(conn, 'locations', single=True, slug=slug)
+    object = readers.read_objects(conn, 'locations', first=True, slug=slug)
 
     # Create object
     if not object:

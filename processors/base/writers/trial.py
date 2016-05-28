@@ -36,7 +36,7 @@ def write_trial(conn, trial, source_id):
     if 'scientific_title' in trial:
         facts.append(trial['scientific_title'])
     facts = helpers.slugify_array(facts)
-    object = readers.read_objects(conn, 'trials', single=True, facts=facts)
+    object = readers.read_objects(conn, 'trials', first=True, facts=facts)
 
     # Create object
     if not object:

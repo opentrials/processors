@@ -34,7 +34,7 @@ def write_publication(conn, publication, source_id):
 
     # Get slug/read object
     slug = helpers.slugify_string(publication['source_url'])
-    object = readers.read_objects(conn, 'publications', single=True, slug=slug)
+    object = readers.read_objects(conn, 'publications', first=True, slug=slug)
 
     # Create object
     if not object:

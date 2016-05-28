@@ -41,7 +41,7 @@ def write_person(conn, person, source_id, trial_id=None):
     # Get slug/read object
     slug = helpers.slugify_string(
         '{name}_{trial_id}'.format(name=name, trial_id=person['trial_id']))
-    object = readers.read_objects(conn, 'persons', single=True, slug=slug)
+    object = readers.read_objects(conn, 'persons', first=True, slug=slug)
 
     # Create object
     if not object:

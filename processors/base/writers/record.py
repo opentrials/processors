@@ -33,7 +33,7 @@ def write_database_record(conn, record, source_id, trial_id, trial):
     create = False
 
     # Read object
-    object = readers.read_objects(conn, 'records', single=True, id=record['meta_id'])
+    object = readers.read_objects(conn, 'records', first=True, id=record['meta_id'])
 
     # Create
     if not object:

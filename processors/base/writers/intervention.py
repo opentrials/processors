@@ -39,7 +39,7 @@ def write_intervention(conn, intervention, source_id):
 
     # Get slug/read object
     slug = helpers.slugify_string(name)
-    object = readers.read_objects(conn, 'interventions', single=True, slug=slug)
+    object = readers.read_objects(conn, 'interventions', first=True, slug=slug)
 
     # Create object
     if not object:
