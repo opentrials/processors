@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import re
 from .. import base
 
 
@@ -143,12 +144,17 @@ def extract_interventions(record):
 def extract_locations(record):
     locations = []
     for element in record['countries_of_recruitment'] or []:
-        locations.append({
-            'name': element,
-            'type': 'country',
-            # ---
-            'trial_role': 'recruitment_countries',
-        })
+        for index, name in enumerate(re.split(r'[,;]', element)):
+            name = name.strip()
+            # For cases like "Venezuela, Bolivarian Republic of"
+            if index == 1 and 'republic of' in name.lower():
+                continue
+            locations.append({
+                'name': name,
+                'type': 'country',
+                # ---
+                'trial_role': 'recruitment_countries',
+            })
     return locations
 
 

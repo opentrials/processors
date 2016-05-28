@@ -93,9 +93,12 @@ def extract_interventions(record):
 
 def extract_locations(record):
     locations = []
-    for element in record['locations'] or []:
+    for name in record['locations'] or []:
+        # For strange case "Republic of"
+        if name.strip().lower() == 'republic of':
+            continue
         locations.append({
-            'name': element,
+            'name': name,
             'type': 'country',
             # ---
             'trial_role': 'recruitment_countries',
