@@ -35,7 +35,7 @@ def write_condition(conn, condition, source_id, trial_id=None):
 
     # Get name
     name = helpers.clean_string(condition['name'])
-    if not name:
+    if len(name) <= 1:
         return None
 
     # Get slug/read object

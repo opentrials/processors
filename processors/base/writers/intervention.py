@@ -34,7 +34,7 @@ def write_intervention(conn, intervention, source_id):
 
     # Get name
     name = helpers.clean_string(intervention['name'])
-    if not name:
+    if len(name) <= 1:
         return None
 
     # Get slug/read object

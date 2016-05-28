@@ -35,7 +35,7 @@ def write_organisation(conn, organisation, source_id, trial_id=None):
 
     # Get name
     name = helpers.clean_string(organisation['name'])
-    if not name:
+    if len(name) <= 1:
         return None
 
     # Get slug/read object

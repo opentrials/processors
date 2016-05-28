@@ -35,7 +35,7 @@ def write_location(conn, location, source_id, trial_id=None):
 
     # Get name
     name = helpers.clean_string(location['name'])
-    if not name:
+    if len(name) <= 1:
         return None
 
     # Get slug/read object

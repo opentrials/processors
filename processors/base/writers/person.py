@@ -35,7 +35,7 @@ def write_person(conn, person, source_id, trial_id=None):
 
     # Get name
     name = helpers.clean_string(person['name'])
-    if not name:
+    if len(name) <= 1:
         return None
 
     # Get slug/read object
