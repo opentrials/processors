@@ -134,10 +134,12 @@ def extract_conditions(record):
 
 def extract_interventions(record):
     interventions = []
+    pattern = r'(?:Intervention\s*)?\d[.):]'
     for element in record['interventions'] or []:
-        interventions.append({
-            'name': element,
-        })
+        for name in re.split(pattern, element):
+            interventions.append({
+                'name': name,
+            })
     return interventions
 
 
