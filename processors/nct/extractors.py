@@ -51,7 +51,7 @@ def extract_trial(record):
 
     # Get gender
     gender = None
-    if record['eligibility'].get('gender', None):
+    if (record['eligibility'] or {}).get('gender', None):
         gender = record['eligibility']['gender'].lower()
 
     # Get has_published_results
