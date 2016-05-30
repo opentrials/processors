@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
+from .. import helpers
 from .. import readers
 from .. import writers
 logger = logging.getLogger(__name__)
@@ -51,12 +52,12 @@ def process_publication(conn, table, extractors):
                     publication_id=publication_id)
 
                 # Write relationships
-                for id in publication['trial_identifiers']:
-                    trial_objects = readers.read_objects(conn, 'trials', facts=[id])
-                    for trial_object in trial_objects:
-                        trial_id = trial_object['id']
-                        writers.write_trial_relationship(
-                            conn, 'publication', publication, publication_id, trial_id)
+                trial_facts = helpers.slugify_array(publication['trial_identifiers'])
+                trial_objects = readers.read_objects(conn, 'trials', facts=trial_facts)
+                for trial_object in trial_objects:
+                    trial_id = trial_object['id']
+                    writers.write_trial_relationship(
+                        conn, 'publication', publication, publication_id, trial_id)
 
         except Exception as exception:
             errors += 1

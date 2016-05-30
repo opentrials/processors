@@ -16,7 +16,7 @@ def read_objects(conn, table, first=False, slug=None, facts=None, **filter):
         conn (dict): connection dict
         table (str): table name
         first (bool): return first object if True
-        slug (str): string to check (should be slugified)
+        slug (str): string to check (SHOULD BE SLUGIFIED)
         facts (list): strings to check (should be slugified)
         filter (dict): additional field filter
 
