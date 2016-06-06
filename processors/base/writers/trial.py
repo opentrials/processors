@@ -74,7 +74,7 @@ def write_trial(conn, trial, source_id):
 
         # Update object
         object.update({
-            'source_id': source_id,
+            'primary_source_id': source_id,
             # ---
             'primary_register': trial['primary_register'],
             'primary_id': trial['primary_id'],

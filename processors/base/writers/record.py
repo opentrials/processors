@@ -49,7 +49,7 @@ def write_database_record(conn, record, source_id, trial_id, trial):
         object.update({
             'updated_at': record['meta_updated'],
             'trial_id': trial_id,
-            'source_id': source_id,
+            'primary_source_id': source_id,
             'source_url': record['meta_source'],
             'source_data': json.loads(json.dumps(record, cls=helpers.JSONEncoder)),
             # ---
