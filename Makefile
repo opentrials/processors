@@ -1,4 +1,4 @@
-.PHONY: all build install list push start test
+.PHONY: all build install list push start test up
 
 
 all: list
