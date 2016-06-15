@@ -1,6 +1,7 @@
 actrn:
   image: okibot/processors
   command: make start actrn
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -9,6 +10,7 @@ actrn:
 contentmine:
   image: okibot/processors
   command: make start contentmine
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -17,6 +19,7 @@ contentmine:
 euctr:
   image: okibot/processors
   command: make start euctr
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -25,6 +28,7 @@ euctr:
 fdadl:
   image: okibot/processors
   command: make start fdadl
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -33,6 +37,7 @@ fdadl:
 gsk:
   image: okibot/processors
   command: make start gsk
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -41,6 +46,7 @@ gsk:
 icdcm:
   image: okibot/processors
   command: make start icdcm
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -49,6 +55,7 @@ icdcm:
 icdpcs:
   image: okibot/processors
   command: make start icdpcs
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -57,6 +64,7 @@ icdpcs:
 ictrp:
   image: okibot/processors
   command: make start ictrp
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -65,6 +73,7 @@ ictrp:
 isrctn:
   image: okibot/processors
   command: make start isrctn
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -73,6 +82,7 @@ isrctn:
 jprn:
   image: okibot/processors
   command: make start jprn
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -81,6 +91,7 @@ jprn:
 nct:
   image: okibot/processors
   command: make start nct
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -89,6 +100,7 @@ nct:
 openaire:
   image: okibot/processors
   command: make start openaire
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -97,6 +109,7 @@ openaire:
 pfizer:
   image: okibot/processors
   command: make start pfizer
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -105,6 +118,7 @@ pfizer:
 pubmed:
   image: okibot/processors
   command: make start pubmed
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
@@ -113,6 +127,7 @@ pubmed:
 takeda:
   image: okibot/processors
   command: make start takeda
+  # restart: always
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
