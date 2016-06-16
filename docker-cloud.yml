@@ -43,6 +43,15 @@ gsk:
     DATABASE_URL:
     LOGGING_URL:
 
+hra:
+  image: okibot/processors
+  command: make start hra
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
+
 icdcm:
   image: okibot/processors
   command: make start icdcm

@@ -18,6 +18,11 @@ gsk:
     service: gsk
     file: docker-cloud.yml
 
+hra:
+  extends:
+    service: hra
+    file: docker-cloud.yml
+
 icdcm:
   extends:
     service: icdcm
