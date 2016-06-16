@@ -50,16 +50,16 @@ def write_trial(conn, trial, source_id):
     is_primary = False
     priority = ['nct', 'euctr', 'isrctn']
     for register in priority:
-        if 'source_id' not in object:
+        if create:
             is_primary = True
             break
-        elif object['source_id'] == source_id:
+        elif object['primary_source_id'] == source_id:
             is_primary = True
             break
         elif source_id == register:
             is_primary = True
             break
-        elif object['source_id'] == register:
+        elif object['primary_source_id'] == register:
             is_primary = False
             break
 
