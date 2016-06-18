@@ -5,7 +5,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
-from .. import helpers
 from .. import readers
 from .. import writers
 logger = logging.getLogger(__name__)
@@ -35,29 +34,10 @@ def process_publication(conn, table, extractors):
 
         try:
 
-            # Extract and write publication/relationships
+            # Extract and write publications
             publications = extractors['extract_publications'](record)
             for publication in publications:
-
-                # Write publication
-                publication_id = writers.write_publication(conn, publication, source_id)
-                if publication_id is None:
-                    continue
-
-                # Following code could be moved to separete linking processor:
-                # https://github.com/opentrials/opentrials/issues/115
-
-                # Delete existent relationships
-                conn['database']['trials_publications'].delete(
-                    publication_id=publication_id)
-
-                # Write relationships
-                trial_facts = helpers.slugify_array(publication['trial_identifiers'])
-                trial_objects = readers.read_objects(conn, 'trials', facts=trial_facts)
-                for trial_object in trial_objects:
-                    trial_id = trial_object['id']
-                    writers.write_trial_relationship(
-                        conn, 'publication', publication, publication_id, trial_id)
+                writers.write_publication(conn, publication, source_id)
 
         except Exception as exception:
             errors += 1
