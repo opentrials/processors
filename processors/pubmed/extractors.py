@@ -4,6 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from .. import base
+
 
 # Module API
 
@@ -23,6 +25,10 @@ def extract_publications(record):
     if record['article_abstract']:
         article_abstract = record['article_abstract']
 
+    # Get slug
+    slug = base.helpers.slugify_string(
+        '%s_%s' % (record['article_title'], record['date_created']))
+
     # Extract publications
     publications = []
     publications.append({
@@ -32,6 +38,8 @@ def extract_publications(record):
         'authors': record['article_authors'],
         'journal': record['journal_title'],
         'date': record['article_date'],
+        # ---
+        'slug': slug,
     })
 
     return publications

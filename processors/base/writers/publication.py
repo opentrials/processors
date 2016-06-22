@@ -8,7 +8,6 @@ import uuid
 import logging
 import datetime
 from .. import readers
-from .. import helpers
 logger = logging.getLogger(__name__)
 
 
@@ -33,7 +32,7 @@ def write_publication(conn, publication, source_id):
     timestamp = datetime.datetime.utcnow()
 
     # Get slug/read object
-    slug = helpers.slugify_string('%s_%s' % (publication['title'], publication['date']))
+    slug = publication['slug']
     object = readers.read_objects(conn, 'publications', first=True, slug=slug)
 
     # Create object

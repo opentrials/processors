@@ -37,6 +37,10 @@ def extract_publications(record):
     if identifiers:
         abstract = '%s [%s]' % (abstract, '/'.join(identifiers))
 
+    # Get slug
+    slug = base.helpers.slugify_string(
+        '%s_%s' % (title, record['publication_date']))
+
     # Extract publications
     publications = []
     publications.append({
@@ -44,6 +48,8 @@ def extract_publications(record):
         'title': title,
         'abstract': abstract,
         'date': record['publication_date'],
+        # ---
+        'slug': slug,
     })
 
     return publications
