@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 
 def process(conf, conn):
 
-    # Iterate over all pubmed publications
+    # Iterate over all hra publications
     count = 0
     for publication in base.readers.read_rows(conn, 'database', 'publications',
-            orderby='id', source_id='pubmed'):
+            orderby='id', source_id='hra'):
 
         # Find identifiers
         identifiers = base.helpers.find_identifiers(
@@ -41,20 +41,7 @@ def process(conf, conn):
                 logger.debug('Linked %s to "%s"',
                     trial['primary_id'], publication['title'][0:50])
 
-            # Not found trial - add trial stub
-            else:
-                trial = {
-                    'primary_register': 'Pubmed',
-                    'primary_id': identifier,
-                    'identifiers': {
-                        'pubmed': identifier,
-                    },
-                    'public_title': identifier,
-                }
-                base.writers.write_trial(conn, trial, 'pubmed')
-                logger.debug('Added pubmed-only trial: %s', identifier)
-
         # Log info
         count += 1
         if not count % 100:
-            logger.info('Processed for links %s pubmed publications', count)
+            logger.info('Processed for links %s hra publications', count)

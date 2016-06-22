@@ -33,7 +33,7 @@ def write_publication(conn, publication, source_id):
     timestamp = datetime.datetime.utcnow()
 
     # Get slug/read object
-    slug = helpers.slugify_string(publication['source_url'])
+    slug = helpers.slugify_string('%s_%s' % (publication['title'], publication['date']))
     object = readers.read_objects(conn, 'publications', first=True, slug=slug)
 
     # Create object

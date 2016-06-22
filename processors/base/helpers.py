@@ -58,6 +58,16 @@ class JSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+def clean_list(raw_list):
+    """Remove falsy values from list.
+    """
+    cleaned_list = []
+    for value in raw_list:
+        if value:
+            cleaned_list.append(value)
+    return cleaned_list
+
+
 def clean_dict(raw_dict):
     """Remove falsy values from dict.
     """
@@ -86,3 +96,30 @@ def clean_string(value):
         value = ''
     value = value.strip(string.whitespace + '."')
     return value
+
+
+def find_identifiers(text):
+    """Find list of trial indentifiers in the given text.
+    """
+
+    # Pattern could be improved based on a extended
+    # clinical trial identifiers format analysis
+    PATTERN = r'(%s[\d-]{3,})'
+    PREFIXES = [
+        'actrn',
+        'euctr',
+        'gsk',
+        'isrctn',
+        'jprn',
+        'nct',
+        'takeda',
+        'umin',
+    ]
+
+    # Find identifiers
+    identifiers = []
+    for prefix in PREFIXES:
+        pattern = PATTERN % prefix
+        identifiers.extend(re.findall(pattern, text, re.IGNORECASE))
+
+    return identifiers
