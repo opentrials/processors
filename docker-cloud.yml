@@ -133,6 +133,15 @@ pubmed:
     DATABASE_URL:
     LOGGING_URL:
 
+pubmed_linker:
+  image: okibot/processors
+  command: make start pubmed_linker
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
+
 takeda:
   image: okibot/processors
   command: make start takeda
