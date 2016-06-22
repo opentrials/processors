@@ -133,7 +133,7 @@ pubmed:
     DATABASE_URL:
     LOGGING_URL:
 
-pubmed_linker:
+pubmed-linker:
   image: okibot/processors
   command: make start pubmed_linker
   # restart: always

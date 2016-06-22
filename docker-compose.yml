@@ -63,9 +63,9 @@ pubmed:
     service: pubmed
     file: docker-cloud.yml
 
-pubmed_linker:
+pubmed-linker:
   extends:
-    service: pubmed_linker
+    service: pubmed-linker
     file: docker-cloud.yml
 
 takeda:
