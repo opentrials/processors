@@ -23,6 +23,11 @@ hra:
     service: hra
     file: docker-cloud.yml
 
+hra-linker:
+  extends:
+    service: hra-linker
+    file: docker-cloud.yml
+
 icdcm:
   extends:
     service: icdcm
