@@ -6,6 +6,8 @@ actrn:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 contentmine:
   image: okibot/processors
@@ -15,6 +17,8 @@ contentmine:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 euctr:
   image: okibot/processors
@@ -24,6 +28,8 @@ euctr:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 fdadl:
   image: okibot/processors
@@ -33,6 +39,8 @@ fdadl:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 gsk:
   image: okibot/processors
@@ -42,6 +50,8 @@ gsk:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 hra:
   image: okibot/processors
@@ -51,6 +61,8 @@ hra:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 hra-linker:
   image: okibot/processors
@@ -60,6 +72,8 @@ hra-linker:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 icdcm:
   image: okibot/processors
@@ -69,6 +83,8 @@ icdcm:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 icdpcs:
   image: okibot/processors
@@ -78,6 +94,8 @@ icdpcs:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 ictrp:
   image: okibot/processors
@@ -87,6 +105,8 @@ ictrp:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 isrctn:
   image: okibot/processors
@@ -96,6 +116,8 @@ isrctn:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 jprn:
   image: okibot/processors
@@ -105,6 +127,8 @@ jprn:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 nct:
   image: okibot/processors
@@ -114,6 +138,8 @@ nct:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 openaire:
   image: okibot/processors
@@ -123,6 +149,8 @@ openaire:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 pfizer:
   image: okibot/processors
@@ -132,6 +160,8 @@ pfizer:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 pubmed:
   image: okibot/processors
@@ -141,6 +171,8 @@ pubmed:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 pubmed-linker:
   image: okibot/processors
@@ -150,6 +182,8 @@ pubmed-linker:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
 
 takeda:
   image: okibot/processors
@@ -159,3 +193,5 @@ takeda:
     WAREHOUSE_URL:
     DATABASE_URL:
     LOGGING_URL:
+  tags:
+    - opentrials
