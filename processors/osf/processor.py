@@ -90,8 +90,8 @@ def process(conf, conn):
         # 201 - created
         # 409 - conflict (already exists)
         if res.status_code not in [201, 409]:
-            logger.error('Can\'t create "trial" documents')
-            exit(1)
+            logger.error('Can\'t create "trial" documents: %s', res.json())
+            continue
         count += len(trials)
         logger.info('Exported %s trials', count)
 
