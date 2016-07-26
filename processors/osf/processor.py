@@ -48,6 +48,7 @@ def process(conf, conn):
                 logger.error('Can\'t authenticate')
                 exit(1)
             token = res.json()['data']['attributes']['token']
+            token_issued_time = datetime.datetime.now()
             session.headers.update({'Authorization': token})
             logger.info('Successfully authenticated')
 
