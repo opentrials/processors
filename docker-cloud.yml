@@ -152,6 +152,20 @@ openaire:
   tags:
     - opentrials
 
+osf:
+  image: okibot/processors
+  command: make start osf
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
+    OSF_URL:
+    OSF_KEY:
+    OSF_NAMESPACE:
+  tags:
+    - opentrials
+
 pfizer:
   image: okibot/processors
   command: make start pfizer

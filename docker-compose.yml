@@ -70,6 +70,12 @@ nct:
     file: docker-cloud.yml
   restart: 'no'
 
+osf:
+  extends:
+    service: osf
+    file: docker-cloud.yml
+  restart: 'no'
+
 pfizer:
   extends:
     service: pfizer
