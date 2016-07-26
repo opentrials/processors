@@ -25,3 +25,9 @@ if os.environ.get('LOGGING_URL', None):
     syslog_handler = SysLogHandler(address=(host, int(port)))
     syslog_handler.setLevel(logging.INFO)
     root_logger.addHandler(syslog_handler)
+
+# OSF
+
+OSF_URL = os.environ.get('OSF_URL', None)
+OSF_KEY = os.environ.get('OSF_KEY', None)
+OSF_NAMESPACE = os.environ.get('OSF_NAMESPACE', None)
