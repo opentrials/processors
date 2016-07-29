@@ -5,6 +5,7 @@ actrn:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -16,6 +17,7 @@ contentmine:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -43,6 +45,7 @@ euctr:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -54,6 +57,7 @@ fdadl:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -65,6 +69,7 @@ gsk:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -76,6 +81,7 @@ hra:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -87,6 +93,7 @@ hra-linker:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -98,6 +105,7 @@ icdcm:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -109,6 +117,7 @@ icdpcs:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -120,6 +129,7 @@ ictrp:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -131,6 +141,7 @@ isrctn:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -142,6 +153,7 @@ jprn:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -153,6 +165,7 @@ nct:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -164,6 +177,7 @@ openaire:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -175,6 +189,7 @@ osf:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
     OSF_URL:
     OSF_KEY:
@@ -189,6 +204,7 @@ pfizer:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -200,6 +216,7 @@ pubmed:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -211,6 +228,7 @@ pubmed-linker:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
@@ -222,6 +240,7 @@ takeda:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
   tags:
     - opentrials
