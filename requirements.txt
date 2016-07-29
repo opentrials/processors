@@ -6,3 +6,4 @@ requests
 sqlalchemy
 git+git://github.com/frictionlessdata/datapackage-py.git@66fdf7e407b95e1804bea74c6d484df536a4fb3f
 jsontableschema-sql
+boto3

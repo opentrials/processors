@@ -13,6 +13,7 @@ The OpenTrials data processors set.
 - [Processors](docs/processors/)
     - [ACTRN](docs/processors/actrn.md)
     - [ContencMine](docs/exporter/translators/contentmine.md)
+    - [contrib](docs/exporter/translators/contrib.md)
     - [EUCTR](docs/processors/euctr.md)
     - [GSK](docs/processors/gsk.md)
     - [ICTRP](docs/processors/ictrp.md)
