@@ -31,77 +31,79 @@ def process(conf, conn):
         # Get trial ids for logging errors
         trial_ids = [trial['id'] for trial in trials]
 
-        # Ensure authenticated
-        if (datetime.datetime.now() - token_issued_time).seconds > token_ttl_seconds:
-            del session.headers['Authorization']
-        if 'Authorization' not in session.headers:
-            url = '%s/auth' % conf['OSF_URL']
+        try:
+
+            # Ensure authenticated
+            if (datetime.datetime.now() - token_issued_time).seconds > token_ttl_seconds:
+                del session.headers['Authorization']
+            if 'Authorization' not in session.headers:
+                url = '%s/auth' % conf['OSF_URL']
+                res = session.post(url, json={
+                  'data': {
+                    'type': 'users',
+                    'attributes': {
+                      'provider': 'osf',
+                      'access_token': conf['OSF_KEY'],
+                    }
+                  }
+                })
+                # Check status
+                # 200 - ok
+                if res.status_code not in [200]:
+                    logger.error('Can\'t authenticate')
+                    exit(1)
+                token = res.json()['data']['attributes']['token']
+                token_issued_time = datetime.datetime.now()
+                session.headers.update({'Authorization': token})
+                logger.info('Successfully authenticated')
+
+            # Ensure collection exists
+            url = '%s/namespaces/%s/collections'
+            url = url % (conf['OSF_URL'], conf['OSF_NAMESPACE'])
             res = session.post(url, json={
-              'data': {
-                'type': 'users',
-                'attributes': {
-                  'provider': 'osf',
-                  'access_token': conf['OSF_KEY'],
+                'data': {
+                    'id': 'trials',
+                    'type': 'collections',
+                    'attributes': {},
                 }
-              }
             })
             # Check status
-            # 200 - ok
-            if res.status_code not in [200]:
-                logger.error('Can\'t authenticate')
+            # 201 - created
+            # 409 - conflict (already exists)
+            if res.status_code == 201:
+                logger.info('Created collection "trials"')
+            elif res.status_code not in [409]:
+                logger.error('Can\'t create "trials" collection')
                 exit(1)
-            token = res.json()['data']['attributes']['token']
-            token_issued_time = datetime.datetime.now()
-            session.headers.update({'Authorization': token})
-            logger.info('Successfully authenticated')
 
-        # Ensure collection exists
-        url = '%s/namespaces/%s/collections'
-        url = url % (conf['OSF_URL'], conf['OSF_NAMESPACE'])
-        res = session.post(url, json={
-            'data': {
-                'id': 'trials',
-                'type': 'collections',
-                'attributes': {},
-            }
-        })
-        # Check status
-        # 201 - created
-        # 409 - conflict (already exists)
-        if res.status_code == 201:
-            logger.info('Created collection "trials"')
-        elif res.status_code not in [409]:
-            logger.error('Can\'t create "trials" collection')
-            exit(1)
-
-        # Export trials
-        # We use bulk post
-        # https://github.com/CenterForOpenScience/jamdb/blob/master/features/document/create.feature#L244
-        url = '%s/namespaces/%s/collections/trials/documents'
-        url = url % (conf['OSF_URL'], conf['OSF_NAMESPACE'])
-        data = []
-        for trial in trials:
-            data.append({
-                'id': trial['id'],
-                'type': 'documents',
-                'attributes': json.loads(json.dumps(
-                    trial, cls=base.helpers.JSONEncoder)),
-            })
-        try:
+            # Export trials
+            # We use bulk post
+            # https://github.com/CenterForOpenScience/jamdb/blob/master/features/document/create.feature#L244
+            url = '%s/namespaces/%s/collections/trials/documents'
+            url = url % (conf['OSF_URL'], conf['OSF_NAMESPACE'])
+            data = []
+            for trial in trials:
+                data.append({
+                    'id': trial['id'],
+                    'type': 'documents',
+                    'attributes': json.loads(json.dumps(
+                        trial, cls=base.helpers.JSONEncoder)),
+                })
             res = session.post(url, json={'data': data}, headers={
                 'Content-Type': 'application/vnd.api+json; ext="bulk"',
             })
+            # Check status
+            # 201 - created
+            # 409 - conflict (already exists)
+            if res.status_code not in [201, 409]:
+                logger.error('Can\'t create "trial" documents: %s/%s', res.json(), trial_ids)
+                continue
+            count += len(trials)
+            logger.info('Exported %s trials', count)
+
         except Exception:
             logger.exception('Unknown error: %s', trial_ids)
             continue
-        # Check status
-        # 201 - created
-        # 409 - conflict (already exists)
-        if res.status_code not in [201, 409]:
-            logger.error('Can\'t create "trial" documents: %s/%s', res.json(), trial_ids)
-            continue
-        count += len(trials)
-        logger.info('Exported %s trials', count)
 
     # Log finished
     logger.info('Finished trials export')
