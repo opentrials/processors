@@ -20,6 +20,21 @@ contentmine:
   tags:
     - opentrials
 
+contrib:
+  image: okibot/processors
+  command: make start contrib
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    LOGGING_URL:
+    AWS_ACCESS_KEY_ID:
+    AWS_SECRET_ACCESS_KEY:
+    AWS_S3_BUCKET:
+    AWS_S3_REGION:
+  tags:
+    - opentrials
+
 euctr:
   image: okibot/processors
   command: make start euctr
