@@ -22,6 +22,11 @@ logger = logging.getLogger(__name__)
 
 def process(conf, conn):
 
+    # Document names by type
+    DOCUMENT_NAMES = {
+        'csr': 'Clinical Study Report (CSR)',
+    }
+
     # Prepare s3 resource
     resource = boto3.resource('s3',
         region_name=conf['AWS_S3_REGION'],
@@ -50,9 +55,9 @@ def process(conf, conn):
                 logger.warning('Document "%s" is not in contrib mappings', filename)
                 continue
 
-            # Retrieve trial
-            trial = conn['database']['trials'].find_one(primary_id=primary_id)
-            if not trial:
+            # Retrieve record
+            record = conn['database']['records'].find_one(primary_id=primary_id)
+            if not record:
                 logger.warning('Document "%s" has no matched trial', filename)
                 continue
 
@@ -67,25 +72,29 @@ def process(conf, conn):
             # Get documents table
             table = conn['database']['documents']
 
-            # Skip if document is already saved
-            if table.find_one(trial_id=trial['id'], url=url):
-                logger.info('Document "%s" is already saved', filename)
-                continue
+            # Get document identifier
+            create = True
+            document_id = uuid.uuid4().hex
+            document = table.find_one(trial_id=record['trial_id'], url=url)
+            if document:
+                create = False
+                document_id = document['id']
 
             # Upload document to S3
             resource.Bucket(bucket).upload_file(filepath, key)
 
             # Write document to database
-            table.insert({
-                'id': uuid.uuid4().hex,
-                'name': '%s [%s]' % (primary_id, type),
-                'trial_id': trial['id'],
+            table.upsert({
+                'id': document_id,
+                'name': DOCUMENT_NAMES[type],
+                'trial_id': record['trial_id'],
                 'type': type,
                 'url': url,
-            }, ensure=False)
+            }, keys=['id'], ensure=False)
 
             # Log success
-            logger.info('Document "%s" saved with url "%s"', filename, url)
+            logger.info('Document "%s" %s: %s',
+                filename, 'created' if create else 'updated', url)
 
         # Remove temp directory
         shutil.rmtree(dirpath)
