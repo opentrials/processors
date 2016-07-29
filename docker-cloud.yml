@@ -27,6 +27,7 @@ contrib:
   environment:
     WAREHOUSE_URL:
     DATABASE_URL:
+    EXPLORERDB_URL:
     LOGGING_URL:
     AWS_ACCESS_KEY_ID:
     AWS_SECRET_ACCESS_KEY:
