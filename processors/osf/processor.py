@@ -28,6 +28,9 @@ def process(conf, conn):
     session = requests.Session()
     for trials in _read_trial_groups(conn, limit=limit):
 
+        # Get trial ids for logging errors
+        trial_ids = [trial['id'] for trial in trials]
+
         # Ensure authenticated
         if (datetime.datetime.now() - token_issued_time).seconds > token_ttl_seconds:
             del session.headers['Authorization']
@@ -84,14 +87,18 @@ def process(conf, conn):
                 'attributes': json.loads(json.dumps(
                     trial, cls=base.helpers.JSONEncoder)),
             })
-        res = session.post(url, json={'data': data}, headers={
-            'Content-Type': 'application/vnd.api+json; ext="bulk"',
-        })
+        try:
+            res = session.post(url, json={'data': data}, headers={
+                'Content-Type': 'application/vnd.api+json; ext="bulk"',
+            })
+        except Exception:
+            logger.exception('Unknown error: %s', trial_ids)
+            continue
         # Check status
         # 201 - created
         # 409 - conflict (already exists)
         if res.status_code not in [201, 409]:
-            logger.error('Can\'t create "trial" documents: %s', res.json())
+            logger.error('Can\'t create "trial" documents: %s/%s', res.json(), trial_ids)
             continue
         count += len(trials)
         logger.info('Exported %s trials', count)
