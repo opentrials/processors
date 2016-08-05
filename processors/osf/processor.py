@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import json
+import time
 import logging
 import requests
 import datetime
@@ -50,8 +51,7 @@ def process(conf, conn):
                 # Check status
                 # 200 - ok
                 if res.status_code not in [200]:
-                    logger.error('Can\'t authenticate')
-                    exit(1)
+                    raise RuntimeError('Can\'t authenticate')
                 token = res.json()['data']['attributes']['token']
                 token_issued_time = datetime.datetime.now()
                 session.headers.update({'Authorization': token})
@@ -73,8 +73,7 @@ def process(conf, conn):
             if res.status_code == 201:
                 logger.info('Created collection "trials"')
             elif res.status_code not in [409]:
-                logger.error('Can\'t create "trials" collection')
-                exit(1)
+                raise RuntimeError('Can\'t create "trials" collection')
 
             # Export trials
             # We use bulk post
@@ -96,13 +95,13 @@ def process(conf, conn):
             # 201 - created
             # 409 - conflict (already exists)
             if res.status_code not in [201, 409]:
-                logger.error('Can\'t create "trial" documents: %s/%s', res.json(), trial_ids)
-                continue
+                raise RuntimeError('Can\'t create "trial" documents: %s/%s', res.json(), trial_ids)
             count += len(trials)
             logger.info('Exported %s trials', count)
 
-        except Exception:
-            logger.exception('Unknown error: %s', trial_ids)
+        except Exception as exception:
+            logger.exception('Interaction error: %s, %s', trial_ids, repr(exception))
+            time.sleep(5*60)
             continue
 
     # Log finished
