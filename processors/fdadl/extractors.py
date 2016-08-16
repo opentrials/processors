@@ -31,6 +31,7 @@ def extract_interventions(record):
             'type': 'drug',
             'description': record['product_type'],
             'ndc_code': record['product_ndc'],
+            'fda_application_number': record.get('fda_application_number'),
         })
 
     return interventions
