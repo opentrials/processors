@@ -39,5 +39,9 @@ def read_rows(conn, dataset, table, orderby, bufsize=100, **filter):
             # Fixing hex representation
             for field in ['id', 'meta_id']:
                 if field in row:
-                    row[field] = uuid.UUID(row[field]).hex
+                    try:
+                        row[field] = uuid.UUID(row[field]).hex
+                    except ValueError:
+                        # Ignore errors if ID fields aren't UUIDs
+                        pass
             yield row
