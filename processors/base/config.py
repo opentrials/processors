@@ -39,6 +39,13 @@ AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', None)
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
 AWS_S3_BUCKET = os.environ.get('AWS_S3_BUCKET', None)
 AWS_S3_REGION = os.environ.get('AWS_S3_REGION', None)
+AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN')
+
+# DocumentCloud
+
+DOCUMENTCLOUD_USERNAME = os.environ.get('DOCUMENTCLOUD_USERNAME')
+DOCUMENTCLOUD_PASSWORD = os.environ.get('DOCUMENTCLOUD_PASSWORD')
+DOCUMENTCLOUD_PROJECT = os.environ.get('DOCUMENTCLOUD_PROJECT')
 
 # Contrib
 

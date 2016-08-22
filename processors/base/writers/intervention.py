@@ -39,36 +39,37 @@ def write_intervention(conn, intervention, source_id):
 
     # Get slug/read object
     slug = helpers.slugify_string(name)
-    object = readers.read_objects(conn, 'interventions', first=True, slug=slug)
+    obj = readers.read_objects(conn, 'interventions', first=True, slug=slug)
 
     # Create object
-    if not object:
-        object = {}
-        object['id'] = uuid.uuid4().hex
-        object['created_at'] = timestamp
-        object['slug'] = slug
+    if not obj:
+        obj = {}
+        obj['id'] = uuid.uuid4().hex
+        obj['created_at'] = timestamp
+        obj['slug'] = slug
         create = True
 
     # Write object only for high priority source
     if create or source_id in ['icdpcs', 'fdadl']:
 
         # Update object
-        object.update({
+        obj.update({
             'updated_at': timestamp,
             'source_id': source_id,
             # ---
             'name': name,
-            'type': intervention.get('type', None),
-            'description': intervention.get('description', None),
-            'icdpcs_code': intervention.get('icdpcs_code', None),
-            'ndc_code': intervention.get('ndc_code', None),
+            'type': intervention.get('type'),
+            'description': intervention.get('description'),
+            'icdpcs_code': intervention.get('icdpcs_code'),
+            'ndc_code': intervention.get('ndc_code'),
+            'fda_application_number': intervention.get('fda_application_number'),
         })
 
         # Write object
-        conn['database']['interventions'].upsert(object, ['id'], ensure=False)
+        conn['database']['interventions'].upsert(obj, ['id'], ensure=False)
 
         # Log debug
         logger.debug('Intervention - %s: %s',
             'created' if create else 'updated', name)
 
-    return object['id']
+    return obj['id']
