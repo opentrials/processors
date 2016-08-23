@@ -64,7 +64,7 @@ fdadl:
 
 fdadap:
   image: okibot/processors
-  command: make start fdadap
+  command: make start fda_dap
   # restart: always
   environment:
     WAREHOUSE_URL:
