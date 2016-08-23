@@ -187,7 +187,7 @@ class FDADAPProcessor(object):
         uploaded = client.documents.upload(
             url,
             title=title,
-            project=project
+            project=project.id
         )
 
         return uploaded.get_published_url()
