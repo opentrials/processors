@@ -24,7 +24,7 @@ fdadl:
 
 fdadap:
   extends:
-    service: fda_dap
+    service: fdadap
     file: docker-cloud.yml
   restart: 'no'
 
