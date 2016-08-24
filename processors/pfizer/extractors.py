@@ -53,8 +53,6 @@ def extract_trial(record):
     has_published_results = None
 
     trial = {
-        'primary_register': 'Pfizer',
-        'primary_id': record['nct_id'],
         'identifiers': identifiers,
         'public_title': public_title,
         'recruitment_status': recruitment_status,

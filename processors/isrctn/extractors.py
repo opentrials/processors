@@ -59,8 +59,6 @@ def extract_trial(record):
         has_published_results = True
 
     trial = {
-        'primary_register': 'ISRCTN',
-        'primary_id': record['isrctn_id'],
         'identifiers': identifiers,
         'registration_date': record['date_applied'],
         'public_title': public_title,

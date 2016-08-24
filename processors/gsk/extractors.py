@@ -56,8 +56,6 @@ def extract_trial(record):
         has_published_results = True
 
     trial = {
-        'primary_register': 'GlaxoSmithKline',
-        'primary_id': record['study_id'],
         'identifiers': identifiers,
         'registration_date': record['first_received'],
         'public_title': public_title,

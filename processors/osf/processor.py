@@ -122,8 +122,6 @@ def _read_trial_groups(conn, limit=100):
         t.gender,
         t.has_published_results,
         t.identifiers,
-        t.primary_id,
-        t.primary_register,
         t.public_title,
         t.recruitment_status,
         t.registration_date,

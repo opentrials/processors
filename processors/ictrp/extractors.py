@@ -101,8 +101,6 @@ def extract_trial(record):
     has_published_results = None
 
     trial = {
-        'primary_register': record['register'],
-        'primary_id': record['main_id'],
         'identifiers': identifiers,
         'public_title': public_title,
         'scientific_title': record['scientific_title'],

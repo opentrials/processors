@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import re
 import json
+import uuid
 import string
 import datetime
 
@@ -98,28 +99,97 @@ def clean_string(value):
     return value
 
 
-def find_identifiers(text):
-    """Find list of trial indentifiers in the given text.
+def find_list_of_identifiers(text):
+    """Find list of trial indentifier dicts in the given text.
+
+    Example:
+        [{'nct': 'NCT123345'}, {'euctr': 'EUCTR12345'}]
+
     """
 
     # Pattern could be improved based on a extended
     # clinical trial identifiers format analysis
     PATTERN = r'(%s[\d-]{3,})'
+    # In a form (source_id, pattern[])
     PREFIXES = [
-        'actrn',
-        'euctr',
-        'gsk',
-        'isrctn',
-        'jprn',
-        'nct',
-        'takeda',
-        'umin',
+        ('actrn', ['actrn']),
+        ('euctr', ['euctr']),
+        ('gsk', ['gsk']),
+        ('isrctn', ['isrctn']),
+        ('jprn', ['jprn', 'umin']),
+        ('nct', ['nct']),
+        ('takeda', ['takeda']),
     ]
 
     # Find identifiers
-    identifiers = []
-    for prefix in PREFIXES:
-        pattern = PATTERN % prefix
-        identifiers.extend(re.findall(pattern, text, re.IGNORECASE))
+    list_of_identifiers = []
+    for source_id, patterns in PREFIXES:
+        for prefix in patterns:
+            pattern = PATTERN % prefix
+            matches = re.findall(pattern, text, re.IGNORECASE)
+            for match in matches:
+                list_of_identifiers.append({source_id: match})
 
-    return identifiers
+    return list_of_identifiers
+
+
+def iter_rows(conn, dataset, table, orderby, bufsize=100, **filter):
+    """Yield keyed rows from dataset table lazily and effective (using buffer).
+
+    Args:
+        conn (dict): connection dict
+        dataset (str): dataset name (e.g. warehouse/database)
+        table (str): table name
+        order_by (str): how to order rows
+        bufsize (int): how many rows to get per query
+        filter (dict): additional field filter
+
+    Yields:
+        dict: the next row from table
+
+    """
+    offset = 0
+    query = filter
+    query['order_by'] = orderby
+    while True:
+        query['_offset'] = offset
+        query['_limit'] = bufsize
+        count = conn[dataset][table].find(return_count=True, **query)
+        if not count:
+            break
+        rows = conn[dataset][table].find(**query)
+        offset += bufsize
+        for row in rows:
+            # Fixing hex representation
+            for field in ['id', 'meta_id']:
+                if field in row:
+                    try:
+                        row[field] = uuid.UUID(row[field]).hex
+                    except ValueError:
+                        # Ignore errors if ID fields aren't UUIDs
+                        pass
+            yield row
+
+
+def find_trial_by_identifiers(conn, identifiers):
+    """Find first trial matched by one of passed identifiers.
+
+    Args:
+        conn (dict): connection dict
+        identifiers (dict): identifiers dict (nct: <id>, euct: <id>, ...)
+
+    Returns:
+        dict: trial
+
+    """
+    trial = None
+    QUERY = "SELECT * FROM records WHERE identifiers @> '%s'"
+    for source, identifier in identifiers.items():
+        query = QUERY % json.dumps({source: identifier})
+        records = list(conn['database'].query(query))
+        if not records:
+            continue
+        trial = conn['database']['trials'].find_one(id=records[0]['trial_id'].hex)
+        if trial:
+            break
+    return trial

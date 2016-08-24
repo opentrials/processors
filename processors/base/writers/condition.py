@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 import uuid
 import logging
 import datetime
-from .. import readers
 from .. import helpers
 logger = logging.getLogger(__name__)
 
@@ -38,9 +37,9 @@ def write_condition(conn, condition, source_id, trial_id=None):
     if len(name) <= 1:
         return None
 
-    # Get slug/read object
+    # Get slug/find object
     slug = helpers.slugify_string(name)
-    object = readers.read_objects(conn, 'conditions', first=True, slug=slug)
+    object = conn['database']['conditions'].find_one(slug=slug)
 
     # Create object
     if not object:

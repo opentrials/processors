@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 import uuid
 import logging
 import datetime
-from .. import readers
 logger = logging.getLogger(__name__)
 
 
@@ -33,7 +32,7 @@ def write_publication(conn, publication, source_id):
 
     # Get slug/read object
     slug = publication['slug']
-    object = readers.read_objects(conn, 'publications', first=True, slug=slug)
+    object = conn['database']['publications'].find_one(slug=slug)
 
     # Create object
     if not object:

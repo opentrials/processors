@@ -16,7 +16,7 @@ def process(conf, conn):
     # View/table
     query = """
         create table export_openaire as
-        select t.id, t.primary_register, t.primary_id, t.secondary_ids,
+        select t.id, t.source_id, t.primary_id, t.secondary_ids,
         t.scientific_title, t.public_title, t.description, t.brief_summary,
         t.registration_date, t.target_sample_size,
         array_agg(distinct r.primary_id) filter(where r.primary_id is not null) as identifiers,
@@ -24,7 +24,7 @@ def process(conf, conn):
         from trials as t
         left outer join records as r on t.id = r.trial_id
         left outer join sources as s on r.source_id = s.id
-        group by t.id, t.primary_register, t.primary_id, t.secondary_ids,
+        group by t.id, t.source_id, t.primary_id, t.secondary_ids,
         t.scientific_title, t.public_title, t.description, t.brief_summary,
         t.registration_date, t.target_sample_size;
     """

@@ -5,14 +5,14 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
-from .. import readers
+from .. import helpers
 from .. import writers
 logger = logging.getLogger(__name__)
 
 
 # Module API
 
-def process_publication(conn, table, extractors):
+def process_publications(conn, table, extractors):
     """Translate publication records from warehouse to database.
 
     Args:
@@ -28,7 +28,7 @@ def process_publication(conn, table, extractors):
 
     errors = 0
     success = 0
-    for record in readers.read_records(conn, table):
+    for record in helpers.iter_rows(conn, 'warehouse', table, orderby='meta_id'):
 
         conn['database'].begin()
 

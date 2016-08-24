@@ -5,7 +5,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
-from .. import readers
 logger = logging.getLogger(__name__)
 
 
@@ -28,10 +27,7 @@ def write_document(conn, document):
     create = False
 
     # Get slug/read object
-    obj = readers.read_objects(
-        conn, 'documents', first=True,
-        id=document['id']
-    )
+    obj = conn['database']['documents'].find_one(id=document['id'])
 
     # Create object
     if not obj:

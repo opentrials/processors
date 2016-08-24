@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 import uuid
 import logging
 import datetime
-from .. import readers
 from .. import helpers
 logger = logging.getLogger(__name__)
 
@@ -41,7 +40,7 @@ def write_person(conn, person, source_id, trial_id=None):
     # Get slug/read object
     slug = helpers.slugify_string(
         '{name}_{trial_id}'.format(name=name, trial_id=person['trial_id']))
-    object = readers.read_objects(conn, 'persons', first=True, slug=slug)
+    object = conn['database']['persons'].find_one(slug=slug)
 
     # Create object
     if not object:

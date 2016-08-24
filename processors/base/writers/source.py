@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 import logging
 import datetime
-from .. import readers
 logger = logging.getLogger(__name__)
 
 
@@ -30,7 +29,7 @@ def write_source(conn, source):
     timestamp = datetime.datetime.utcnow()
 
     # Read object
-    object = readers.read_objects(conn, 'sources', first=True, id=source['id'])
+    object = conn['database']['sources'].find_one(id=source['id'])
 
     # Create object
     if not object:

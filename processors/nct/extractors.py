@@ -60,8 +60,6 @@ def extract_trial(record):
         has_published_results = True
 
     trial = {
-        'primary_register': 'ClinicalTrials.gov',
-        'primary_id': record['nct_id'],
         'identifiers': identifiers,
         'registration_date': record['firstreceived_date'],
         'public_title': public_title,

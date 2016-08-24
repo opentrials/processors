@@ -13,4 +13,4 @@ from . import extractors as extractors_module
 def process(conf, conn):
     extractors = base.helpers.get_variables(
         extractors_module, lambda x: x.startswith('extract_'))
-    base.processors.process_publication(conn, 'pubmed', extractors)
+    base.processors.process_publications(conn, 'pubmed', extractors)

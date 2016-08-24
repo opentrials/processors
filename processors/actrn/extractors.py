@@ -61,8 +61,6 @@ def extract_trial(record):
     has_published_results = None
 
     trial = {
-        'primary_register': 'ANZCTR',
-        'primary_id': record['trial_id'],
         'identifiers': identifiers,
         'registration_date': record['date_registered'],
         'public_title': public_title,

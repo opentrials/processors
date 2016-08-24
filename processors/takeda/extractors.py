@@ -55,8 +55,6 @@ def extract_trial(record):
         has_published_results = True
 
     trial = {
-        'primary_register': 'Takeda',
-        'primary_id': record['takeda_trial_id'],
         'identifiers': identifiers,
         'public_title': public_title,
         'brief_summary': record['brief_summary'],

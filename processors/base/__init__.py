@@ -5,6 +5,5 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from . import processors
-from . import readers
 from . import writers
 from . import helpers

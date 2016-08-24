@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 import uuid
 import logging
 import datetime
-from .. import readers
 from .. import helpers
 logger = logging.getLogger(__name__)
 
@@ -31,19 +30,14 @@ def write_trial(conn, trial, source_id):
     create = False
     timestamp = datetime.datetime.utcnow()
 
-    # Get facts/read object
-    facts = list(trial['identifiers'].values())
-    if 'scientific_title' in trial:
-        facts.append(trial['scientific_title'])
-    facts = helpers.slugify_array(facts)
-    object = readers.read_objects(conn, 'trials', first=True, facts=facts)
+    # Get trial object
+    object = helpers.find_trial_by_identifiers(conn, identifiers=trial['identifiers'])
 
     # Create object
     if not object:
         object = {}
         object['id'] = uuid.uuid4().hex
         object['created_at'] = timestamp
-        object['facts'] = []
         create = True
 
     # Decide primary
@@ -53,20 +47,19 @@ def write_trial(conn, trial, source_id):
         if create:
             is_primary = True
             break
-        elif object['primary_source_id'] == source_id:
+        elif object['source_id'] == source_id:
             is_primary = True
             break
         elif source_id == register:
             is_primary = True
             break
-        elif object['primary_source_id'] == register:
+        elif object['source_id'] == register:
             is_primary = False
             break
 
     # Update meta
     object.update({
         'updated_at': timestamp,
-        'facts': helpers.slugify_array(object['facts'] + facts),
     })
 
     # Update data only if it's primary
@@ -74,10 +67,8 @@ def write_trial(conn, trial, source_id):
 
         # Update object
         object.update({
-            'primary_source_id': source_id,
+            'source_id': source_id,
             # ---
-            'primary_register': trial['primary_register'],
-            'primary_id': trial['primary_id'],
             'identifiers': trial['identifiers'],
             'registration_date': trial.get('registration_date', None),
             'public_title': trial['public_title'],
@@ -102,6 +93,6 @@ def write_trial(conn, trial, source_id):
 
     # Log debug
     logger.debug('Trial - %s: %s',
-        'created' if create else 'updated', trial['primary_id'])
+        'created' if create else 'updated', trial['identifiers'])
 
     return object['id'], is_primary

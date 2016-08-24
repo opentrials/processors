@@ -23,7 +23,7 @@ def process(conf, conn):
     assert source_id is not None
 
     processor = FDADAPProcessor(conf, conn)
-    for record in base.readers.read_rows(conn, 'warehouse', 'fda_dap', orderby='id'):
+    for record in base.helpers.iter_rows(conn, 'warehouse', 'fda_dap', orderby='id'):
         processor.process_record(record, source_id)
 
 
@@ -121,24 +121,16 @@ class FDADAPProcessor(object):
 
     def _find_intervention(self, fda_application_number):
         if fda_application_number not in self.INTERVENTIONS_CACHE:
-            intervention = base.readers.read_objects(
-                self._conn, 'interventions', first=True,
-                fda_application_number=fda_application_number
-            )
+            intervention = self._conn['database']['interventions'].find_one(
+                fda_application_number=fda_application_number)
             self.INTERVENTIONS_CACHE[fda_application_number] = intervention
         return self.INTERVENTIONS_CACHE[fda_application_number]
 
     def _find_document(self, document_id):
-        return base.readers.read_objects(
-            self._conn, 'documents', first=True,
-            id=document_id
-        )
+        return self._conn['database']['documents'].find_one(id=document_id)
 
     def _find_fda_approval(self, fda_approval_id):
-        return base.readers.read_objects(
-            self._conn, 'fda_approvals', first=True,
-            id=fda_approval_id
-        )
+        return self._conn['database']['fda_approvals'].find_one(id=fda_approval_id)
 
     def _upload_to_s3(self, fd):
         s3 = boto3.resource(

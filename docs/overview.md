@@ -51,7 +51,7 @@ So if you're going to process trials from `warehouse`
 to `database` you could use this shared component.
 
 ```python
-def process_trial(conn, table, extractors):
+def process_trials(conn, table, extractors):
     pass
 ```
 

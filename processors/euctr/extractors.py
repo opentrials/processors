@@ -21,11 +21,21 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
+    euctr_id = record['eudract_number']
+    who_id = record['who_universal_trial_reference_number_utrn']
+    if who_id and not who_id.startswith('U'):
+        who_id = None
+    nct_id = record['us_nct_clinicaltrials_gov_registry_number']
+    if nct_id and not nct_id.startswith('NCT'):
+        nct_id = None
+    isrctn_id = record['isrctn_international_standard_randomised_controlled_trial_numbe']
+    if isrctn_id and not isrctn_id.startswith('ISRCTN'):
+        isrctn_id = None
     identifiers = base.helpers.clean_dict({
-        'who': record['who_universal_trial_reference_number_utrn'],
-        'nct': record['us_nct_clinicaltrials_gov_registry_number'],
-        'euctr': record['eudract_number_with_country'],
-        'isrctn': record['isrctn_international_standard_randomised_controlled_trial_numbe'],
+        'euctr': euctr_id,
+        'who': who_id,
+        'nct': nct_id,
+        'isrctn': isrctn_id,
     })
 
     # Get public title
@@ -65,8 +75,6 @@ def extract_trial(record):
         has_published_results = True
 
     trial = {
-        'primary_register': 'EU Clinical Trials Register',
-        'primary_id': record['eudract_number_with_country'],
         'identifiers': identifiers,
         'registration_date': record['date_on_which_this_record_was_first_entered_in_the_eudract_data'],
         'public_title': public_title,

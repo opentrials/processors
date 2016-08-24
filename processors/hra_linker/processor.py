@@ -15,11 +15,11 @@ def process(conf, conn):
 
     # Iterate over all hra publications
     count = 0
-    for publication in base.readers.read_rows(conn, 'database', 'publications',
+    for publication in base.helpers.iter_rows(conn, 'database', 'publications',
             orderby='id', source_id='hra'):
 
         # Find identifiers
-        identifiers = base.helpers.find_identifiers(
+        list_of_identifiers = base.helpers.find_list_of_identifiers(
             publication['title'] + publication['abstract'])
 
         # Delete existent relationships
@@ -27,19 +27,18 @@ def process(conf, conn):
             publication_id=publication['id'])
 
         # Write new relationships
-        for identifier in identifiers:
+        for identifiers in list_of_identifiers:
 
             # Get trial
-            trial_facts = base.helpers.slugify_array([identifier])
-            trial = base.readers.read_objects(
-                conn, 'trials', first=True, facts=trial_facts)
+            trial = base.helpers.find_trial_by_identifiers(
+                conn, identifiers=identifiers)
 
             # Found trial - add relationship
             if trial:
                 base.writers.write_trial_relationship(
                     conn, 'publication', publication, publication['id'], trial['id'])
                 logger.debug('Linked %s to "%s"',
-                    trial['primary_id'], publication['title'][0:50])
+                    trial['identifiers'].values(), publication['title'][0:50])
 
         # Log info
         count += 1

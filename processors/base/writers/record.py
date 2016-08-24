@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 import json
 import logging
-from .. import readers
 from .. import helpers
 logger = logging.getLogger(__name__)
 
@@ -33,7 +32,7 @@ def write_database_record(conn, record, source_id, trial_id, trial):
     create = False
 
     # Read object
-    object = readers.read_objects(conn, 'records', first=True, id=record['meta_id'])
+    object = conn['database']['records'].find_one(id=record['meta_id'])
 
     # Create
     if not object:
@@ -49,12 +48,10 @@ def write_database_record(conn, record, source_id, trial_id, trial):
         object.update({
             'updated_at': record['meta_updated'],
             'trial_id': trial_id,
-            'primary_source_id': source_id,
+            'source_id': source_id,
             'source_url': record['meta_source'],
             'source_data': json.loads(json.dumps(record, cls=helpers.JSONEncoder)),
             # ---
-            'primary_register': trial['primary_register'],
-            'primary_id': trial['primary_id'],
             'identifiers': trial['identifiers'],
             'registration_date': trial.get('registration_date', None),
             'public_title': trial['public_title'],
@@ -79,6 +76,6 @@ def write_database_record(conn, record, source_id, trial_id, trial):
 
         # Log debug
         logger.debug('Record - %s: %s',
-            'created' if create else 'updated', trial['primary_id'])
+            'created' if create else 'updated', trial['identifiers'])
 
     return object['id']

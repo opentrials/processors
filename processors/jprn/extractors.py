@@ -60,8 +60,6 @@ def extract_trial(record):
         has_published_results = True
 
     trial = {
-        'primary_register': 'UMIN',
-        'primary_id': record['unique_trial_number'],
         'identifiers': identifiers,
         'registration_date': record['date_of_registration'],
         'public_title': public_title,
