@@ -40,7 +40,12 @@ def extract_trial(record):
         'RPEC': 'per',  # Peru
         'TCTR': 'tctr',  # Thai
     }
-    identifiers[registries[record['register']]] = record['main_id']
+    source_id = registries[record['register']]
+    identifier = record['main_id']
+    # Extract EUCTR master identifier
+    if source_id == 'euctr' and len(identifier) > 19:
+        identifier = identifier.rsplit('-', 1)[0]
+    identifiers[source_id] = identifier
 
     # Get public title
     public_title = base.helpers.get_optimal_title(
