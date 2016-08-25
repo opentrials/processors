@@ -122,7 +122,7 @@ def extract_organisations(record):
     organisations = []
     for element in record['sponsors'] or []:
         organisations.append({
-            'name': element['name_of_sponsor'],
+            'name': element.get('name_of_sponsor', ''),
             # ---
             'trial_role': 'sponsor',
         })

@@ -22,8 +22,11 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
+    nct_id = record['clinicaltrials_gov_number']
+    if nct_id and not nct_id.startswith('NCT'):
+        nct_id = None
     identifiers = base.helpers.clean_dict({
-        'nct': record['clinicaltrials_gov_number'],
+        'nct': nct_id,
         'isrctn': record['isrctn_id'],
     })
 

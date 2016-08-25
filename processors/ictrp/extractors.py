@@ -42,6 +42,9 @@ def extract_trial(record):
     }
     source_id = registries[record['register']]
     identifier = record['main_id']
+    # Fix ChiCTR identifier
+    if source_id == 'chictr' and identifier.startswith('chictr'):
+        identifier = identifier.replace('chictr', 'ChiCTR')
     # Extract EUCTR master identifier
     if source_id == 'euctr' and len(identifier) > 19:
         identifier = identifier.rsplit('-', 1)[0]
