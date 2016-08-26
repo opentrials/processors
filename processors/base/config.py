@@ -54,7 +54,7 @@ CONTRIB = {
     # Contribution ID
     '9e4f1280-41bf-11e6-8971-f99af8d5a820': {
         # Contribution type
-        'csr': [
+        'csr_synopsis': [
             # Regex to extract primary_id from filename
             r'(?P<primary_id>nct\d{3,})\.pdf',
             # Hard-coded mapping for primary_id
