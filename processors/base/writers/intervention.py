@@ -43,7 +43,7 @@ def write_intervention(conn, intervention, source_id):
     # Create object
     if not obj:
         obj = {}
-        obj['id'] = uuid.uuid4().hex
+        obj['id'] = uuid.uuid1().hex
         obj['created_at'] = timestamp
         obj['slug'] = slug
         create = True

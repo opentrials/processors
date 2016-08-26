@@ -36,7 +36,7 @@ def write_trial(conn, trial, source_id):
     # Create object
     if not object:
         object = {}
-        object['id'] = uuid.uuid4().hex
+        object['id'] = uuid.uuid1().hex
         object['created_at'] = timestamp
         create = True
 

@@ -44,7 +44,7 @@ def write_organisation(conn, organisation, source_id, trial_id=None):
     # Create object
     if not object:
         object = {}
-        object['id'] = uuid.uuid4().hex
+        object['id'] = uuid.uuid1().hex
         object['created_at'] = timestamp
         object['slug'] = slug
         create = True

@@ -74,7 +74,7 @@ def process(conf, conn):
 
             # Get document identifier
             create = True
-            document_id = uuid.uuid4().hex
+            document_id = uuid.uuid1().hex
             document = table.find_one(trial_id=record['trial_id'], url=url)
             if document:
                 create = False
