@@ -24,8 +24,8 @@ def process(conf, conn):
 
     # Document names by type
     DOCUMENT_NAMES = {
-        'csr': 'Clinical Study Report (CSR)',
-        'csr_synopsis': 'Clinical Study Report Synopsis',
+        'csr': 'Clinical study report',
+        'csr_synopsis': 'Clinical study report synopsis',
     }
 
     # Prepare s3 resource
