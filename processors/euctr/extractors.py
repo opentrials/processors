@@ -44,21 +44,18 @@ def extract_trial(record):
         record['full_title_of_the_trial'],
         record['eudract_number_with_country'])
 
-    # Get recruitment status
-    recruitment_status = None
-    if record['trial_status']:
-        statuses = {
-            'Completed': 'complete',
-            'Not Authorised': 'other',
-            'Ongoing': 'recruiting',
-            '': 'other',
-            'Prematurely Ended': 'other',
-            'Prohibited by CA': 'other',
-            'Restarted': 'recruiting',
-            'Suspended by CA': 'suspended',
-            'Temporarily Halted': 'suspended',
-        }
-        recruitment_status = statuses[record['trial_status']]
+    # Get status and recruitment status
+    statuses = {
+        None: [None, None],
+        'Completed': ['complete', 'not_recruiting'],
+        'Not Authorised': ['other', 'other'],
+        'Ongoing': ['ongoing', 'unknown'],
+        'Prematurely Ended': ['terminated', 'not_recruiting'],
+        'Restarted': ['ongoing', 'unknown'],
+        'Suspended by CA': ['suspended', 'not_recruiting'],
+        'Temporarily Halted': ['suspended', 'not_recruiting'],
+    }
+    status, recruitment_status = statuses[record.get('trial_status')]
 
     # Get gender
     gender = None
@@ -81,6 +78,7 @@ def extract_trial(record):
         'brief_summary': record['trial_main_objective_of_the_trial'],
         'scientific_title': record['full_title_of_the_trial'],
         'description': record['trial_main_objective_of_the_trial'],
+        'status': status,
         'recruitment_status': recruitment_status,
         'eligibility_criteria': {
             'inclusion': record['trial_principal_inclusion_criteria'],

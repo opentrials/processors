@@ -30,19 +30,21 @@ def extract_trial(record):
         record['title'],
         record['nct_id'])
 
-    # Get recruitment status
+    # Get status and recruitment status
     statuses = {
-        'Active, not recruiting': 'other',
-        'Available': 'recruiting',
-        'Completed': 'complete',
-        'Enrolling by invitation': 'recruiting',
-        'Not yet recruiting': 'pending',
-        'Recruiting': 'recruiting',
-        'Terminated': 'other',
-        'Unknown': 'other',
-        'Withdrawn': 'other',
+        None: [None, None],
+        'Active, not recruiting': ['ongoing', 'not_recruiting'],
+        'Available': ['ongoing', 'unknown'],
+        'Completed': ['complete', 'not_recruiting'],
+        'Enrolling by invitation': ['ongoing', 'recruiting'],
+        'No longer available': ['other', 'other'],
+        'Not yet recruiting': ['ongoing', 'not_recruiting'],
+        'Recruiting': ['ongoing', 'recruiting'],
+        'Terminated': ['terminated', 'not_recruiting'],
+        'Unknown': ['other', 'other'],
+        'Withdrawn': ['withdrawn', 'other'],
     }
-    recruitment_status = statuses[record['status']]
+    status, recruitment_status = statuses[record.get('status')]
 
     # Get gender
     gender = None
@@ -55,6 +57,7 @@ def extract_trial(record):
     trial = {
         'identifiers': identifiers,
         'public_title': public_title,
+        'status': status,
         'recruitment_status': recruitment_status,
         'eligibility_criteria': {'criteria': record['eligibility_criteria']},
         'first_enrollment_date': record['study_start_date'],

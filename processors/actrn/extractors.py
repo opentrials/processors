@@ -31,21 +31,22 @@ def extract_trial(record):
         record['scientific_title'],
         record['trial_id'])
 
-    # Get recruitment status
+    # Get status and recruitment status
     statuses = {
-        'Active, not recruiting': 'pending',
-        'Closed: follow-up complete': 'complete',
-        'Closed: follow-up continuing': 'other',
-        'Completed': 'complete',
-        'Enrolling by invitation': 'recruiting',
-        'Not yet recruiting': 'pending',
-        '': 'other',
-        'Recruiting': 'recruiting',
-        'Suspended': 'suspended',
-        'Terminated': 'other',
-        'Withdrawn': 'other',
+        None: [None, None],
+        'Active, not recruiting': ['ongoing', 'not_recruiting'],
+        'Closed: follow-up complete': ['complete', 'not_recruiting'],
+        'Closed: follow-up continuing': ['ongoing', 'not_recruiting'],
+        'Completed': ['complete', 'not_recruiting'],
+        'Enrolling by invitation': ['ongoing', 'recruiting'],
+        'Not yet recruiting': ['ongoing', 'not_recruiting'],
+        'Recruiting': ['ongoing', 'recruiting'],
+        'Suspended': ['suspended', 'not_recruiting'],
+        'Terminated': ['terminated', 'not_recruiting'],
+        'Withdrawn': ['withdrawn', 'not_recruiting'],
+        'Stopped early': ['terminated', 'not_recruiting'],
     }
-    recruitment_status = statuses[record['recruitment_status']]
+    status, recruitment_status = statuses[record.get('recruitment_status')]
 
     # Get gender
     gender = None
@@ -67,6 +68,7 @@ def extract_trial(record):
         'brief_summary': record['brief_summary'],
         'scientific_title': record['scientific_title'],
         'description': record['brief_summary'],
+        'status': status,
         'recruitment_status': recruitment_status,
         'eligibility_criteria': {
             'inclusion': record['key_inclusion_criteria'],

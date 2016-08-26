@@ -75,6 +75,7 @@ def write_trial(conn, trial, source_id):
             'brief_summary': trial.get('brief_summary', None),
             'scientific_title': trial.get('scientific_title', None),
             'description': trial.get('description', None),
+            'status': trial.get('status'),
             'recruitment_status': trial.get('recruitment_status', None),
             'eligibility_criteria': trial.get('eligibility_criteria', None),
             'target_sample_size': trial.get('target_sample_size', None),

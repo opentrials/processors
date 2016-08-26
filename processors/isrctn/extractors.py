@@ -36,14 +36,15 @@ def extract_trial(record):
         record['scientific_title'],
         record['isrctn_id'])
 
-    # Get recruitment status
+    # Get status and recruitment status
     statuses = {
-        'No longer recruiting': 'complete',
-        'Not yet recruiting': 'pending',
-        'Recruiting': 'recruiting',
-        'Stopped': 'complete',
+        None: [None, None],
+        'No longer recruiting': ['ongoing', 'not_recruiting'],
+        'Not yet recruiting': ['ongoing', 'not_recruiting'],
+        'Recruiting': ['ongoing', 'recruiting'],
+        'Stopped': ['terminated', 'not_recruiting'],
     }
-    recruitment_status = statuses[record['recruitment_status']]
+    status, recruitment_status = statuses[record.get('recruitment_status')]
 
     # Get target sample size
     try:
@@ -68,6 +69,7 @@ def extract_trial(record):
         'brief_summary': record['plain_english_summary'],
         'scientific_title': record['scientific_title'],
         'description': record['plain_english_summary'],
+        'status': status,
         'recruitment_status': recruitment_status,
         'eligibility_criteria': {
             'inclusion': record['participant_inclusion_criteria'],
