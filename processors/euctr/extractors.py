@@ -48,9 +48,10 @@ def extract_trial(record):
     statuses = {
         None: [None, None],
         'Completed': ['complete', 'not_recruiting'],
-        'Not Authorised': ['other', 'other'],
+        'Not Authorised': ['other', 'not_recruiting'],
         'Ongoing': ['ongoing', 'unknown'],
         'Prematurely Ended': ['terminated', 'not_recruiting'],
+        'Prohibited by CA': ['other', 'not_recruiting'],
         'Restarted': ['ongoing', 'unknown'],
         'Suspended by CA': ['suspended', 'not_recruiting'],
         'Temporarily Halted': ['suspended', 'not_recruiting'],

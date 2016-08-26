@@ -41,7 +41,7 @@ def extract_trial(record):
         'Not yet recruiting': ['ongoing', 'not_recruiting'],
         'Recruiting': ['ongoing', 'recruiting'],
         'Terminated': ['terminated', 'not_recruiting'],
-        'Unknown': ['other', 'other'],
+        'Unknown': ['other', 'unknown'],
         'Withdrawn': ['withdrawn', 'other'],
     }
     status, recruitment_status = statuses[record.get('status')]
