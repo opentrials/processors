@@ -22,7 +22,6 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
-    identifiers = {}
     registries = {
         'ANZCTR': 'actrn',  # Australia
         'ChiCTR': 'chictr',  # China
@@ -42,19 +41,19 @@ def extract_trial(record):
     }
     source_id = registries[record['register']]
     identifier = record['main_id']
-    # Fix ChiCTR identifier
-    if source_id == 'chictr' and identifier.startswith('chictr'):
-        identifier = identifier.replace('chictr', 'ChiCTR')
     # Extract EUCTR master identifier
     if source_id == 'euctr' and len(identifier) > 19:
         identifier = identifier.rsplit('-', 1)[0]
-    identifiers[source_id] = identifier
+    identifiers = base.helpers.get_cleaned_identifiers({
+        source_id: identifier,
+    })
 
     # Get public title
     public_title = base.helpers.get_optimal_title(
         record['public_title'],
         record['scientific_title'],
-        record['main_id'])
+        record['main_id'],
+    )
 
     # Get status and recruitment status
     statuses = {

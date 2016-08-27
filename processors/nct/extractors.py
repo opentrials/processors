@@ -21,7 +21,7 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
-    identifiers = base.helpers.clean_dict({
+    identifiers = base.helpers.get_cleaned_identifiers({
         'nct': record['nct_id'],
     })
 
@@ -29,7 +29,8 @@ def extract_trial(record):
     public_title = base.helpers.get_optimal_title(
         record['brief_title'],
         record['official_title'],
-        record['nct_id'])
+        record['nct_id']
+    )
 
     # Get status and recruitment status
     statuses = {

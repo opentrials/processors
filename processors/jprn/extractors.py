@@ -21,15 +21,16 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
-    identifiers = base.helpers.clean_dict({
-        'jprn': record['unique_trial_number'],
+    identifiers = base.helpers.get_cleaned_identifiers({
+        'jprn': 'JPRN-%s' % record['unique_trial_number'],
     })
 
     # Get public title
     public_title = base.helpers.get_optimal_title(
         record['title_of_the_study'],
         record['official_scientific_title_of_the_study'],
-        record['unique_trial_number'])
+        record['unique_trial_number'],
+    )
 
     # Get status and recruitment status
     statuses = {

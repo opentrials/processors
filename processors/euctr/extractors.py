@@ -21,28 +21,19 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
-    euctr_id = record['eudract_number']
-    who_id = record['who_universal_trial_reference_number_utrn']
-    if who_id and not who_id.startswith('U'):
-        who_id = None
-    nct_id = record['us_nct_clinicaltrials_gov_registry_number']
-    if nct_id and not nct_id.startswith('NCT'):
-        nct_id = None
-    isrctn_id = record['isrctn_international_standard_randomised_controlled_trial_numbe']
-    if isrctn_id and not isrctn_id.startswith('ISRCTN'):
-        isrctn_id = None
-    identifiers = base.helpers.clean_dict({
-        'euctr': euctr_id,
-        'who': who_id,
-        'nct': nct_id,
-        'isrctn': isrctn_id,
+    identifiers = base.helpers.get_cleaned_identifiers({
+        'euctr': 'EUCTR%s' % record['eudract_number'],
+        'nct': record['us_nct_clinicaltrials_gov_registry_number'],
+        'isrctn': record['isrctn_international_standard_randomised_controlled_trial_numbe'],
+        'who': record['who_universal_trial_reference_number_utrn'],
     })
 
     # Get public title
     public_title = base.helpers.get_optimal_title(
         record['title_of_the_trial_for_lay_people_in_easily_understood_i_e_non_'],
         record['full_title_of_the_trial'],
-        record['eudract_number_with_country'])
+        record['eudract_number_with_country'],
+    )
 
     # Get status and recruitment status
     statuses = {

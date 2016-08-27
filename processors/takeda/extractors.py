@@ -21,15 +21,16 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
-    identifiers = base.helpers.clean_dict({
+    identifiers = base.helpers.get_cleaned_identifiers({
         'nct': record['nct_number'],
-        'takeda': record['takeda_trial_id'],
+        'takeda': 'TAKEDA-%s' % record['takeda_trial_id'],
     })
 
     # Get public title
     public_title = base.helpers.get_optimal_title(
         record['official_title'],
-        record['takeda_trial_id'])
+        record['takeda_trial_id'],
+    )
 
     # Get status and recruitment status
     statuses = {

@@ -8,7 +8,9 @@ import re
 import json
 import uuid
 import string
+import logging
 import datetime
+logger = logging.getLogger(__name__)
 
 
 # Module API
@@ -34,18 +36,6 @@ def slugify_string(string):
     return string
 
 
-def slugify_array(array, min_length=5):
-    """Slugify copy of array: slugify + uniquify + sort + remove short items
-    """
-    result = []
-    for item in array:
-        if item and len(item) > min_length:
-            item = slugify_string(item)
-            result.append(item)
-    result = list(sorted(set(result)))
-    return result
-
-
 class JSONEncoder(json.JSONEncoder):
     """JSON encoder with datetime, date set support.
     """
@@ -69,14 +59,39 @@ def clean_list(raw_list):
     return cleaned_list
 
 
-def clean_dict(raw_dict):
-    """Remove falsy values from dict.
+def get_cleaned_identifiers(identifiers):
+    """Remove falsy values and bad identifiers.
     """
-    cleaned_dict = {}
-    for key, value in raw_dict.items():
-        if value:
-            cleaned_dict[key] = value
-    return cleaned_dict
+    PATTERNS = {
+        'actrn': r'^ACTRN\d{14}p?',
+        'chictr': r'^ChiCTR',
+        'drks': r'^DRKS',
+        'euctr': r'^EUCTR\d{4}-\d{6}-\d{2}',
+        'gsk': r'^GSK',
+        'irct': r'^IRCT',
+        'isrctn': r'^ISRCTN\d{8}',
+        'jprn': r'^JPRN-(C\d{9}|JapicCTI-\d{6}|JMA-IIA\d{5}|UMIN\d{9})',
+        'kct': r'^KCT',
+        'nct': r'^NCT\d{8}',
+        'ntr': r'^NTR',
+        'pactr': r'^PACTR',
+        'per': r'^PER',
+        'rbr': r'^RBR',
+        'rpcec': r'^RPCEC',
+        'takeda': r'^TAKEDA',
+        'tctr': r'^TCTR',
+        'who': r'^U\d{4}-\d{4}-\d{4}',
+    }
+    result = {}
+    for key, value in identifiers.items():
+        if not value:
+            continue
+        if key not in PATTERNS or not re.match(PATTERNS[key], value):
+            message = 'Identifier "%s:%s" is not recognized'
+            logger.warning(message, key, value)
+            continue
+        result[key] = value
+    return result
 
 
 def get_optimal_title(*titles):

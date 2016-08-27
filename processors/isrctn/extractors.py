@@ -22,11 +22,8 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
-    nct_id = record['clinicaltrials_gov_number']
-    if nct_id and not nct_id.startswith('NCT'):
-        nct_id = None
-    identifiers = base.helpers.clean_dict({
-        'nct': nct_id,
+    identifiers = base.helpers.get_cleaned_identifiers({
+        'nct': record['clinicaltrials_gov_number'],
         'isrctn': record['isrctn_id'],
     })
 
@@ -34,7 +31,8 @@ def extract_trial(record):
     public_title = base.helpers.get_optimal_title(
         record['title'],
         record['scientific_title'],
-        record['isrctn_id'])
+        record['isrctn_id'],
+    )
 
     # Get status and recruitment status
     statuses = {
