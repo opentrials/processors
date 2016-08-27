@@ -21,8 +21,12 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
+    source_id = 'actrn'
+    identifier = record['trial_id']
+    if identifier.startswith('NCT'):
+        source_id = 'nct'
     identifiers = base.helpers.get_cleaned_identifiers({
-        'actrn': record['trial_id'],
+        source_id: identifier,
     })
 
     # Get public title
