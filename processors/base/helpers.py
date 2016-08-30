@@ -198,6 +198,7 @@ def find_trial_by_identifiers(conn, identifiers):
 
     """
     trial = None
+    # See https://github.com/opentrials/processors/pull/46/files/f5e8403072bf6ed93b82d0c45bd3877e42e435c4#r76836368
     QUERY = "SELECT * FROM records WHERE identifiers @> '%s'"
     for source, identifier in identifiers.items():
         query = QUERY % json.dumps({source: identifier})
