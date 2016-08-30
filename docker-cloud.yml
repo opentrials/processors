@@ -253,9 +253,33 @@ pubmed-linker:
   tags:
     - opentrials
 
+record-remover:
+  image: okibot/processors
+  command: make start record_remover
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    EXPLORERDB_URL:
+    LOGGING_URL:
+  tags:
+    - opentrials
+
 takeda:
   image: okibot/processors
   command: make start takeda
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    EXPLORERDB_URL:
+    LOGGING_URL:
+  tags:
+    - opentrials
+
+trial-remover:
+  image: okibot/processors
+  command: make start trial_remover
   # restart: always
   environment:
     WAREHOUSE_URL:
