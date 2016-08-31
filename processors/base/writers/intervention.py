@@ -61,7 +61,7 @@ def write_intervention(conn, intervention, source_id):
             'description': intervention.get('description'),
             'icdpcs_code': intervention.get('icdpcs_code'),
             'ndc_code': intervention.get('ndc_code'),
-            'fda_application_number': intervention.get('fda_application_number'),
+            'fda_application_id': intervention.get('fda_application_id'),
         })
 
         # Write object
