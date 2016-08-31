@@ -11,14 +11,18 @@ logger = logging.getLogger(__name__)
 # Module API
 
 def process(conf, conn):
+    """Remove trials without records.
+    """
 
-    # Remove trials without records
-    count = 0
+    # Prepare
     query = """
         SELECT trials.id, trials.identifiers
         FROM trials LEFT JOIN records ON records.trial_id = trials.id
         WHERE records.trial_id IS NULL AND trials.source_id != 'pubmed'
     """
+
+    # Execute
+    count = 0
     for trial in conn['database'].query(query):
         try:
             conn['database']['trials'].delete(id=trial['id'].hex)
