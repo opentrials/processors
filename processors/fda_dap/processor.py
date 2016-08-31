@@ -135,7 +135,7 @@ class FDADAPProcessor(object):
         )
         bucket_name = self._conf['AWS_S3_BUCKET']
         checksum = self._calculate_hash(fd)
-        key = 'documents/%s.pdf' % checksum
+        key = 'documents/fda/%s.pdf' % checksum
 
         s3_custom_domain = self._conf.get('AWS_S3_CUSTOM_DOMAIN')
         if s3_custom_domain:
