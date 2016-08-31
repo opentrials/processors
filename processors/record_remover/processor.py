@@ -18,6 +18,9 @@ def process(conf, conn):
     count = 0
     for trial in base.helpers.iter_rows(conn, 'database', 'trials', orderby='id'):
 
+        # Count trials
+        count += 1
+
         # Get all records
         records = list(conn['database']['records'].find(trial_id=trial['id']))
 
@@ -56,6 +59,5 @@ def process(conf, conn):
                     logger.info('Removed record: %s', record['identifiers'])
 
         # Log info
-        count += 1
         if count and not count % 100:
             logger.info('Processed %s trials', count)
