@@ -35,7 +35,6 @@ def write_trial(conn, trial, source_id, record_id):
         ignore_record_id=record_id)
     if not object:
         object = helpers.find_trial_by_identifiers(conn, trial['identifiers'])
-    print('---')
 
     # Create object
     if not object:
