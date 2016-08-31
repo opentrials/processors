@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import uuid
 import logging
 from .. import base
 logger = logging.getLogger(__name__)
@@ -13,23 +12,50 @@ logger = logging.getLogger(__name__)
 # Module API
 
 def process(conf, conn):
+    """Remove records without trial.
+    """
 
-    # Remove records without trial
     count = 0
-    for record in base.helpers.iter_rows(conn, 'database', 'records', orderby='id'):
-        trial_records = list(conn['database']['records'].find(trial_id=record['trial_id']))
-        # Record not linked to others
-        if len(trial_records) == 1:
+    for trial in base.helpers.iter_rows(conn, 'database', 'trials', orderby='id'):
+
+        # Get all records
+        records = list(conn['database']['records'].find(trial_id=trial['id']))
+
+        # Trial has no multiple records
+        if len(records) <= 1:
             continue
-        linked_identifiers = set()
-        for trial_record in trial_records:
-            if uuid.UUID(record['id']).hex == uuid.UUID(trial_record['id']).hex:
-                continue
-            linked_identifiers.update(trial_record['identifiers'].items())
-        if not linked_identifiers.intersection(record['identifiers'].items()):
-            conn['database']['records'].delete(id=record['id'])
-            logger.info('Removed record without trials: %s', record['identifiers'])
-            count += 1
+
+        # Prepare identifier segments
+        segments = []
+        for record in records:
+
+            # Get set of record identifiers
+            idset = set(record['identifiers'].items())
+
+            # Find intersections -> update segments
+            intersection = False
+            for segment in segments:
+                if segment.intersection(idset):
+                    segment.update(idset)
+                    intersection = True
+
+            # No intersection -> new segment
+            if not intersection:
+                segments.append(idset)
+
+        # Sort segments and get the biggest segment
+        segments = list(sorted(segments, key=lambda s: len(s), reverse=True))
+        biggest_segment = segments[0]
+
+        # Delete all records without intersection with the biggest segment
+        for record in records:
+            idset = set(record['identifiers'].items())
+            if not biggest_segment.intersection(idset):
+                if conn['database']['records'].find_one(id=record['id']):
+                    conn['database']['records'].delete(id=record['id'])
+                    logger.info('Removed record: %s', record['identifiers'])
+
+        # Log info
+        count += 1
         if count and not count % 100:
-            logger.info('Removed %s records without trials', count)
-    logger.info('Removed %s records without trials', count)
+            logger.info('Processed %s trials', count)
