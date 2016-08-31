@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def write_trial(conn, trial, source_id):
+def write_trial(conn, trial, source_id, record_id):
     """Write trial to database.
 
     Args:
@@ -30,8 +30,12 @@ def write_trial(conn, trial, source_id):
     create = False
     timestamp = datetime.datetime.utcnow()
 
-    # Get trial object
-    object = helpers.find_trial_by_identifiers(conn, identifiers=trial['identifiers'])
+    # Get trial object (first try to ignore source record for better dedup)
+    object = helpers.find_trial_by_identifiers(conn, trial['identifiers'],
+        ignore_record_id=record_id)
+    if not object:
+        object = helpers.find_trial_by_identifiers(conn, trial['identifiers'])
+    print('---')
 
     # Create object
     if not object:

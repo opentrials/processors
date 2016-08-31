@@ -36,7 +36,7 @@ def process_trials(conn, table, extractors):
 
             # Extract and write trial
             trial = extractors['extract_trial'](record)
-            trial_id, is_primary = writers.write_trial(conn, trial, source_id)
+            trial_id, is_primary = writers.write_trial(conn, trial, source_id, record['meta_id'])
             if trial_id is None:
                 continue
 

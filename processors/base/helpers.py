@@ -186,12 +186,13 @@ def iter_rows(conn, dataset, table, orderby, bufsize=100, **filter):
             yield row
 
 
-def find_trial_by_identifiers(conn, identifiers):
+def find_trial_by_identifiers(conn, identifiers, ignore_record_id=None):
     """Find first trial matched by one of passed identifiers.
 
     Args:
         conn (dict): connection dict
         identifiers (dict): identifiers dict (nct: <id>, euct: <id>, ...)
+        ignore_record_id (str): skip record with this id (for better dedup)
 
     Returns:
         dict: trial
@@ -203,9 +204,12 @@ def find_trial_by_identifiers(conn, identifiers):
     for source, identifier in identifiers.items():
         query = QUERY % json.dumps({source: identifier})
         records = list(conn['database'].query(query))
-        if not records:
-            continue
-        trial = conn['database']['trials'].find_one(id=records[0]['trial_id'].hex)
+        for record in records:
+            if (ignore_record_id and record['id'].hex == uuid.UUID(ignore_record_id).hex):
+                continue
+            trial = conn['database']['trials'].find_one(id=record['trial_id'].hex)
+            if trial:
+                break
         if trial:
             break
     return trial
