@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import uuid
 import hashlib
 import logging
 import requests
@@ -44,9 +43,7 @@ class FDADAPProcessor(object):
         self._conn = conn
 
     def process_record(self, record, source_id):
-        fda_approval = self._write_fda_approval_if_possible(record)
-        if not fda_approval:
-            return
+        fda_approval = self._write_fda_approval(record)
 
         for document in record['documents']:
             document_id = self._generate_document_id(document, fda_approval)
@@ -83,26 +80,21 @@ class FDADAPProcessor(object):
             # Save to DB
             base.writers.write_document(self._conn, data)
 
-    def _write_fda_approval_if_possible(self, fda_approval):
-        '''Creates an FDA Approval row if there's an existing Intervention with
-        the corresponding FDA Application Number in the DB.'''
+    def _write_fda_approval(self, fda_approval):
+        '''Creates an FDA Approval and the related FDA Application if
+        needed.'''
 
-        application_num = fda_approval['fda_application_num']
-        intervention = self._find_intervention(application_num)
-        if not intervention:
-            msg = "Couldn't find intervention with application %s" % application_num
-            logging.warn(msg)
-            return
+        fda_application_id = self._ensure_fda_application_exists(fda_approval)
 
         obj = self._find_fda_approval(fda_approval['id'])
 
         if not obj:
             obj = {
                 'id': fda_approval['id'],
+                'fda_application_id': fda_application_id,
             }
 
         obj.update({
-            'intervention_id': intervention['id'],
             'supplement_number': fda_approval['supplement_number'],
             'type': fda_approval['approval_type'],
             'action_date': fda_approval['action_date'],
@@ -113,18 +105,20 @@ class FDADAPProcessor(object):
 
         return obj
 
+    def _ensure_fda_application_exists(self, fda_approval):
+        fda_application = {
+            'id': fda_approval['fda_application_num'],
+            'organisation': fda_approval['company'],
+            'drug_name': fda_approval['drug_name'],
+            'active_ingredients': fda_approval['active_ingredients'],
+        }
+        return base.writers.write_fda_application(self._conn, fda_application, 'fda')
+
     def _generate_document_id(self, document, fda_approval):
-        namespace = uuid.UUID(fda_approval['intervention_id'])
+        # MD5 is 128 bits, as UUID, so we can use one in place of the other
         name = ''.join([fda_approval['id'],
                         document['name']])
-        return uuid.uuid5(namespace, name.encode('utf-8')).hex
-
-    def _find_intervention(self, fda_application_number):
-        if fda_application_number not in self.INTERVENTIONS_CACHE:
-            intervention = self._conn['database']['interventions'].find_one(
-                fda_application_number=fda_application_number)
-            self.INTERVENTIONS_CACHE[fda_application_number] = intervention
-        return self.INTERVENTIONS_CACHE[fda_application_number]
+        return hashlib.md5(name.encode('utf-8')).hexdigest()
 
     def _find_document(self, document_id):
         return self._conn['database']['documents'].find_one(id=document_id)
@@ -141,7 +135,7 @@ class FDADAPProcessor(object):
         )
         bucket_name = self._conf['AWS_S3_BUCKET']
         checksum = self._calculate_hash(fd)
-        key = 'documents/%s.pdf' % checksum
+        key = 'documents/fda/%s.pdf' % checksum
 
         s3_custom_domain = self._conf.get('AWS_S3_CUSTOM_DOMAIN')
         if s3_custom_domain:

@@ -15,3 +15,4 @@ from .source import write_source
 from .trial import write_trial
 from .trial_relationship import write_trial_relationship
 from .document import write_document
+from .fda_application import write_fda_application
