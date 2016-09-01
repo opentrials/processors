@@ -36,6 +36,7 @@ def test_get_cleaned_identifiers():
         'actrn': '123ACTRN',
         'takeda': False,
         'jprn': None,
+        'isrctn': 'ISRCTN12345678, ISRCTN12345678',
     }
     assert helpers.get_cleaned_identifiers(good_identifiers) == good_identifiers
     assert helpers.get_cleaned_identifiers(bad_identifiers) == {}

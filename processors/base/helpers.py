@@ -63,16 +63,16 @@ def get_cleaned_identifiers(identifiers):
     """Remove falsy values and bad identifiers.
     """
     PATTERNS = {
-        'actrn': r'^ACTRN\d{14}p?',
+        'actrn': r'^ACTRN\d{14}p?$',
         'chictr': r'^ChiCTR',
         'drks': r'^DRKS',
-        'euctr': r'^EUCTR\d{4}-\d{6}-\d{2}',
+        'euctr': r'^EUCTR\d{4}-\d{6}-\d{2}$',
         'gsk': r'^GSK',
         'irct': r'^IRCT',
-        'isrctn': r'^ISRCTN\d{8}',
-        'jprn': r'^JPRN-(C\d{9}|JapicCTI-\d{6}|JMA-IIA\d{5}|UMIN\d{9})',
+        'isrctn': r'^ISRCTN\d{8}$',
+        'jprn': r'^JPRN-(C\d{9}|JapicCTI-\d{6}|JMA-IIA\d{5}|UMIN\d{9})$',
         'kct': r'^KCT',
-        'nct': r'^NCT\d{8}',
+        'nct': r'^NCT\d{8}$',
         'ntr': r'^NTR',
         'pactr': r'^PACTR',
         'per': r'^PER',
@@ -80,7 +80,7 @@ def get_cleaned_identifiers(identifiers):
         'rpcec': r'^RPCEC',
         'takeda': r'^TAKEDA',
         'tctr': r'^TCTR',
-        'who': r'^U\d{4}-\d{4}-\d{4}',
+        'who': r'^U\d{4}-\d{4}-\d{4}$',
     }
     result = {}
     for key, value in identifiers.items():
