@@ -120,7 +120,6 @@ def _read_trial_groups(conn, limit=100):
         t.description,
         t.first_enrollment_date,
         t.gender,
-        t.has_published_results,
         t.identifiers,
         t.public_title,
         t.recruitment_status,

@@ -55,11 +55,6 @@ def extract_trial(record):
     if record['gender'] and record['gender'] != 'Not Specified':
         gender = record['gender'].lower()
 
-    # Get has_published_results
-    has_published_results = False
-    if record['results_basic_reporting']:
-        has_published_results = True
-
     trial = {
         'identifiers': identifiers,
         'registration_date': record['date_applied'],
@@ -81,7 +76,6 @@ def extract_trial(record):
         'primary_outcomes': record['primary_outcome_measures'],
         'secondary_outcomes': record['secondary_outcome_measures'],
         'gender': gender,
-        'has_published_results': has_published_results,
     }
     return trial
 

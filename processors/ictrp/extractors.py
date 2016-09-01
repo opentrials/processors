@@ -107,9 +107,6 @@ def extract_trial(record):
     # Get gender
     gender = None
 
-    # Get has_published_results
-    has_published_results = None
-
     trial = {
         'identifiers': identifiers,
         'public_title': public_title,
@@ -124,7 +121,6 @@ def extract_trial(record):
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
-        'has_published_results': has_published_results,
     }
     return trial
 

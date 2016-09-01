@@ -52,9 +52,6 @@ def extract_trial(record):
     if record['gender']:
         gender = record['gender'].lower()
 
-    # Get has_published_results
-    has_published_results = None
-
     trial = {
         'identifiers': identifiers,
         'public_title': public_title,
@@ -64,7 +61,6 @@ def extract_trial(record):
         'first_enrollment_date': record['study_start_date'],
         'study_type': record['study_type'],
         'gender': gender,
-        'has_published_results': has_published_results,
     }
     return trial
 

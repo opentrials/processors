@@ -63,9 +63,6 @@ def extract_trial(record):
         elif record['gender'].startswith('Female'):
             gender = 'female'
 
-    # Get has_published_results
-    has_published_results = None
-
     trial = {
         'identifiers': identifiers,
         'registration_date': record['date_registered'],
@@ -86,7 +83,6 @@ def extract_trial(record):
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
-        'has_published_results': has_published_results,
     }
     return trial
 

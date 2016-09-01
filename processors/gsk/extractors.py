@@ -52,11 +52,6 @@ def extract_trial(record):
     if record['gender']:
         gender = record['gender'].lower()
 
-    # Get has_published_results
-    has_published_results = False
-    if record['protocol_id']:
-        has_published_results = True
-
     trial = {
         'identifiers': identifiers,
         'registration_date': record['first_received'],
@@ -77,7 +72,6 @@ def extract_trial(record):
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
-        'has_published_results': has_published_results,
     }
     return trial
 

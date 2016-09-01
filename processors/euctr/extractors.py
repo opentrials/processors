@@ -58,11 +58,6 @@ def extract_trial(record):
     elif record['subject_female']:
         gender = 'female'
 
-    # Get has_published_results
-    has_published_results = False
-    if record['trial_results'] == 'View results':
-        has_published_results = True
-
     trial = {
         'identifiers': identifiers,
         'registration_date': record['date_on_which_this_record_was_first_entered_in_the_eudract_data'],
@@ -79,7 +74,6 @@ def extract_trial(record):
         'target_sample_size': record['subject_in_the_whole_clinical_trial'],
         'first_enrollment_date': None,
         'gender': gender,
-        'has_published_results': has_published_results,
     }
     return trial
 

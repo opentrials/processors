@@ -56,11 +56,6 @@ def extract_trial(record):
     elif record['gender'] == 'Female':
         gender = 'female'
 
-    # Get has_published_results
-    has_published_results = False
-    if record['publication_of_results'] in ['Published', 'partially published']:
-        has_published_results = True
-
     trial = {
         'identifiers': identifiers,
         'registration_date': record['date_of_registration'],
@@ -82,7 +77,6 @@ def extract_trial(record):
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['key_secondary_outcomes'],
         'gender': gender,
-        'has_published_results': has_published_results,
     }
     return trial
 

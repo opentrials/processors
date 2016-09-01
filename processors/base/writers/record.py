@@ -69,7 +69,6 @@ def write_database_record(conn, record, source_id, trial_id, trial):
             'primary_outcomes': trial.get('primary_outcomes', None),
             'secondary_outcomes': trial.get('primary_outcomes', None),
             'gender': trial.get('gender', None),
-            'has_published_results': trial.get('has_published_results', None),
         })
 
         # Write object

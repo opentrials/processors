@@ -56,11 +56,6 @@ def extract_trial(record):
     if (record['eligibility'] or {}).get('gender', None):
         gender = record['eligibility']['gender'].lower()
 
-    # Get has_published_results
-    has_published_results = False
-    if record['clinical_results']:
-        has_published_results = True
-
     trial = {
         'identifiers': identifiers,
         'registration_date': record['firstreceived_date'],
@@ -79,7 +74,6 @@ def extract_trial(record):
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
-        'has_published_results': has_published_results,
     }
     return trial
 
