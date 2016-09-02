@@ -122,3 +122,16 @@ def extract_organisations(record):
 def extract_persons(record):
     persons = []
     return persons
+
+
+def extract_documents(record):
+    documents = []
+    results_url = record.get('trial_results')
+    if results_url:
+        document = {
+            'name': 'Results',
+            'type': 'results',
+            'url': results_url,
+        }
+        documents.append(document)
+    return documents

@@ -43,6 +43,16 @@ def process_trials(conn, table, extractors):
             # Write record
             writers.write_database_record(conn, record, source_id, trial_id, trial)
 
+            # Extract and write documents
+            extract_documents = extractors.get('extract_documents')
+            if extract_documents:
+                for document in extract_documents(record):
+                    document.update({
+                        'trial_id': trial_id,
+                        'source_id': source_id,
+                    })
+                    writers.write_document(conn, document)
+
             # Write other entities
             if is_primary:
 

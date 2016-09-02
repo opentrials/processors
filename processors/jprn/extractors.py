@@ -135,3 +135,16 @@ def extract_persons(record):
         'trial_role': 'public_queries',
     })
     return persons
+
+
+def extract_documents(record):
+    documents = []
+    results_url = record.get('url_releasing_results')
+    if results_url:
+        document = {
+            'name': 'Results',
+            'type': 'results',
+            'url': results_url,
+        }
+        documents.append(document)
+    return documents

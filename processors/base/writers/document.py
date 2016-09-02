@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import uuid
 import logging
 logger = logging.getLogger(__name__)
 
@@ -25,14 +26,23 @@ def write_document(conn, document):
 
     """
     create = False
+    obj = None
 
     # Get slug/read object
-    obj = conn['database']['documents'].find_one(id=document['id'])
+    if document.get('id'):
+        obj = conn['database']['documents'].find_one(id=document['id'])
+    else:
+        # (trial_id, url, fda_approval_id) must be unique
+        obj = conn['database']['documents'].find_one(
+            trial_id=document.get('trial_id'),
+            url=document.get('url'),
+            fda_approval_id=document.get('fda_approval_id')
+        )
 
     # Create object
     if not obj:
         obj = {
-            'id': document['id'],
+            'id': document.get('id', uuid.uuid1().hex),
         }
         create = True
 

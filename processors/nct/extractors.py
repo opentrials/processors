@@ -136,3 +136,19 @@ def extract_persons(record):
                 'trial_role': 'principal_investigator',
             })
     return persons
+
+
+def extract_documents(record):
+    documents = []
+    if record['clinical_results']:
+        identifiers = base.helpers.get_cleaned_identifiers({
+            'nct': record['nct_id'],
+        })
+        identifier = identifiers['nct']
+        document = {
+            'name': 'Results',
+            'type': 'results',
+            'url': 'https://clinicaltrials.gov/ct2/show/results/' + identifier,
+        }
+        documents.append(document)
+    return documents
