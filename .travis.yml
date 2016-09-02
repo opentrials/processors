@@ -14,8 +14,8 @@ install:
   - make install
 
 script:
-  - make build
   - make test
+  - make build
 
 deploy:
   - provider: script
