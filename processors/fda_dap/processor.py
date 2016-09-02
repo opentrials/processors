@@ -23,7 +23,10 @@ def process(conf, conn):
 
     processor = FDADAPProcessor(conf, conn)
     for record in base.helpers.iter_rows(conn, 'warehouse', 'fda_dap', orderby='id'):
-        processor.process_record(record, source_id)
+        try:
+            processor.process_record(record, source_id)
+        except Exception:
+            logger.exception('Failed processing record %s' % record['meta_id'])
 
 
 def _create_source(conn):
