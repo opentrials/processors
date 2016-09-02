@@ -5,7 +5,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
+import logging
+from datetime import datetime
 from .. import base
+
+logger = logging.getLogger(__name__)
 
 
 # Module API
@@ -110,6 +114,23 @@ def extract_trial(record):
     # Get has_published_results
     has_published_results = None
 
+    # Registration date
+    registration_date = None
+    date_of_registration = record.get('date_of_registration')
+    if date_of_registration:
+        date_formats = [
+            '%d/%m/%Y',
+            '%Y-%m-%d',
+        ]
+        for fmt in date_formats:
+            try:
+                registration_date = datetime.strptime(date_of_registration, fmt).date()
+                break
+            except ValueError:
+                pass
+        if not registration_date:
+            logger.warn("Failed to parse date '%s'" % date_of_registration)
+
     trial = {
         'identifiers': identifiers,
         'public_title': public_title,
@@ -125,6 +146,7 @@ def extract_trial(record):
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
         'has_published_results': has_published_results,
+        'registration_date': registration_date,
     }
     return trial
 
