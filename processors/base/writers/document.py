@@ -53,7 +53,8 @@ def write_document(conn, document):
         'type': document['type'],
         'trial_id': document.get('trial_id'),
         'fda_approval_id': document.get('fda_approval_id'),
-        'url': document['url'],
+        'file_id': document.get('file_id'),
+        'url': document.get('url'),
         'documentcloud_url': document.get('documentcloud_url'),
     })
 

@@ -39,8 +39,6 @@ def _create_source(conn):
 
 
 class FDADAPProcessor(object):
-    INTERVENTIONS_CACHE = {}
-
     def __init__(self, conf, conn):
         self._conf = conf
         self._conn = conn
@@ -49,39 +47,63 @@ class FDADAPProcessor(object):
         fda_approval = self._write_fda_approval(record)
 
         for document in record['documents']:
-            document_id = self._generate_document_id(document, fda_approval)
-            data = self._find_document(document_id) or {}
+            data = self._find_document(document, fda_approval) or {}
 
             data.update({
-                'id': document_id,
                 'source_id': 'fda',
                 'name': document['name'],
                 'type': 'other',
                 'fda_approval_id': fda_approval['id'],
             })
 
-            # Merge PDFs and upload to S3
-            if data.get('url') is None:
-                urls = document['urls']
-                logging.debug('Downloading PDFs from %s' % ', '.join(urls))
-                with DownloadAndMergePDFs(urls) as pdf_file:
-                    data['url'] = self._upload_to_s3(pdf_file)
-                    logging.debug('Merged PDF uploaded to: %s' % data['url'])
-
-            # Upload to DocumentCloud
-            if data.get('documentcloud_url') is None:
-                url = data['url']
-                title = '-'.join([
-                    fda_approval['id'],
-                    fda_approval['type'],
-                    document['name']
-                ])
-                dc_url = self._upload_to_documentcloud(url, data, title)
-                logging.debug('PDF uploaded to DocumentCloud: %s' % dc_url)
-                data['documentcloud_url'] = dc_url
+            if not data.get('file_id'):
+                data['file_id'] = self._upsert_file(document, fda_approval)
 
             # Save to DB
             base.writers.write_document(self._conn, data)
+
+    def _upsert_file(self, document, fda_approval):
+        theFile = {}
+        fileModified = False
+
+        # Merge PDFs and upload to S3 if we haven't done it already
+        urls = document['urls']
+        logging.debug('Downloading PDFs from %s' % ', '.join(urls))
+        with DownloadAndMergePDFs(urls) as pdf_file:
+            sha1 = self._calculate_sha1(pdf_file)
+
+            existingFile = self._conn['database']['files'].find_one(sha1=sha1)
+            if existingFile:
+                fileModified = (sha1 != existingFile['sha1'])
+                theFile = existingFile
+
+            theFile['sha1'] = sha1
+
+            # Upload to S3 if needed
+            if not theFile.get('url') or fileModified:
+                pdf_file.seek(0)
+                theFile['url'] = self._upload_to_s3(pdf_file, sha1)
+                logging.debug('Merged PDF uploaded to: %s' % theFile['url'])
+
+        # Delete file in DocumentCloud if it was modified
+        if fileModified and theFile.get('documentcloud_id'):
+            dc_id = theFile['documentcloud_id']
+            logging.debug('Deleting outdated DocumentCloud doc: %s' % dc_id)
+            self._delete_documentcloud_file(theFile['documentcloud_id'])
+            del theFile['documentcloud_id']
+
+        # Upload to DocumentCloud
+        if not theFile.get('documentcloud_id'):
+            dc_title = '-'.join([
+                fda_approval['id'],
+                fda_approval['type'],
+                document['name']
+            ])
+            dc_id = self._upload_to_documentcloud(theFile['url'], dc_title)
+            logging.debug('PDF uploaded to DocumentCloud: %s' % dc_id)
+            theFile['documentcloud_id'] = dc_id
+
+        return base.writers.write_file(self._conn, theFile)
 
     def _write_fda_approval(self, fda_approval):
         '''Creates an FDA Approval and the related FDA Application if
@@ -117,19 +139,19 @@ class FDADAPProcessor(object):
         }
         return base.writers.write_fda_application(self._conn, fda_application, 'fda')
 
-    def _generate_document_id(self, document, fda_approval):
-        # MD5 is 128 bits, as UUID, so we can use one in place of the other
-        name = ''.join([fda_approval['id'],
-                        document['name']])
-        return hashlib.md5(name.encode('utf-8')).hexdigest()
-
-    def _find_document(self, document_id):
-        return self._conn['database']['documents'].find_one(id=document_id)
+    def _find_document(self, document, fda_approval):
+        # FIXME: We're using "name" to identify if the document already exist
+        # in our DB. However, "name" is mutable, so it isn't a good candidate
+        # for a key. I couldn't find a better one, though.
+        return self._conn['database']['documents'].find_one(
+            name=document['name'],
+            fda_approval_id=fda_approval['id']
+        )
 
     def _find_fda_approval(self, fda_approval_id):
         return self._conn['database']['fda_approvals'].find_one(id=fda_approval_id)
 
-    def _upload_to_s3(self, fd):
+    def _upload_to_s3(self, fd, checksum):
         s3 = boto3.resource(
             's3',
             region_name=self._conf['AWS_S3_REGION'],
@@ -137,7 +159,6 @@ class FDADAPProcessor(object):
             aws_secret_access_key=self._conf['AWS_SECRET_ACCESS_KEY']
         )
         bucket_name = self._conf['AWS_S3_BUCKET']
-        checksum = self._calculate_hash(fd)
         key = 'documents/fda/%s.pdf' % checksum
 
         s3_custom_domain = self._conf.get('AWS_S3_CUSTOM_DOMAIN')
@@ -157,7 +178,7 @@ class FDADAPProcessor(object):
 
         return url
 
-    def _calculate_hash(self, fd):
+    def _calculate_sha1(self, fd):
         BLOCKSIZE = 65536
         hasher = hashlib.sha1()
         for chunk in iter(lambda: fd.read(BLOCKSIZE), b''):
@@ -165,12 +186,9 @@ class FDADAPProcessor(object):
         fd.seek(0)
         return hasher.hexdigest()
 
-    def _upload_to_documentcloud(self, url, document, title):
-        username = self._conf['DOCUMENTCLOUD_USERNAME']
-        password = self._conf['DOCUMENTCLOUD_PASSWORD']
+    def _upload_to_documentcloud(self, url, title):
         project_title = self._conf['DOCUMENTCLOUD_PROJECT']
-
-        client = documentcloud.DocumentCloud(username, password)
+        client = self._documentcloud_client()
         project, _ = client.projects.get_or_create_by_title(project_title)
 
         uploaded = client.documents.upload(
@@ -179,7 +197,17 @@ class FDADAPProcessor(object):
             project=project.id
         )
 
-        return uploaded.get_published_url()
+        return uploaded.id
+
+    def _delete_documentcloud_file(self, documentcloud_id):
+        client = self._documentcloud_client()
+        return client.documents.delete(documentcloud_id)
+
+    def _documentcloud_client(self):
+        username = self._conf['DOCUMENTCLOUD_USERNAME']
+        password = self._conf['DOCUMENTCLOUD_PASSWORD']
+
+        return documentcloud.DocumentCloud(username, password)
 
 
 class DownloadAndMergePDFs(object):
