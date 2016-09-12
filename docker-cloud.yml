@@ -288,3 +288,15 @@ trial-remover:
     LOGGING_URL:
   tags:
     - opentrials
+
+remove-unknown-documentcloud-docs:
+  image: okibot/processors
+  command: make start remove_unknown_documentcloud_docs
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    EXPLORERDB_URL:
+    LOGGING_URL:
+  tags:
+    - opentrials

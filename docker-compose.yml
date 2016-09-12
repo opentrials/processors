@@ -111,3 +111,9 @@ takeda:
     service: takeda
     file: docker-cloud.yml
   restart: 'no'
+
+remove-unknown-documentcloud-docs:
+  extends:
+    service: remove-unknown-documentcloud-docs
+    file: docker-cloud.yml
+  restart: 'no'
