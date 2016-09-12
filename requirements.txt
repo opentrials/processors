@@ -9,3 +9,4 @@ jsontableschema-sql
 boto3
 PyPDF2
 python-documentcloud
+pybossa-client

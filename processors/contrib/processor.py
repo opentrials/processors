@@ -64,7 +64,7 @@ def process(conf, conn):
 
             # Build document url
             filepath = os.path.join(dirpath, filename)
-            checksum = _caclulate_checksum(filepath)
+            checksum = _calculate_checksum(filepath)
             extension = os.path.splitext(filename)[1]
             bucket = conf['AWS_S3_BUCKET']
             key = 'documents/%s%s' % (checksum, extension)
@@ -141,7 +141,7 @@ def _extract_metadata(filename, mappings):
     return (None, None)
 
 
-def _caclulate_checksum(filepath):
+def _calculate_checksum(filepath):
     """Calculate SHA1 checksum for filepath.
     """
     BLOCKSIZE = 65536

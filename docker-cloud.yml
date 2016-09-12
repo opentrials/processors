@@ -253,6 +253,21 @@ pubmed-linker:
   tags:
     - opentrials
 
+pybossa-indications:
+  image: okibot/processors
+  command: make start pybossa_indications
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    EXPLORERDB_URL:
+    LOGGING_URL:
+    PYBOSSA_URL:
+    PYBOSSA_API_KEY:
+    PYBOSSA_PROJECT_INDICATIONS:
+  tags:
+    - opentrials
+
 record-remover:
   image: okibot/processors
   command: make start record_remover
