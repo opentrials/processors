@@ -11,12 +11,12 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def write_file(conn, theFile):
+def write_file(conn, file_data):
     """Write file to database.
 
     Args:
         conn (dict): connection dict
-        theFile (dict): normalized file data
+        file_data (dict): normalized file data
 
     Raises:
         KeyError: if data structure is not valid
@@ -27,22 +27,22 @@ def write_file(conn, theFile):
     """
     create = False
     obj = None
-    if theFile.get('id'):
-        obj = conn['database']['files'].find_one(id=theFile['id'])
+    if file_data.get('id'):
+        obj = conn['database']['files'].find_one(id=file_data['id'])
     else:
-        obj = conn['database']['files'].find_one(sha1=theFile['sha1'])
+        obj = conn['database']['files'].find_one(sha1=file_data['sha1'])
 
     if not obj:
         create = True
         obj = {
-            'id': theFile.get('id', uuid.uuid1().hex),
+            'id': file_data.get('id', uuid.uuid1().hex),
         }
 
     obj.update({
-        'url': theFile['url'],
-        'sha1': theFile['sha1'],
-        'documentcloud_id': theFile.get('documentcloud_id'),
-        'text': theFile.get('text'),
+        'url': file_data['url'],
+        'sha1': file_data['sha1'],
+        'documentcloud_id': file_data.get('documentcloud_id'),
+        'text': file_data.get('text'),
     })
 
     conn['database']['files'].upsert(obj, ['id'], ensure=False)

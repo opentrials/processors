@@ -64,8 +64,8 @@ class FDADAPProcessor(object):
             base.writers.write_document(self._conn, data)
 
     def _upsert_file(self, document, fda_approval):
-        theFile = {}
-        fileModified = False
+        file_data = {}
+        file_modified = False
 
         # Merge PDFs and upload to S3 if we haven't done it already
         urls = document['urls']
@@ -73,38 +73,38 @@ class FDADAPProcessor(object):
         with DownloadAndMergePDFs(urls) as pdf_file:
             sha1 = self._calculate_sha1(pdf_file)
 
-            existingFile = self._conn['database']['files'].find_one(sha1=sha1)
-            if existingFile:
-                fileModified = (sha1 != existingFile['sha1'])
-                theFile = existingFile
+            existing_file = self._conn['database']['files'].find_one(sha1=sha1)
+            if existing_file:
+                file_modified = (sha1 != existing_file['sha1'])
+                file_data = existing_file
 
-            theFile['sha1'] = sha1
+            file_data['sha1'] = sha1
 
             # Upload to S3 if needed
-            if not theFile.get('url') or fileModified:
+            if not file_data.get('url') or file_modified:
                 pdf_file.seek(0)
-                theFile['url'] = self._upload_to_s3(pdf_file, sha1)
-                logging.debug('Merged PDF uploaded to: %s' % theFile['url'])
+                file_data['url'] = self._upload_to_s3(pdf_file, sha1)
+                logging.debug('Merged PDF uploaded to: %s' % file_data['url'])
 
         # Delete file in DocumentCloud if it was modified
-        if fileModified and theFile.get('documentcloud_id'):
-            dc_id = theFile['documentcloud_id']
+        if file_modified and file_data.get('documentcloud_id'):
+            dc_id = file_data['documentcloud_id']
             logging.debug('Deleting outdated DocumentCloud doc: %s' % dc_id)
-            self._delete_documentcloud_file(theFile['documentcloud_id'])
-            del theFile['documentcloud_id']
+            self._delete_documentcloud_file(file_data['documentcloud_id'])
+            del file_data['documentcloud_id']
 
         # Upload to DocumentCloud
-        if not theFile.get('documentcloud_id'):
+        if not file_data.get('documentcloud_id'):
             dc_title = '-'.join([
                 fda_approval['id'],
                 fda_approval['type'],
                 document['name']
             ])
-            dc_id = self._upload_to_documentcloud(theFile['url'], dc_title)
+            dc_id = self._upload_to_documentcloud(file_data['url'], dc_title)
             logging.debug('PDF uploaded to DocumentCloud: %s' % dc_id)
-            theFile['documentcloud_id'] = dc_id
+            file_data['documentcloud_id'] = dc_id
 
-        return base.writers.write_file(self._conn, theFile)
+        return base.writers.write_file(self._conn, file_data)
 
     def _write_fda_approval(self, fda_approval):
         '''Creates an FDA Approval and the related FDA Application if
