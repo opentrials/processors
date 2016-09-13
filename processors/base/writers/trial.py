@@ -60,6 +60,14 @@ def write_trial(conn, trial, source_id, record_id):
             is_primary = False
             break
 
+    # BUG #389: Overwrite trials without records from the same source
+    records_count = conn['database']['records'].count(
+        trial_id=object['id'],
+        source_id=object.get('source_id')
+    )
+    if records_count == 0:
+        is_primary = True
+
     # Update meta
     object.update({
         'updated_at': timestamp,
