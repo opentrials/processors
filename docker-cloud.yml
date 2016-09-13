@@ -298,5 +298,8 @@ remove-unknown-dcloud-docs:
     DATABASE_URL:
     EXPLORERDB_URL:
     LOGGING_URL:
+    DOCUMENTCLOUD_USERNAME:
+    DOCUMENTCLOUD_PASSWORD:
+    DOCUMENTCLOUD_PROJECT:
   tags:
     - opentrials
