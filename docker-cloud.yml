@@ -289,7 +289,7 @@ trial-remover:
   tags:
     - opentrials
 
-remove-unknown-documentcloud-docs:
+remove-unknown-dcloud-docs:
   image: okibot/processors
   command: make start remove_unknown_documentcloud_docs
   # restart: always
