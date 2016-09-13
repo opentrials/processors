@@ -15,6 +15,8 @@ def extract_source(record):
         'id': 'hra',
         'name': 'Health Research Authority',
         'type': 'other',
+        'url': 'http://www.hra.nhs.uk',
+        'terms_and_conditions_url': 'http://www.hra.nhs.uk/terms-conditions/',
     }
     return source
 

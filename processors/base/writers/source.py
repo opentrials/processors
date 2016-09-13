@@ -43,7 +43,9 @@ def write_source(conn, source):
         'updated_at': timestamp,
         # ---
         'name': source['name'],
-        'type': source.get('type', None),
+        'type': source.get('type'),
+        'url': source.get('url'),
+        'terms_and_conditions_url': source.get('terms_and_conditions_url'),
     })
 
     # Write object

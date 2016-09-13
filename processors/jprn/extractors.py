@@ -14,6 +14,8 @@ def extract_source(record):
         'id': 'jprn',
         'name': 'UMIN',
         'type': 'register',
+        'url': 'http://rctportal.niph.go.jp/en/',
+        'terms_and_conditions_url': 'http://rctportal.niph.go.jp/en/agreement',
     }
     return source
 

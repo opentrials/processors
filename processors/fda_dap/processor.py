@@ -34,6 +34,7 @@ def _create_source(conn):
         'id': 'fda',
         'name': 'U.S. Food and Drug Administration',
         'type': 'other',
+        'url': 'http://www.fda.gov',
     }
     return base.writers.write_source(conn, source)
 

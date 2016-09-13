@@ -10,8 +10,9 @@ from __future__ import unicode_literals
 def extract_source(record):
     source = {
         'id': 'icdcm',
-        'name': 'ICD-CM',
+        'name': 'ICD-10 Clinical Modification',
         'type': 'other',
+        'url': 'https://www.cms.gov/Medicare/Coding/ICD10/index.html',
     }
     return source
 

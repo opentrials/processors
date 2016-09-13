@@ -14,6 +14,8 @@ def extract_source(record):
         'id': 'pfizer',
         'name': 'Pfizer',
         'type': 'register',
+        'url': 'http://www.pfizer.com/research/clinical_trials',
+        'terms_and_conditions_url': 'http://www.pfizer.com/general/terms',
     }
     return source
 

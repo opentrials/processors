@@ -14,6 +14,8 @@ def extract_source(record):
         'id': 'takeda',
         'name': 'Takeda',
         'type': 'register',
+        'url': 'http://www.takedaclinicaltrials.com/',
+        'terms_and_conditions_url': 'http://www.takedaclinicaltrials.com/legal/terms',
     }
     return source
 

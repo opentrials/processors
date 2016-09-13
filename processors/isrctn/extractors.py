@@ -15,6 +15,8 @@ def extract_source(record):
         'id': 'isrctn',
         'name': 'ISRCTN',
         'type': 'register',
+        'url': 'http://www.isrctn.com/',
+        'terms_and_conditions_url': 'http://www.isrctn.com/page/terms',
     }
     return source
 

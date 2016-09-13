@@ -14,6 +14,8 @@ def extract_source(record):
         'id': 'euctr',
         'name': 'EU Clinical Trials Register',
         'type': 'register',
+        'url': 'https://www.clinicaltrialsregister.eu',
+        'terms_and_conditions_url': 'https://www.clinicaltrialsregister.eu/disclaimer.html',
     }
     return source
 

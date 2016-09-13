@@ -14,6 +14,8 @@ def extract_source(record):
         'id': 'nct',
         'name': 'ClinicalTrials.gov',
         'type': 'register',
+        'url': 'https://clinicaltrials.gov',
+        'terms_and_conditions_url': 'https://clinicaltrials.gov/ct2/about-site/terms-conditions',
     }
     return source
 

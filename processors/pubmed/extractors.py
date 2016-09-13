@@ -12,8 +12,10 @@ from .. import base
 def extract_source(record):
     source = {
         'id': 'pubmed',
-        'name': 'Pubmed',
+        'name': 'PubMed',
         'type': 'other',
+        'url': 'http://www.ncbi.nlm.nih.gov/pubmed',
+        'terms_and_conditions_url': 'https://www.ncbi.nlm.nih.gov/home/about/policies.shtml',
     }
     return source
 
