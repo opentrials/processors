@@ -28,11 +28,31 @@ class TestRemoveUnknownDocumentCloudDocsProcessor(object):
         processor.process(conf, conn)
 
         dc_mock().documents.get.assert_has_calls([
-            mock.call('100-foo'),
+            mock.call('300'),
             mock.call().delete(),
-            mock.call('300-baz'),
+            mock.call('100'),
             mock.call().delete(),
         ])
+
+    @mock.patch('documentcloud.DocumentCloud')
+    def test_ignores_documents_with_different_titles(self, dc_mock):
+        conf = {
+            'DOCUMENTCLOUD_USERNAME': 'username',
+            'DOCUMENTCLOUD_PASSWORD': 'password',
+            'DOCUMENTCLOUD_PROJECT': 'project name',
+        }
+        conn = {
+            'database': mock.Mock()
+        }
+        document_ids = ['100-foo']
+        conn['database'].query.return_value = [
+            {'documentcloud_id': '100-bar'},
+        ]
+        _enable_documentcloud_mock(dc_mock, document_ids)
+
+        processor.process(conf, conn)
+
+        assert not dc_mock().documents.get().delete.called
 
 
 def _enable_documentcloud_mock(dc_mock, document_ids):

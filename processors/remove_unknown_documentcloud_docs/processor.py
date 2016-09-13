@@ -14,9 +14,10 @@ def process(conf, conn):
         'SELECT documentcloud_id FROM files'
         ' WHERE documentcloud_id IS NOT NULL'
     )
-    dc_local_ids = set([row['documentcloud_id']
+    dc_local_ids = set([_extract_dc_id(row['documentcloud_id'])
                         for row in conn['database'].query(query)])
-    dc_remote_ids = set(_documentcloud_projects(conf))
+    dc_remote_ids = set([_extract_dc_id(dc_id)
+                         for dc_id in _documentcloud_projects(conf)])
     dc_ids = dc_remote_ids - dc_local_ids
 
     dc_client = _documentcloud_client(conf)
@@ -40,3 +41,17 @@ def _documentcloud_client(conf):
     password = conf['DOCUMENTCLOUD_PASSWORD']
 
     return documentcloud.DocumentCloud(username, password)
+
+
+def _extract_dc_id(dc_id):
+    '''Return only the numeric ID part of a DocumentCloud ID.
+
+    DocumentCloud IDs have the format "00000-document-title", but only the
+    numbers are used as identifier. This means that documents with IDs
+    "100-foo" and "100-bar" are actually the same.
+
+    This function returns only the numeric part of an ID.
+    '''
+    parts = dc_id.split('-')
+    if parts:
+        return parts[0]
