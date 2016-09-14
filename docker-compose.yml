@@ -117,3 +117,9 @@ remove-unknown-dcloud-docs:
     service: remove-unknown-dcloud-docs
     file: docker-cloud.yml
   restart: 'no'
+
+sync-text-from-documentcloud:
+  extends:
+    service: sync-text-from-documentcloud
+    file: docker-cloud.yml
+  restart: 'no'

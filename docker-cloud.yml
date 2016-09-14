@@ -303,3 +303,18 @@ remove-unknown-dcloud-docs:
     DOCUMENTCLOUD_PROJECT:
   tags:
     - opentrials
+
+sync-text-from-documentcloud:
+  image: okibot/processors
+  command: make start sync_text_from_documentcloud
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    EXPLORERDB_URL:
+    LOGGING_URL:
+    DOCUMENTCLOUD_USERNAME:
+    DOCUMENTCLOUD_PASSWORD:
+    DOCUMENTCLOUD_PROJECT:
+  tags:
+    - opentrials

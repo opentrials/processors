@@ -39,8 +39,8 @@ def write_file(conn, file_data):
         }
 
     obj.update({
-        'url': file_data['url'],
-        'sha1': file_data['sha1'],
+        'url': file_data.get('url', obj['url']),
+        'sha1': file_data.get('sha1', obj['sha1']),
         'documentcloud_id': file_data.get('documentcloud_id'),
         'text': file_data.get('text'),
     })
