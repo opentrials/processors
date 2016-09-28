@@ -10,7 +10,9 @@ import uuid
 import string
 import logging
 import datetime
+from . import pybossa_tasks_updater
 logger = logging.getLogger(__name__)
+PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
 
 
 # Module API
