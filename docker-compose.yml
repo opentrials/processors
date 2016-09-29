@@ -112,6 +112,12 @@ takeda:
     file: docker-cloud.yml
   restart: 'no'
 
+merge-trials-identifiers:
+  extends:
+    service: merge-trials-identifiers
+    file: docker-cloud.yml
+  restart: 'no'
+
 remove-unknown-dcloud-docs:
   extends:
     service: remove-unknown-dcloud-docs

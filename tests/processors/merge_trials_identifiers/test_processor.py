@@ -8,7 +8,7 @@ import mock
 import uuid
 import datetime
 import collections
-import processors.merge_trial_identifiers.processor as processor
+import processors.merge_trials_identifiers.processor as processor
 
 
 class TestMergeTrialIdentifiersProcessor(object):

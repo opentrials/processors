@@ -304,6 +304,18 @@ trial-remover:
   tags:
     - opentrials
 
+merge-trials-identifiers:
+  image: okibot/processors
+  command: make start merge_trials_identifiers
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    EXPLORERDB_URL:
+    LOGGING_URL:
+  tags:
+    - opentrials
+
 remove-unknown-dcloud-docs:
   image: okibot/processors
   command: make start remove_unknown_documentcloud_docs
