@@ -10,6 +10,7 @@ from .. import base
 
 # Module API
 
+
 def extract_source(record):
     source = {
         'id': 'hra',
@@ -29,6 +30,9 @@ def extract_publications(record):
         record['application_full_title'],
         record['hra_id'])
 
+    # Get URL for humans
+    source_url = _url_from_title(record['application_title'])
+
     # Get abstract
     abstract = record['research_summary'] or title
     identifiers = base.helpers.clean_list({
@@ -46,7 +50,7 @@ def extract_publications(record):
     # Extract publications
     publications = []
     publications.append({
-        'source_url': record['meta_source'],
+        'source_url': source_url,
         'title': title,
         'abstract': abstract,
         'date': record['publication_date'],
@@ -58,6 +62,17 @@ def extract_publications(record):
 
 
 # Internal
+
+def _url_from_title(title):
+    """A bit different from normal slugs, creates an HRA URL from an application title
+    """
+    slug = re.sub(r'[/]+', '', title)
+    slug = re.sub(r'[\W_]+', '-', slug)
+    slug = slug.strip('-')
+    slug = slug.lower()
+    url = 'http://www.hra.nhs.uk/news/research-summaries/' + slug
+    return url
+
 
 def _clean_identifier(ident, prefix):
     if ident:

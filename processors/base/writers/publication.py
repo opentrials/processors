@@ -42,8 +42,7 @@ def write_publication(conn, publication, source_id):
         object['slug'] = slug
         create = True
 
-    # Write object only for high priority source
-    if create or source_id in ['pubmed']:
+    if create:
 
         # Update object
         object.update({
