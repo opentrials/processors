@@ -112,6 +112,12 @@ takeda:
     file: docker-cloud.yml
   restart: 'no'
 
+trial-remover:
+  extends:
+    service: trial-remover
+    file: docker-cloud.yml
+  restart: 'no'
+
 merge-trials-identifiers:
   extends:
     service: merge-trials-identifiers
