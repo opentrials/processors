@@ -32,20 +32,21 @@ def write_publication(conn, publication, source_id):
 
     # Get slug/read object
     slug = publication['slug']
-    object = conn['database']['publications'].find_one(slug=slug)
+    obj = conn['database']['publications'].find_one(slug=slug)
 
     # Create object
-    if not object:
-        object = {}
-        object['id'] = uuid.uuid1().hex
-        object['created_at'] = timestamp
-        object['slug'] = slug
+    if not obj:
+        obj = {
+            'id': uuid.uuid1().hex,
+            'created_at': timestamp,
+            'slug': slug,
+        }
         create = True
 
     if create:
 
-        # Update object
-        object.update({
+        # Update obj
+        obj.update({
             'updated_at': timestamp,
             'source_id': source_id,
             # ---
@@ -57,11 +58,11 @@ def write_publication(conn, publication, source_id):
             'date': publication.get('date', None),
         })
 
-        # Write object
-        conn['database']['publications'].upsert(object, ['id'], ensure=False)
+        # Write obj
+        conn['database']['publications'].upsert(obj, ['id'], ensure=False)
 
         # Log debug
         logger.debug('Publication - %s: %s',
             'created' if create else 'updated', publication['title'][0:50])
 
-    return object['id']
+    return obj['id']
