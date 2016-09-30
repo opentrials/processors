@@ -43,26 +43,24 @@ def write_publication(conn, publication, source_id):
         }
         create = True
 
-    if create:
+    # Update obj
+    obj.update({
+        'updated_at': timestamp,
+        'source_id': source_id,
+        # ---
+        'source_url': publication['source_url'],
+        'title': publication['title'],
+        'abstract': publication['abstract'],
+        'authors': publication.get('authors'),
+        'journal': publication.get('journal'),
+        'date': publication.get('date'),
+    })
 
-        # Update obj
-        obj.update({
-            'updated_at': timestamp,
-            'source_id': source_id,
-            # ---
-            'source_url': publication['source_url'],
-            'title': publication['title'],
-            'abstract': publication['abstract'],
-            'authors': publication.get('authors', None),
-            'journal': publication.get('journal', None),
-            'date': publication.get('date', None),
-        })
+    # Write obj
+    conn['database']['publications'].upsert(obj, ['id'], ensure=False)
 
-        # Write obj
-        conn['database']['publications'].upsert(obj, ['id'], ensure=False)
-
-        # Log debug
-        logger.debug('Publication - %s: %s',
-            'created' if create else 'updated', publication['title'][0:50])
+    # Log debug
+    logger.debug('Publication - %s: %s',
+        'created' if create else 'updated', publication['title'][0:50])
 
     return obj['id']
