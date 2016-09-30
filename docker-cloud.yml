@@ -268,6 +268,21 @@ pybossa-indications:
   tags:
     - opentrials
 
+pybossa-trials-deduplication:
+  image: okibot/processors
+  command: make start pybossa_trials_deduplication
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    EXPLORERDB_URL:
+    LOGGING_URL:
+    PYBOSSA_URL:
+    PYBOSSA_API_KEY:
+    PYBOSSA_PROJECT_TRIALS_DEDUPLICATION:
+  tags:
+    - opentrials
+
 record-remover:
   image: okibot/processors
   command: make start record_remover
