@@ -62,7 +62,7 @@ def clean_list(raw_list):
 
 
 def get_cleaned_identifiers(identifiers):
-    """Remove falsy values and bad identifiers.
+    """Remove invalid identifiers.
     """
     PATTERNS = {
         'actrn': r'^ACTRN\d{14}p?$',
@@ -72,7 +72,7 @@ def get_cleaned_identifiers(identifiers):
         'gsk': r'^GSK',
         'irct': r'^IRCT',
         'isrctn': r'^ISRCTN\d{8}$',
-        'jprn': r'^JPRN-(C\d{9}|JapicCTI-\d{6}|JMA-IIA\d{5}|UMIN\d{9})$',
+        'jprn': r'^(JPRN-)?(C\d{9}|JapicCTI-\d{6}|JMA-IIA\d{5}|UMIN\d{9})$',
         'kct': r'^KCT',
         'nct': r'^NCT\d{8}$',
         'ntr': r'^NTR',
@@ -86,13 +86,13 @@ def get_cleaned_identifiers(identifiers):
     }
     result = {}
     for key, value in identifiers.items():
-        if not value:
-            continue
-        if key not in PATTERNS or not re.match(PATTERNS[key], value):
+        if not validate_identifier(value):
+            logger.warning('Ignoring invalid identifier %s:%s', key, value)
+        elif key not in PATTERNS or not re.match(PATTERNS[key], value, re.IGNORECASE):
             message = 'Identifier "%s:%s" is not recognized'
             logger.warning(message, key, value)
-            continue
-        result[key] = value
+        else:
+            result[key] = value
     return result
 
 
@@ -117,11 +117,13 @@ def clean_string(value):
 
 
 def find_list_of_identifiers(text):
-    """Find list of trial indentifier dicts in the given text.
+    """Find list of valid trial identifier dicts in the given text.
 
     Example:
         [{'nct': 'NCT123345'}, {'euctr': 'EUCTR12345'}]
 
+    It will only return identifiers that are valid according to
+    validate_identifiers() function.
     """
 
     # Pattern could be improved based on a extended
@@ -144,10 +146,21 @@ def find_list_of_identifiers(text):
         for prefix in patterns:
             pattern = PATTERN % prefix
             matches = re.findall(pattern, text, re.IGNORECASE)
+
             for match in matches:
-                list_of_identifiers.append({source_id: match})
+                clean_ids = get_cleaned_identifiers({source_id: match})
+                if clean_ids:
+                    list_of_identifiers.extend([clean_ids])
 
     return list_of_identifiers
+
+
+def validate_identifier(identifier):
+    """Empty or identifiers with only zeros are invalid."""
+    if identifier:
+        numbers = re.sub('[^\d]', '', identifier)
+        if numbers:
+            return int(numbers) != 0
 
 
 def iter_rows(conn, dataset, table, orderby, bufsize=100, **filter):
