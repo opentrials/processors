@@ -32,10 +32,11 @@ def write_document(conn, document):
     if document.get('id'):
         obj = conn['database']['documents'].find_one(id=document['id'])
     else:
-        # (trial_id, url, fda_approval_id) must be unique
+        # (trial_id, url, file_id, fda_approval_id) must be unique
         obj = conn['database']['documents'].find_one(
             trial_id=document.get('trial_id'),
             url=document.get('url'),
+            file_id=document.get('file_id'),
             fda_approval_id=document.get('fda_approval_id')
         )
 
@@ -55,7 +56,6 @@ def write_document(conn, document):
         'fda_approval_id': document.get('fda_approval_id'),
         'file_id': document.get('file_id'),
         'url': document.get('url'),
-        'documentcloud_url': document.get('documentcloud_url'),
     })
 
     # Write object
