@@ -10,7 +10,7 @@ from .organisation import write_organisation
 from .person import write_person
 from .condition import write_condition
 from .publication import write_publication
-from .record import write_database_record
+from .record import write_record
 from .source import write_source
 from .trial import write_trial
 from .trial_relationship import write_trial_relationship

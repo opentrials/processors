@@ -41,7 +41,7 @@ def process_trials(conn, table, extractors):
                 continue
 
             # Write record
-            writers.write_database_record(conn, record, source_id, trial_id, trial)
+            writers.write_record(conn, record, source_id, trial_id, trial)
 
             # Extract and write documents
             extract_documents = extractors.get('extract_documents')
