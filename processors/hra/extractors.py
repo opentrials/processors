@@ -35,13 +35,13 @@ def extract_publications(record):
 
     # Get abstract
     abstract = record['research_summary'] or title
-    identifiers = base.helpers.clean_list({
-        _clean_identifier(record['nct_id'], prefix='NCT'),
-        _clean_identifier(record['euctr_id'], prefix='EUCTR'),
-        _clean_identifier(record['isrctn_id'], prefix='ISRCTN'),
+    identifiers = base.helpers.clean_identifiers({
+        'nct': _clean_identifier(record['nct_id'], prefix='NCT'),
+        'euctr': _clean_identifier(record['euctr_id'], prefix='EUCTR'),
+        'isrctn': _clean_identifier(record['isrctn_id'], prefix='ISRCTN'),
     })
     if identifiers:
-        abstract = '%s [%s]' % (abstract, '/'.join(identifiers))
+        abstract += ' [%s]' % ('/'.join(sorted(identifiers.values())))
 
     # Get slug
     slug = base.helpers.slugify_string(
@@ -64,7 +64,7 @@ def extract_publications(record):
 # Internal
 
 def _url_from_title(title):
-    """A bit different from normal slugs, creates an HRA URL from an application title
+    """Creates an HRA URL from an application title
     """
     slug = re.sub(r'[/]+', '', title)
     slug = re.sub(r'[\W_]+', '-', slug)
@@ -81,4 +81,3 @@ def _clean_identifier(ident, prefix):
             return ident
         if re.match(r'\d{3,}', ident):
             return '%s%s' % (prefix, ident)
-    return None
