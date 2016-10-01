@@ -69,7 +69,7 @@ class TestGetCleanedIdentifiers(object):
         {'who': 'U1111-1115-2414'},
     ])
     def test_good_identifiers(self, identifiers):
-        assert helpers.get_cleaned_identifiers(identifiers) == identifiers
+        assert helpers.clean_identifiers(identifiers) == identifiers
 
     @pytest.mark.parametrize('identifiers', [
         {'bad_source': 'U123'},
@@ -83,8 +83,8 @@ class TestGetCleanedIdentifiers(object):
         {'isrctn': 'ISRCTN00000000'},
     ])
     def test_bad_identifiers(self, identifiers):
-        assert helpers.get_cleaned_identifiers(identifiers) == {}
+        assert helpers.clean_identifiers(identifiers) == {}
 
     def test_ignores_case(self):
         identifiers = {'nct': 'nCt12345678'}
-        assert helpers.get_cleaned_identifiers(identifiers) == identifiers
+        assert helpers.clean_identifiers(identifiers) == identifiers

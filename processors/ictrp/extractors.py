@@ -50,7 +50,7 @@ def extract_trial(record):
     # Extract EUCTR master identifier
     if source_id == 'euctr' and len(identifier) > 19:
         identifier = identifier.rsplit('-', 1)[0]
-    identifiers = base.helpers.get_cleaned_identifiers({
+    identifiers = base.helpers.clean_identifiers({
         source_id: identifier,
     })
 

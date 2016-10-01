@@ -23,7 +23,7 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
-    identifiers = base.helpers.get_cleaned_identifiers({
+    identifiers = base.helpers.clean_identifiers({
         'euctr': 'EUCTR%s' % record['eudract_number'],
         'nct': record['us_nct_clinicaltrials_gov_registry_number'],
         'isrctn': record['isrctn_international_standard_randomised_controlled_trial_numbe'],

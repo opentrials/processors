@@ -23,7 +23,7 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
-    identifiers = base.helpers.get_cleaned_identifiers({
+    identifiers = base.helpers.clean_identifiers({
         'jprn': 'JPRN-%s' % record['unique_trial_number'],
     })
 

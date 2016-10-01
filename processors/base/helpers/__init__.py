@@ -61,7 +61,7 @@ def clean_list(raw_list):
     return cleaned_list
 
 
-def get_cleaned_identifiers(identifiers):
+def clean_identifiers(identifiers):
     """Remove invalid identifiers.
     """
     PATTERNS = {
@@ -148,7 +148,7 @@ def find_list_of_identifiers(text):
             matches = re.findall(pattern, text, re.IGNORECASE)
 
             for match in matches:
-                clean_ids = get_cleaned_identifiers({source_id: match})
+                clean_ids = clean_identifiers({source_id: match})
                 if clean_ids:
                     list_of_identifiers.extend([clean_ids])
 

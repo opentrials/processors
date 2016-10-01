@@ -23,7 +23,7 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
-    identifiers = base.helpers.get_cleaned_identifiers({
+    identifiers = base.helpers.clean_identifiers({
         'nct': record['nct_id'],
     })
 
@@ -143,7 +143,7 @@ def extract_persons(record):
 def extract_documents(record):
     documents = []
     if record['clinical_results']:
-        identifiers = base.helpers.get_cleaned_identifiers({
+        identifiers = base.helpers.clean_identifiers({
             'nct': record['nct_id'],
         })
         identifier = identifiers['nct']

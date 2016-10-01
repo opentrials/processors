@@ -27,7 +27,7 @@ def extract_trial(record):
     identifier = record['trial_id']
     if identifier.startswith('NCT'):
         source_id = 'nct'
-    identifiers = base.helpers.get_cleaned_identifiers({
+    identifiers = base.helpers.clean_identifiers({
         source_id: identifier,
     })
 
