@@ -23,8 +23,8 @@ start:
 	python -m processors.base.cli $(filter-out $@,$(MAKECMDGOALS))
 
 test:
-	pylama processors
 	py.test
+	pylama processors
 
 up:
 	docker-compose up
