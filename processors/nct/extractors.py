@@ -63,6 +63,10 @@ def extract_trial(record):
     if record['clinical_results']:
         has_published_results = True
 
+    target_sample_size = record.get('enrollment_anticipated')
+    if target_sample_size is None:
+        target_sample_size = record.get('enrollment_actual')
+
     trial = {
         'identifiers': identifiers,
         'registration_date': record['firstreceived_date'],
@@ -73,7 +77,7 @@ def extract_trial(record):
         'status': status,
         'recruitment_status': recruitment_status,
         'eligibility_criteria': record['eligibility'],
-        'target_sample_size': record['enrollment_anticipated'],
+        'target_sample_size': target_sample_size,
         'first_enrollment_date': record['start_date'],
         'study_type': record['study_type'],
         'study_design': record['study_design'],
