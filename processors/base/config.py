@@ -53,6 +53,9 @@ PYBOSSA_URL = os.environ.get('PYBOSSA_URL')
 PYBOSSA_API_KEY = os.environ.get('PYBOSSA_API_KEY')
 PYBOSSA_PROJECT_INDICATIONS = os.environ.get('PYBOSSA_PROJECT_INDICATIONS')
 
+# Remove sources
+REMOVE_SOURCE_IDS = os.environ.get('REMOVE_SOURCE_IDS')
+
 # Contrib
 
 # Contributions mapping to upload
