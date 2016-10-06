@@ -135,3 +135,15 @@ sync-text-from-documentcloud:
     service: sync-text-from-documentcloud
     file: docker-cloud.yml
   restart: 'no'
+
+sources-remover:
+  extends:
+    service: sources-remover
+    file: docker-cloud.yml
+  restart: 'no'
+
+remove-sources-data:
+  extends:
+    service: remove-sources-data
+    file: docker-cloud.yml
+  restart: 'no'
