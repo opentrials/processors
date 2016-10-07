@@ -147,3 +147,9 @@ remove-sources-data:
     service: remove-sources-data
     file: docker-cloud.yml
   restart: 'no'
+
+cochrane-reviews:
+  extends:
+    service: cochrane-reviews
+    file: docker-cloud.yml
+  restart: 'no'

@@ -371,3 +371,15 @@ remove-sources-data:
     REMOVE_SOURCE_IDS:
   tags:
     - opentrials
+
+cochrane-reviews:
+  image: okibot/processors
+  command: make start cochrane_reviews
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    EXPLORERDB_URL:
+    LOGGING_URL:
+  tags:
+    - opentrials

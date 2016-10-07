@@ -8,3 +8,4 @@ from .intervention import process_interventions
 from .condition import process_conditions
 from .publication import process_publications
 from .trial import process_trials
+from .risk_of_bias import process_risk_of_biases
