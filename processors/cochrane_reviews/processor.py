@@ -161,3 +161,18 @@ def scrape_pubmed_id(reference):
         return pmids[0]
     else:
         return None
+
+
+# FIXME: Add this to the RiskOfBias table as 'publishing_date'
+def scrape_publishing_date(review):
+    """Find publishing date of review"""
+
+    review_date = None
+    base_url = 'http://api.crossref.org/works'
+    query = {'filter': 'doi:%s' % review['doi_id']}
+    search_result = requests.get(base_url, params=query)
+    found_reviews = search_result.json()['message']['items']
+    if len(found_reviews) == 1:
+        review = found_reviews[0]
+        review_date = review['created']['date-time']
+    return review_date
