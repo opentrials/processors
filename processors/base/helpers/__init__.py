@@ -86,6 +86,14 @@ def clean_identifiers(identifiers):
     }
     result = {}
     for key, value in identifiers.items():
+        try:
+            new_value, num_changes = re.subn(r'^(\w+)\s+', r'\g<1>', value, re.IGNORECASE)
+            if num_changes:
+                logger.debug('Removed whitespaces from identifier "%s" to "%s"',
+                             value, new_value)
+                value = new_value
+        except TypeError:
+            pass
         if not validate_identifier(value):
             logger.warning('Ignoring invalid identifier %s:%s', key, value)
         elif key not in PATTERNS or not re.match(PATTERNS[key], value, re.IGNORECASE):
@@ -128,7 +136,7 @@ def find_list_of_identifiers(text):
 
     # Pattern could be improved based on a extended
     # clinical trial identifiers format analysis
-    PATTERN = r'(%s[\d-]{3,})'
+    PATTERN = r'(%s\s*[\w\d-]{3,})'
     # In a form (source_id, pattern[])
     PREFIXES = [
         ('actrn', ['actrn']),

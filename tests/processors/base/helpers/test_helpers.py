@@ -45,6 +45,14 @@ class TestFindListOfIdentifiers(object):
     def test_returns_only_valid_identifiers(self, text, identifiers):
         assert sorted(helpers.find_list_of_identifiers(text)) == sorted(identifiers)
 
+    @pytest.mark.parametrize('text,identifiers', [
+        ('NCT 12345678', [{'nct': 'NCT12345678'}]),
+        ('ISRCTN    12345678', [{'isrctn': 'ISRCTN12345678'}]),
+        ('TAKEDA01-02-TL-375-033', [{'takeda': 'TAKEDA01-02-TL-375-033'}]),
+    ])
+    def test_allows_whitespace_in_identifiers(self, text, identifiers):
+        assert sorted(helpers.find_list_of_identifiers(text)) == sorted(identifiers)
+
 
 class TestGetCleanedIdentifiers(object):
     @pytest.mark.parametrize('identifiers', [
