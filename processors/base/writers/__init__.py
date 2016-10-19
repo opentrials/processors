@@ -17,4 +17,4 @@ from .trial_relationship import write_trial_relationship
 from .document import write_document
 from .file import write_file
 from .fda_application import write_fda_application
-from .risk_of_bias import write_rob, write_rob_criteria, write_rob_rob_criteria
+from .risk_of_bias import write_rob, write_rob_criteria, write_rob_rob_criteria, delete_rob

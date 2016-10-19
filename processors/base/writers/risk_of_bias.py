@@ -121,3 +121,27 @@ def write_rob_rob_criteria(conn, rob_rob_criteria):
               ensure=False)
 
     return None
+
+
+def delete_rob(conn, rob):
+    """Delete a risk_of_bias from the database along with its correspondent
+    risk_of_biases_risk_of_bias_criterias
+
+
+    Args:
+        conn (dict): connection dict
+        rob (dict): risk_of_bias data
+
+    Returns:
+        None
+    """
+
+    ex_rob = conn['database']['risk_of_biases'].find_one(study_id=rob['study_id'],
+                                                         source_url=rob['source_url'])
+
+    if ex_rob:
+        conn['database']['risk_of_biases_risk_of_bias_criterias'].delete(risk_of_bias_id=ex_rob['id'])
+        conn['database']['risk_of_biases'].delete(id=ex_rob['id'])
+
+        # Log debug
+        logger.debug('Risk of bias deleted: %s', ex_rob['source_url'])
