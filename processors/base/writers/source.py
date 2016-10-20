@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import logging
 import datetime
+from .. import helpers
 logger = logging.getLogger(__name__)
 
 
@@ -47,6 +48,19 @@ def write_source(conn, source):
         'url': source.get('url'),
         'terms_and_conditions_url': source.get('terms_and_conditions_url'),
     })
+
+    # Validate object
+    url_fields = ['url', 'terms_and_conditions_url']
+    failed_url_validation = [field for field in url_fields
+                             if not helpers.validate_remote_url(object[field])]
+    if failed_url_validation:
+        logger.warning(
+            'Source "%s" wasn\'t %s because it has invalid fields: %s',
+            object['name'],
+            'created' if create else 'updated',
+            {field: object[field] for field in failed_url_validation}
+        )
+        return None
 
     # Write object
     conn['database']['sources'].upsert(object, ['id'], ensure=False)

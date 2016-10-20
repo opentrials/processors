@@ -10,6 +10,7 @@ import uuid
 import string
 import logging
 import datetime
+import urlparse
 from . import pybossa_tasks_updater
 logger = logging.getLogger(__name__)
 PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
@@ -169,6 +170,19 @@ def validate_identifier(identifier):
         numbers = re.sub('[^\d]', '', identifier)
         if numbers:
             return int(numbers) != 0
+
+
+def validate_remote_url(url):
+    """"URLs without domain and scheme or with a file scheme are invalid"""
+    is_valid_url = False
+    try:
+        parsed_url = urlparse.urlparse(url)
+        if parsed_url.scheme and parsed_url.netloc:
+            is_valid_url = (parsed_url.scheme != 'file')
+    except AttributeError:
+        pass
+
+    return is_valid_url
 
 
 def iter_rows(conn, dataset, table, orderby, bufsize=100, **filter):

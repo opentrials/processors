@@ -96,3 +96,23 @@ class TestGetCleanedIdentifiers(object):
     def test_ignores_case(self):
         identifiers = {'nct': 'nCt12345678'}
         assert helpers.clean_identifiers(identifiers) == identifiers
+
+
+class TestValidateRemoteURL(object):
+    @pytest.mark.parametrize('url', [
+        'https://onlinelibrary.wiley.com/doi/10.1002/14651858.CD009005/full',
+        'http://www.ncbi.nlm.nih.gov/pubmed/18502614',
+        'ftp://ftp.funet.fi/pub/standards/RFC/rfc959.txt',
+    ])
+    def test_valid_url(self, url):
+        assert helpers.validate_remote_url(url)
+
+    @pytest.mark.parametrize('url', [
+        'ncbi.nlm.nih.gov/pubmed/18502614',
+        'somewhere',
+        'somewhere.com',
+        None,
+        True,
+    ])
+    def test_invalid_url(self, url):
+        assert not helpers.validate_remote_url(url)

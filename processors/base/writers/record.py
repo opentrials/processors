@@ -70,6 +70,17 @@ def write_record(conn, record, source_id, trial_id, trial):
         'has_published_results': trial.get('has_published_results'),
     })
 
+    # Validate object
+    if not helpers.validate_remote_url(obj['source_url']):
+        logger.warning(
+            'Record - %s wasn\'t %s because its "%s" field is invalid: %s',
+            trial['identifiers'],
+            'created' if create else 'updated',
+            'source_url',
+            obj['source_url']
+        )
+        return None
+
     # Write object
     conn['database']['records'].upsert(obj, ['id'], ensure=False)
 

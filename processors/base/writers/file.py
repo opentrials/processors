@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import uuid
 import logging
+from .. import helpers
 logger = logging.getLogger(__name__)
 
 
@@ -44,6 +45,16 @@ def write_file(conn, file_data):
         'documentcloud_id': file_data.get('documentcloud_id'),
         'text': file_data.get('text'),
     })
+
+    if not helpers.validate_remote_url(obj['url']):
+        logger.warning(
+            'File - %s wasn\'t %s because its "%s" field is invalid: %s',
+            obj['id'],
+            'created' if create else 'updated',
+            'url',
+            obj['url']
+        )
+        return None
 
     conn['database']['files'].upsert(obj, ['id'], ensure=False)
 

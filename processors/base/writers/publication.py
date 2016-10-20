@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import uuid
 import logging
 import datetime
+from .. import helpers
 logger = logging.getLogger(__name__)
 
 
@@ -55,6 +56,17 @@ def write_publication(conn, publication, source_id):
         'journal': publication.get('journal'),
         'date': publication.get('date'),
     })
+
+    # Validate object
+    if not helpers.validate_remote_url(obj['source_url']):
+        logger.warning(
+            'Publication - %s wasn\'t %s because its "%s" field is invalid: %s',
+            publication['title'][0:50],
+            'created' if create else 'updated',
+            'source_url',
+            obj['source_url']
+        )
+        return None
 
     # Write obj
     conn['database']['publications'].upsert(obj, ['id'], ensure=False)
