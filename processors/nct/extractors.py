@@ -23,9 +23,12 @@ def extract_source(record):
 def extract_trial(record):
 
     # Get identifiers
-    identifiers = base.helpers.clean_identifiers({
-        'nct': record['nct_id'],
-    })
+    raw_identifiers = {'nct': record['nct_id']}
+    for secondary_id in record['secondary_ids'] or []:
+        secondary_ids = base.helpers.find_list_of_identifiers(secondary_id)
+        [raw_identifiers.update(sec_id) for sec_id in secondary_ids]
+
+    identifiers = base.helpers.clean_identifiers(raw_identifiers)
 
     # Get public title
     public_title = base.helpers.get_optimal_title(

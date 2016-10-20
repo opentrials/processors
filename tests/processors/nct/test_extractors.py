@@ -26,6 +26,7 @@ class TestNCTExtractors(object):
         'phase': 'Phase',
         'primary_outcomes': 'Primary outcomes',
         'secondary_outcomes': 'Secondary outcomes',
+        'secondary_ids': ['ISRCTN71203361'],
     }
 
     def test_stub_record_is_valid(self):
@@ -47,3 +48,10 @@ class TestNCTExtractors(object):
         trial = extractors.extract_trial(record)
 
         assert trial['target_sample_size'] == result
+
+    def test_extracted_identifiers(self):
+        record = copy.deepcopy(self.STUB_RECORD)
+        extracted_trial = extractors.extract_trial(record)
+
+        expected_identifiers = {'nct': 'NCT12345678', 'isrctn': 'ISRCTN71203361'}
+        assert extracted_trial['identifiers'] == expected_identifiers
