@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def process(conf, conn):
     query = '''
-        SELECT
+        SELECT DISTINCT ON (files.id)
           documents.name,
           files.id,
           files.url,
