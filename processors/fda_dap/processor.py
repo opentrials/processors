@@ -10,7 +10,6 @@ import requests
 import StringIO
 import PyPDF2
 import boto3
-import documentcloud
 from .. import base
 logger = logging.getLogger(__name__)
 
@@ -86,24 +85,6 @@ class FDADAPProcessor(object):
                 pdf_file.seek(0)
                 file_data['url'] = self._upload_to_s3(pdf_file, sha1)
                 logging.debug('Merged PDF uploaded to: %s' % file_data['url'])
-
-        # Delete file in DocumentCloud if it was modified
-        if file_modified and file_data.get('documentcloud_id'):
-            dc_id = file_data['documentcloud_id']
-            logging.debug('Deleting outdated DocumentCloud doc: %s' % dc_id)
-            self._delete_documentcloud_file(file_data['documentcloud_id'])
-            del file_data['documentcloud_id']
-
-        # Upload to DocumentCloud
-        if not file_data.get('documentcloud_id'):
-            dc_title = '-'.join([
-                fda_approval['id'],
-                fda_approval['type'],
-                document['name']
-            ])
-            dc_id = self._upload_to_documentcloud(file_data['url'], dc_title)
-            logging.debug('PDF uploaded to DocumentCloud: %s' % dc_id)
-            file_data['documentcloud_id'] = dc_id
 
         return base.writers.write_file(self._conn, file_data)
 
@@ -185,29 +166,6 @@ class FDADAPProcessor(object):
             hasher.update(chunk)
         fd.seek(0)
         return hasher.hexdigest()
-
-    def _upload_to_documentcloud(self, url, title):
-        project_title = self._conf['DOCUMENTCLOUD_PROJECT']
-        client = self._documentcloud_client()
-        project, _ = client.projects.get_or_create_by_title(project_title)
-
-        uploaded = client.documents.upload(
-            url,
-            title=title,
-            project=project.id
-        )
-
-        return uploaded.id
-
-    def _delete_documentcloud_file(self, documentcloud_id):
-        client = self._documentcloud_client()
-        return client.documents.delete(documentcloud_id)
-
-    def _documentcloud_client(self):
-        username = self._conf['DOCUMENTCLOUD_USERNAME']
-        password = self._conf['DOCUMENTCLOUD_PASSWORD']
-
-        return documentcloud.DocumentCloud(username, password)
 
 
 class DownloadAndMergePDFs(object):

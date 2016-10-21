@@ -346,6 +346,21 @@ sync-text-from-documentcloud:
   tags:
     - opentrials
 
+send-fda-docs-to-documentcloud:
+  image: okibot/processors
+  command: make start send_fda_docs_to_documentcloud
+  # restart: always
+  environment:
+    WAREHOUSE_URL:
+    DATABASE_URL:
+    EXPLORERDB_URL:
+    LOGGING_URL:
+    DOCUMENTCLOUD_USERNAME:
+    DOCUMENTCLOUD_PASSWORD:
+    DOCUMENTCLOUD_PROJECT:
+  tags:
+    - opentrials
+
 sources-remover:
   image: okibot/processors
   command: make start sources_remover
