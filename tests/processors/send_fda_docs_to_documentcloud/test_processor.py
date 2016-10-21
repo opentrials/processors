@@ -26,6 +26,7 @@ class TestSendFDADocsToDocumentCloudProcessor(object):
     def test_process_file(self, dc_mock, file_stub, conn):
         doc_mock, project_mock = _setup_documentcloud_mock(dc_mock)
         doc_mock.file_hash = file_stub['sha1']
+        file_stub['fda_application_id'] = 'NDA00000-000'
 
         processor = SendFDADocsToDocumentCloudProcessor(self.CONF, conn['database'])
         processor.process_file(file_stub)
@@ -35,6 +36,7 @@ class TestSendFDADocsToDocumentCloudProcessor(object):
         assert doc_mock.access == 'public'
         assert doc_mock.data == {
             'fda_application': file_stub['fda_application_id'],
+            'application_type': 'NDA',
             'supplement_number': str(file_stub['supplement_number']),
             'type': file_stub['type'],
             'action_date': file_stub['action_date'].isoformat(),

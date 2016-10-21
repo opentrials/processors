@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
+import re
 import logging
 import documentcloud
 logger = logging.getLogger(__name__)
@@ -55,11 +56,15 @@ class _SendFDADocsToDocumentCloudProcessor(object):
             doc.delete()
             doc = self._upload_file(the_file)
 
+        application_type = re.findall(r'^[a-zA-Z]+',
+                                      the_file['fda_application_id'])[0]
+
         doc.title = self._generate_title(the_file)
         doc.project = self._project
         doc.access = 'public'
         doc.data = {
             'fda_application': the_file['fda_application_id'],
+            'application_type': application_type,
             'supplement_number': str(the_file['supplement_number']),
             'type': the_file['type'],
             'action_date': the_file['action_date'].isoformat(),
