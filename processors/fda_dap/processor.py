@@ -48,17 +48,16 @@ class FDADAPProcessor(object):
         fda_approval = self._write_fda_approval(record)
 
         for document in record['documents']:
-            data = self._find_document(document, fda_approval) or {}
+            file_id = self._upsert_file(document, fda_approval)
+            data = self._find_document(document, fda_approval, file_id) or {}
 
             data.update({
                 'source_id': 'fda',
                 'name': document['name'],
                 'type': 'other',
+                'file_id': file_id,
                 'fda_approval_id': fda_approval['id'],
             })
-
-            if not data.get('file_id'):
-                data['file_id'] = self._upsert_file(document, fda_approval)
 
             # Save to DB
             base.writers.write_document(self._conn, data)
@@ -82,6 +81,8 @@ class FDADAPProcessor(object):
 
             # Upload to S3 if needed
             if not file_data.get('url') or file_modified:
+                # TODO: Maybe delete the previous file? Or maybe we want to
+                # keep them as historical records.
                 pdf_file.seek(0)
                 file_data['url'] = self._upload_to_s3(pdf_file, sha1)
                 logging.debug('Merged PDF uploaded to: %s' % file_data['url'])
@@ -140,13 +141,11 @@ class FDADAPProcessor(object):
         }
         return base.writers.write_fda_application(self._conn, fda_application, 'fda')
 
-    def _find_document(self, document, fda_approval):
-        # FIXME: We're using "name" to identify if the document already exist
-        # in our DB. However, "name" is mutable, so it isn't a good candidate
-        # for a key. I couldn't find a better one, though.
+    def _find_document(self, document, fda_approval, file_id):
         return self._conn['database']['documents'].find_one(
             name=document['name'],
-            fda_approval_id=fda_approval['id']
+            fda_approval_id=fda_approval['id'],
+            file_id=file_id
         )
 
     def _find_fda_approval(self, fda_approval_id):
