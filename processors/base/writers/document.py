@@ -27,19 +27,8 @@ def write_document(conn, document):
 
     """
     create = False
-    obj = None
-
-    # Get slug/read object
-    if document.get('id'):
-        obj = conn['database']['documents'].find_one(id=document['id'])
-    else:
-        # (trial_id, url, file_id, fda_approval_id) must be unique
-        obj = conn['database']['documents'].find_one(
-            trial_id=document.get('trial_id'),
-            url=document.get('url'),
-            file_id=document.get('file_id'),
-            fda_approval_id=document.get('fda_approval_id')
-        )
+    db = conn['database']
+    obj = _find_document(db, document)
 
     # Create object
     if not obj:
@@ -53,7 +42,6 @@ def write_document(conn, document):
         'source_id': document.get('source_id'),
         'name': document['name'],
         'type': document['type'],
-        'trial_id': document.get('trial_id'),
         'fda_approval_id': document.get('fda_approval_id'),
         'file_id': document.get('file_id'),
         'url': document.get('url'),
@@ -70,14 +58,69 @@ def write_document(conn, document):
         )
         return None
 
-    # Write object
-    conn['database']['documents'].upsert(obj, ['id'], ensure=False)
+    # Write object and relationships
+    try:
+        db.begin()
 
-    # Log debug
-    logger.debug(
-        'Document - %s: %s',
-        'created' if create else 'updated',
-        document['name'][0:50]
-    )
+        db['documents'].upsert(obj, ['id'], ensure=False)
 
-    return obj['id']
+        trial_id = document.get('trial_id')
+        if trial_id:
+            trials_documents = {
+                'trial_id': trial_id,
+                'document_id': obj['id'],
+            }
+            db['trials_documents'].insert_ignore(
+                trials_documents,
+                ['trial_id', 'document_id'],
+                ensure=False
+            )
+
+        db.commit()
+    except Exception:
+        db.rollback()
+        msg = 'Error creating document: {}'.format(document['name'][0:50])
+        logger.error(msg, exc_info=True)
+    else:
+        # Log debug
+        logger.debug(
+            'Document - %s: %s',
+            'created' if create else 'updated',
+            document['name'][0:50]
+        )
+        return obj['id']
+
+
+def _find_document(db, document):
+    '''Finds document in DB if it exists
+
+    If the received document has an ID, we try to find it using it. Otherwise,
+    we'll look for its set of columns that must be unique. There currently are
+    3 cases:
+
+    * FDA documents - [`fda_approval_id`, `file_id`, `name`]
+    * Documents with files - [`type`, `file_id`]
+    * Documents with URLs - [`type`, `url`]
+    '''
+    result = None
+
+    if document.get('id'):
+        result = db['documents'].find_one(id=document['id'])
+    elif document.get('fda_approval_id'):
+        result = db['documents'].find_one(
+            fda_approval_id=document['fda_approval_id'],
+            file_id=document['file_id'],
+            name=document['name']
+        )
+    elif document.get('file_id'):
+        result = db['documents'].find_one(
+            file_id=document['file_id'],
+            type=document['type']
+        )
+    else:
+        result = db['documents'].find_one(
+            url=document['url'],
+            type=document['type']
+        )
+
+    return result
