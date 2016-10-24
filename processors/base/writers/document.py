@@ -60,7 +60,7 @@ def write_document(conn, document):
     })
 
     # Validate object
-    if not helpers.validate_remote_url(obj['url']):
+    if obj.get('url') is not None and not helpers.validate_remote_url(obj['url']):
         logger.warning(
             'Document %s wasn\'t %s because its "%s" field is invalid: %s',
             obj['name'][0:50],

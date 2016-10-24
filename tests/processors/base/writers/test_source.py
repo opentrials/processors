@@ -35,6 +35,17 @@ class TestSourceWriter(object):
 
         assert writers.write_source(conn, source) is not None
 
+    def test_writes_source_without_urls(self):
+        source = {
+            'id': 'id',
+            'name': 'name',
+            'type': 'type',
+        }
+        conn = _get_mock_conn()
+        conn['database']['sources'].find_one.return_value = None
+
+        assert writers.write_source(conn, source) is not None
+
 
 def _get_mock_conn():
     return {

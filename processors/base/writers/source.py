@@ -52,7 +52,7 @@ def write_source(conn, source):
     # Validate object
     url_fields = ['url', 'terms_and_conditions_url']
     failed_url_validation = [field for field in url_fields
-                             if not helpers.validate_remote_url(object[field])]
+                             if object.get(field) is not None and not helpers.validate_remote_url(object[field])]
     if failed_url_validation:
         logger.warning(
             'Source "%s" wasn\'t %s because it has invalid fields: %s',

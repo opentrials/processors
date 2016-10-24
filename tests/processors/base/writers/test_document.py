@@ -39,6 +39,17 @@ class TestDocumentWriter(object):
 
         assert writers.write_document(conn, document) is not None
 
+    def test_writes_file_only_document(self):
+        document = {
+            'name': 'name',
+            'type': 'type',
+            'file_id': 'file_id',
+        }
+        conn = _get_mock_conn()
+        conn['database']['documents'].find_one.return_value = None
+
+        assert writers.write_document(conn, document) is not None
+
 
 def _get_mock_conn():
     return {
