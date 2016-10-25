@@ -136,6 +136,12 @@ sync-text-from-documentcloud:
     file: docker-cloud.yml
   restart: 'no'
 
+send-fda-docs-to-documentcloud:
+  extends:
+    service: send-fda-docs-to-documentcloud
+    file: docker-cloud.yml
+  restart: 'no'
+
 sources-remover:
   extends:
     service: sources-remover

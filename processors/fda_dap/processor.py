@@ -10,7 +10,6 @@ import requests
 import StringIO
 import PyPDF2
 import boto3
-import documentcloud
 from .. import base
 logger = logging.getLogger(__name__)
 
@@ -48,17 +47,16 @@ class FDADAPProcessor(object):
         fda_approval = self._write_fda_approval(record)
 
         for document in record['documents']:
-            data = self._find_document(document, fda_approval) or {}
+            file_id = self._upsert_file(document, fda_approval)
+            data = self._find_document(document, fda_approval, file_id) or {}
 
             data.update({
                 'source_id': 'fda',
                 'name': document['name'],
                 'type': 'other',
+                'file_id': file_id,
                 'fda_approval_id': fda_approval['id'],
             })
-
-            if not data.get('file_id'):
-                data['file_id'] = self._upsert_file(document, fda_approval)
 
             # Save to DB
             base.writers.write_document(self._conn, data)
@@ -82,27 +80,11 @@ class FDADAPProcessor(object):
 
             # Upload to S3 if needed
             if not file_data.get('url') or file_modified:
+                # TODO: Maybe delete the previous file? Or maybe we want to
+                # keep them as historical records.
                 pdf_file.seek(0)
                 file_data['url'] = self._upload_to_s3(pdf_file, sha1)
                 logging.debug('Merged PDF uploaded to: %s' % file_data['url'])
-
-        # Delete file in DocumentCloud if it was modified
-        if file_modified and file_data.get('documentcloud_id'):
-            dc_id = file_data['documentcloud_id']
-            logging.debug('Deleting outdated DocumentCloud doc: %s' % dc_id)
-            self._delete_documentcloud_file(file_data['documentcloud_id'])
-            del file_data['documentcloud_id']
-
-        # Upload to DocumentCloud
-        if not file_data.get('documentcloud_id'):
-            dc_title = '-'.join([
-                fda_approval['id'],
-                fda_approval['type'],
-                document['name']
-            ])
-            dc_id = self._upload_to_documentcloud(file_data['url'], dc_title)
-            logging.debug('PDF uploaded to DocumentCloud: %s' % dc_id)
-            file_data['documentcloud_id'] = dc_id
 
         return base.writers.write_file(self._conn, file_data)
 
@@ -140,13 +122,11 @@ class FDADAPProcessor(object):
         }
         return base.writers.write_fda_application(self._conn, fda_application, 'fda')
 
-    def _find_document(self, document, fda_approval):
-        # FIXME: We're using "name" to identify if the document already exist
-        # in our DB. However, "name" is mutable, so it isn't a good candidate
-        # for a key. I couldn't find a better one, though.
+    def _find_document(self, document, fda_approval, file_id):
         return self._conn['database']['documents'].find_one(
             name=document['name'],
-            fda_approval_id=fda_approval['id']
+            fda_approval_id=fda_approval['id'],
+            file_id=file_id
         )
 
     def _find_fda_approval(self, fda_approval_id):
@@ -186,29 +166,6 @@ class FDADAPProcessor(object):
             hasher.update(chunk)
         fd.seek(0)
         return hasher.hexdigest()
-
-    def _upload_to_documentcloud(self, url, title):
-        project_title = self._conf['DOCUMENTCLOUD_PROJECT']
-        client = self._documentcloud_client()
-        project, _ = client.projects.get_or_create_by_title(project_title)
-
-        uploaded = client.documents.upload(
-            url,
-            title=title,
-            project=project.id
-        )
-
-        return uploaded.id
-
-    def _delete_documentcloud_file(self, documentcloud_id):
-        client = self._documentcloud_client()
-        return client.documents.delete(documentcloud_id)
-
-    def _documentcloud_client(self):
-        username = self._conf['DOCUMENTCLOUD_USERNAME']
-        password = self._conf['DOCUMENTCLOUD_PASSWORD']
-
-        return documentcloud.DocumentCloud(username, password)
 
 
 class DownloadAndMergePDFs(object):
