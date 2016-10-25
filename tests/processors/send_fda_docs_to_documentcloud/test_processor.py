@@ -38,6 +38,7 @@ class TestSendFDADocsToDocumentCloudProcessor(object):
             'fda_application': file_stub['fda_application_id'],
             'application_type': 'NDA',
             'supplement_number': str(file_stub['supplement_number']),
+            'name': file_stub['name'],
             'type': file_stub['type'],
             'action_date': file_stub['action_date'].isoformat(),
         }

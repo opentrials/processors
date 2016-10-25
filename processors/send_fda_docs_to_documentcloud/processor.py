@@ -66,6 +66,7 @@ class _SendFDADocsToDocumentCloudProcessor(object):
             'fda_application': the_file['fda_application_id'],
             'application_type': application_type,
             'supplement_number': str(the_file['supplement_number']),
+            'name': the_file['name'],
             'type': the_file['type'],
             'action_date': the_file['action_date'].isoformat(),
         }
