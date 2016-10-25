@@ -44,17 +44,17 @@ def write_document(conn, document):
         'type': document['type'],
         'fda_approval_id': document.get('fda_approval_id'),
         'file_id': document.get('file_id'),
-        'url': document.get('url'),
+        'source_url': document.get('url'),
     })
 
     # Validate object
-    if obj.get('url') is not None and not helpers.validate_remote_url(obj['url']):
+    if obj.get('source_url') is not None and not helpers.validate_remote_url(obj['source_url']):
         logger.warning(
             'Document %s wasn\'t %s because its "%s" field is invalid: %s',
             obj['name'][0:50],
             'created' if create else 'updated',
-            'url',
-            obj['url']
+            'source_url',
+            obj['source_url']
         )
         return None
 
@@ -100,7 +100,7 @@ def _find_document(db, document):
 
     * FDA documents - [`fda_approval_id`, `file_id`, `name`]
     * Documents with files - [`type`, `file_id`]
-    * Documents with URLs - [`type`, `url`]
+    * Documents with URLs - [`type`, `source_url`]
     '''
     result = None
 
@@ -119,7 +119,7 @@ def _find_document(db, document):
         )
     else:
         result = db['documents'].find_one(
-            url=document['url'],
+            source_url=document['url'],
             type=document['type']
         )
 

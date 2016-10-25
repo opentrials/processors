@@ -149,7 +149,7 @@ def conn():
         'file_id',
         'trial_id',
         'fda_approval_id',
-        'url',
+        'source_url',
     ])
 
     _create_str_columns(db['trials_documents'], [
