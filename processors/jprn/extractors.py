@@ -14,7 +14,7 @@ def extract_source(record):
         'id': 'jprn',
         'name': 'UMIN',
         'type': 'register',
-        'url': 'http://rctportal.niph.go.jp/en/',
+        'source_url': 'http://rctportal.niph.go.jp/en/',
         'terms_and_conditions_url': 'http://rctportal.niph.go.jp/en/agreement',
     }
     return source
@@ -146,7 +146,7 @@ def extract_documents(record):
         document = {
             'name': 'Results',
             'type': 'results',
-            'url': results_url,
+            'source_url': results_url,
         }
         documents.append(document)
     return documents

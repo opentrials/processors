@@ -17,11 +17,11 @@ def process(conf, conn):
         SELECT documents.id AS document_id,
                fda_approvals.id AS fda_approval_id,
                documents.name,
-               files.url
+               files.source_url
         FROM documents
         INNER JOIN fda_approvals ON documents.fda_approval_id = fda_approvals.id
         INNER JOIN files ON documents.file_id = files.id
-        WHERE files.url IS NOT NULL
+        WHERE files.source_url IS NOT NULL
               AND fda_approvals.type = 'New or Modified Indication'
         ORDER BY fda_approvals.id
     """
@@ -61,5 +61,5 @@ def _extract_document(document):
     return {
         'document_id': str(document['document_id']),
         'name': document['name'],
-        'url': document['url'],
+        'source_url': document['source_url'],
     }

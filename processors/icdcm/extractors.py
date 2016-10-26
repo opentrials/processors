@@ -12,7 +12,7 @@ def extract_source(record):
         'id': 'icdcm',
         'name': 'ICD-10 Clinical Modification',
         'type': 'other',
-        'url': 'https://www.cms.gov/Medicare/Coding/ICD10/index.html',
+        'source_url': 'https://www.cms.gov/Medicare/Coding/ICD10/index.html',
     }
     return source
 

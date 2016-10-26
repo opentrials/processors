@@ -19,7 +19,7 @@ def extract_source(record):
         'id': 'ictrp',
         'name': 'WHO ICTRP',
         'type': 'register',
-        'url': 'http://www.who.int/trialsearch/',
+        'source_url': 'http://www.who.int/trialsearch/',
         'terms_and_conditions_url': 'http://www.who.int/ictrp/search/download/en/',
     }
     return source

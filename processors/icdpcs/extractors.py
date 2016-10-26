@@ -12,7 +12,7 @@ def extract_source(record):
         'id': 'icdpcs',
         'name': 'ICD-10 Procedure Coding System',
         'type': 'other',
-        'url': 'https://www.cms.gov/Medicare/Coding/ICD10/index.html',
+        'source_url': 'https://www.cms.gov/Medicare/Coding/ICD10/index.html',
     }
     return source
 

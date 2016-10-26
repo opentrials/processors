@@ -16,7 +16,7 @@ class TestDocumentWriter(object):
             'name': 'name',
             'type': 'csr',
             'file_id': '7e7bee65ba2b4adba3657d88ad1afc3f',
-            'url': 'https://clinicaltrials.gov/ct2/show/results/NCT00486265',
+            'source_url': 'https://clinicaltrials.gov/ct2/show/results/NCT00486265',
         }
 
         document_id = writers.write_document(conn, document)
@@ -36,7 +36,7 @@ class TestDocumentWriter(object):
         document = {
             'name': 'name',
             'type': 'type',
-            'url': 'https://clinicaltrials.gov/ct2/show/results/NCT00486265',
+            'source_url': 'https://clinicaltrials.gov/ct2/show/results/NCT00486265',
         }
 
         assert writers.write_document(conn, document) is not None
@@ -45,7 +45,7 @@ class TestDocumentWriter(object):
         document = {
             'name': 'name',
             'type': 'type',
-            'url': 'url',
+            'source_url': 'url',
         }
 
         assert writers.write_document(conn, document) is None
@@ -55,7 +55,7 @@ class TestDocumentWriter(object):
             'id': '5b99281096b311e6a0ecf8165487599c',
             'name': 'name',
             'type': 'csr',
-            'url': 'http://example.org',
+            'source_url': 'http://example.org',
         }
         new_document = {
             'id': original_document['id'],
@@ -109,7 +109,7 @@ class TestDocumentWriter(object):
             'id': document_id,
             'name': 'name',
             'type': 'csr',
-            'url': 'http://example.org',
+            'source_url': 'http://example.org',
         }
         writers.write_document(conn, document)
 

@@ -47,7 +47,7 @@ def extract_source(record):
         'id': 'cochrane_schizophrenia',
         'name': 'Cochrane Schizophrenia Group',
         'type': 'other',
-        'url': 'http://schizophrenia.cochrane.org/',
+        'source_url': 'http://schizophrenia.cochrane.org/',
     }
 
 

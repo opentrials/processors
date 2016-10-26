@@ -14,7 +14,7 @@ def extract_source(record):
         'id': 'nct',
         'name': 'ClinicalTrials.gov',
         'type': 'register',
-        'url': 'https://clinicaltrials.gov',
+        'source_url': 'https://clinicaltrials.gov',
         'terms_and_conditions_url': 'https://clinicaltrials.gov/ct2/about-site/terms-conditions',
     }
     return source
@@ -157,7 +157,7 @@ def extract_documents(record):
         document = {
             'name': 'Results',
             'type': 'results',
-            'url': 'https://clinicaltrials.gov/ct2/show/results/' + identifier,
+            'source_url': 'https://clinicaltrials.gov/ct2/show/results/' + identifier,
         }
         documents.append(document)
     return documents

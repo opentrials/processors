@@ -44,7 +44,7 @@ def write_document(conn, document):
         'type': document['type'],
         'fda_approval_id': document.get('fda_approval_id'),
         'file_id': document.get('file_id'),
-        'source_url': document.get('url'),
+        'source_url': document.get('source_url'),
     })
 
     # Validate object
@@ -119,7 +119,7 @@ def _find_document(db, document):
         )
     else:
         result = db['documents'].find_one(
-            source_url=document['url'],
+            source_url=document['source_url'],
             type=document['type']
         )
 

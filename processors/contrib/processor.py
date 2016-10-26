@@ -68,7 +68,7 @@ def process(conf, conn):
             extension = os.path.splitext(filename)[1]
             bucket = conf['AWS_S3_BUCKET']
             key = 'documents/%s%s' % (checksum, extension)
-            url = _generate_url(resource, bucket, key)
+            source_url = _generate_url(resource, bucket, key)
 
             # Get documents table
             table = conn['database']['documents']
@@ -76,7 +76,10 @@ def process(conf, conn):
             # Get document identifier
             create = True
             document_id = uuid.uuid1().hex
-            document = table.find_one(trial_id=record['trial_id'], url=url)
+            document = table.find_one(
+                trial_id=record['trial_id'],
+                source_url=source_url
+            )
             if document:
                 create = False
                 document_id = document['id']
@@ -90,12 +93,12 @@ def process(conf, conn):
                 'name': DOCUMENT_NAMES[type],
                 'trial_id': record['trial_id'],
                 'type': type,
-                'url': url,
+                'source_url': source_url,
             }, keys=['id'], ensure=False)
 
             # Log success
             logger.info('Document "%s" %s: %s',
-                filename, 'created' if create else 'updated', url)
+                filename, 'created' if create else 'updated', source_url)
 
         # Remove temp directory
         shutil.rmtree(dirpath)

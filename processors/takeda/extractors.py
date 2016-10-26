@@ -14,7 +14,7 @@ def extract_source(record):
         'id': 'takeda',
         'name': 'Takeda',
         'type': 'register',
-        'url': 'http://www.takedaclinicaltrials.com/',
+        'source_url': 'http://www.takedaclinicaltrials.com/',
         'terms_and_conditions_url': 'http://www.takedaclinicaltrials.com/legal/terms',
     }
     return source
@@ -127,7 +127,7 @@ def extract_documents(record):
         document = {
             'name': 'Results',
             'type': 'results',
-            'url': results_url,
+            'source_url': results_url,
         }
         documents.append(document)
     return documents

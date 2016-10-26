@@ -87,7 +87,7 @@ def file_stub():
         'supplement_number': 0,
         'type': 'Review',
         'name': 'Review',
-        'url': 'https://example.org/file.pdf',
+        'source_url': 'https://example.org/file.pdf',
         'action_date': datetime.date(2016, 1, 1),
     }
 
@@ -101,7 +101,7 @@ def conn():
         'fda_application_id',
         'type',
         'name',
-        'url',
+        'source_url',
     ])
     db['files'].create_column('supplement_number', sqlalchemy.Integer)
     db['files'].create_column('action_date', sqlalchemy.Date)

@@ -40,7 +40,7 @@ def write_file(conn, file_data):
         }
 
     obj.update({
-        'source_url': file_data.get('url', obj['source_url']),
+        'source_url': file_data.get('source_url', obj['source_url']),
         'sha1': file_data.get('sha1', obj['sha1']),
         'documentcloud_id': file_data.get('documentcloud_id'),
         'text': file_data.get('text'),

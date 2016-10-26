@@ -12,7 +12,7 @@ def extract_source(record):
         'id': 'fdadl',
         'name': 'FDA Drug Labels',
         'type': 'other',
-        'url': 'https://open.fda.gov',
+        'source_url': 'https://open.fda.gov',
         'terms_and_conditions_url': 'https://open.fda.gov/terms/',
     }
     return source

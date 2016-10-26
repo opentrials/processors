@@ -33,7 +33,7 @@ def _create_source(conn):
         'id': 'fda',
         'name': 'U.S. Food and Drug Administration',
         'type': 'other',
-        'url': 'http://www.fda.gov',
+        'source_url': 'http://www.fda.gov',
     }
     return base.writers.write_source(conn, source)
 
@@ -79,12 +79,12 @@ class FDADAPProcessor(object):
             file_data['sha1'] = sha1
 
             # Upload to S3 if needed
-            if not file_data.get('url') or file_modified:
+            if not file_data.get('source_url') or file_modified:
                 # TODO: Maybe delete the previous file? Or maybe we want to
                 # keep them as historical records.
                 pdf_file.seek(0)
-                file_data['url'] = self._upload_to_s3(pdf_file, sha1)
-                logging.debug('Merged PDF uploaded to: %s' % file_data['url'])
+                file_data['source_url'] = self._upload_to_s3(pdf_file, sha1)
+                logging.debug('Merged PDF uploaded to: %s' % file_data['source_url'])
 
         return base.writers.write_file(self._conn, file_data)
 

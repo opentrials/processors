@@ -16,7 +16,7 @@ def process(conf, conn):
         SELECT DISTINCT ON (files.id)
           documents.name,
           files.id,
-          files.url,
+          files.source_url,
           files.sha1,
           files.documentcloud_id,
           fda_approvals.supplement_number,
@@ -81,11 +81,11 @@ class _SendFDADocsToDocumentCloudProcessor(object):
     def _upload_file(self, the_file):
         title = self._generate_title(the_file)
         doc = self._dc_client.documents.upload(
-            the_file['url'],
+            the_file['source_url'],
             title=title,
             project=self._project.id
         )
-        logger.debug('PDF uploaded to DocumentCloud: %s' % the_file['url'])
+        logger.debug('PDF uploaded to DocumentCloud: %s' % the_file['source_url'])
 
         return doc
 

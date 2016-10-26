@@ -45,7 +45,7 @@ def write_source(conn, source):
         # ---
         'name': source['name'],
         'type': source.get('type'),
-        'source_url': source.get('url'),
+        'source_url': source.get('source_url'),
         'terms_and_conditions_url': source.get('terms_and_conditions_url'),
     })
 

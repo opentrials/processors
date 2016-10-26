@@ -14,7 +14,7 @@ def extract_source(record):
         'id': 'actrn',
         'name': 'ANZCTR',
         'type': 'register',
-        'url': 'http://www.anzctr.org.au',
+        'source_url': 'http://www.anzctr.org.au',
         'terms_and_conditions_url': 'http://www.anzctr.org.au/Support/Terms.aspx',
     }
     return source

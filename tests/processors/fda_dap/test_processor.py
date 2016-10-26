@@ -15,7 +15,7 @@ class TestFDADAPProcessor(object):
             'id': 'fda',
             'name': 'U.S. Food and Drug Administration',
             'type': 'other',
-            'url': 'http://www.fda.gov',
+            'source_url': 'http://www.fda.gov',
         }
         conn = {}
         processor._create_source(conn)

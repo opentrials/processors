@@ -14,7 +14,7 @@ def extract_source(record):
         'id': 'euctr',
         'name': 'EU Clinical Trials Register',
         'type': 'register',
-        'url': 'https://www.clinicaltrialsregister.eu',
+        'source_url': 'https://www.clinicaltrialsregister.eu',
         'terms_and_conditions_url': 'https://www.clinicaltrialsregister.eu/disclaimer.html',
     }
     return source
@@ -133,7 +133,7 @@ def extract_documents(record):
         document = {
             'name': 'Results',
             'type': 'results',
-            'url': results_url,
+            'source_url': results_url,
         }
         documents.append(document)
     return documents

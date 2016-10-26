@@ -14,7 +14,7 @@ def extract_source(record):
         'id': 'pubmed',
         'name': 'PubMed',
         'type': 'other',
-        'url': 'http://www.ncbi.nlm.nih.gov/pubmed',
+        'source_url': 'http://www.ncbi.nlm.nih.gov/pubmed',
         'terms_and_conditions_url': 'https://www.ncbi.nlm.nih.gov/home/about/policies.shtml',
     }
     return source

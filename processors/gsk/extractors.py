@@ -14,7 +14,7 @@ def extract_source(record):
         'id': 'gsk',
         'name': 'GlaxoSmithKline',
         'type': 'register',
-        'url': 'http://www.gsk.com',
+        'source_url': 'http://www.gsk.com',
         'terms_and_conditions_url': 'http://www.gsk.com/en-gb/terms-of-use',
     }
     return source
@@ -120,7 +120,7 @@ def extract_documents(record):
         document = {
             'name': 'Results',
             'type': 'results',
-            'url': results_url,
+            'source_url': results_url,
         }
         documents.append(document)
     return documents
