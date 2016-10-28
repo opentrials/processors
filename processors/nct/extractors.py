@@ -73,6 +73,7 @@ def extract_trial(record):
     trial = {
         'identifiers': identifiers,
         'registration_date': record['firstreceived_date'],
+        'completion_date': record['completion_date_actual'],
         'public_title': public_title,
         'brief_summary': record['brief_summary'],
         'scientific_title': record['official_title'],

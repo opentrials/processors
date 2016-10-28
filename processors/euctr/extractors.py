@@ -68,6 +68,7 @@ def extract_trial(record):
     trial = {
         'identifiers': identifiers,
         'registration_date': record['date_on_which_this_record_was_first_entered_in_the_eudract_data'],
+        'completion_date': record['date_of_the_global_end_of_the_trial'],
         'public_title': public_title,
         'brief_summary': record['trial_main_objective_of_the_trial'],
         'scientific_title': record['full_title_of_the_trial'],

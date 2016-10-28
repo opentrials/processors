@@ -82,6 +82,7 @@ def write_trial(conn, trial, source_id, record_id):
             # ---
             'identifiers': trial['identifiers'],
             'registration_date': trial.get('registration_date', None),
+            'completion_date': trial.get('completion_date', None),
             'public_title': trial['public_title'],
             'brief_summary': trial.get('brief_summary', None),
             'scientific_title': trial.get('scientific_title', None),

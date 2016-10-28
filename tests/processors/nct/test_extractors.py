@@ -27,6 +27,7 @@ class TestNCTExtractors(object):
         'primary_outcomes': 'Primary outcomes',
         'secondary_outcomes': 'Secondary outcomes',
         'secondary_ids': ['ISRCTN71203361'],
+        'completion_date_actual': datetime.date(2016, 12, 12),
     }
 
     def test_stub_record_is_valid(self):
