@@ -31,6 +31,22 @@ class TestFileWriter(object):
 
         assert writers.write_file(conn, file_record) is not None
 
+    def test_keeps_the_files_current_attributes(self):
+        file_record = {
+            'id': '308ec87895f511e68ba9e4b3181a2c8c',
+            'sha1': 'd4bac000bb4a42d8c9e3a8679bc5f8fd571b3ba4',
+            'source_url': 'http://example.org',
+            'documentcloud_id': '1000',
+            'pages': ['page 1', 'page 2'],
+        }
+        conn = _get_mock_conn()
+        conn['database']['files'].find_one.return_value = file_record.copy()
+
+        writers.write_file(conn, {'id': file_record['id']})
+
+        upserted_file = conn['database']['files'].upsert.call_args[0][0]
+        assert upserted_file == file_record
+
 
 def _get_mock_conn():
     return {
