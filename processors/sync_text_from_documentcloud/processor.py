@@ -16,7 +16,7 @@ def process(conf, conn):
           WHERE documentcloud_id IS NOT NULL
           ORDER BY pages DESC  -- Process files without pages first
     '''
-    client = _documentcloud_client(conf)
+    client = documentcloud.DocumentCloud()
     for row in conn['database'].query(query):
         pages = _get_pages(client, row['documentcloud_id'])
         if pages:
@@ -52,10 +52,3 @@ def _get_pages(client, doc_id):
         logger.debug(msg)
 
     return pages
-
-
-def _documentcloud_client(conf):
-    username = conf['DOCUMENTCLOUD_USERNAME']
-    password = conf['DOCUMENTCLOUD_PASSWORD']
-
-    return documentcloud.DocumentCloud(username, password)

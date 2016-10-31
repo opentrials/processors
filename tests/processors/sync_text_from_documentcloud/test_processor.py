@@ -15,10 +15,7 @@ class TestSyncTextFromDocumentCloud(object):
     @mock.patch('processors.base.writers.write_file')
     @mock.patch('documentcloud.DocumentCloud')
     def test_updates_files_with_documentcloud_stripped_pages(self, dc_mock, write_file_mock):
-        conf = {
-            'DOCUMENTCLOUD_USERNAME': 'username',
-            'DOCUMENTCLOUD_PASSWORD': 'password',
-        }
+        conf = {}
         conn = {
             'database': mock.Mock(),
         }
@@ -43,10 +40,7 @@ class TestSyncTextFromDocumentCloud(object):
 
     @mock.patch('documentcloud.DocumentCloud')
     def test_ignores_documents_without_fulltext(self, dc_mock):
-        conf = {
-            'DOCUMENTCLOUD_USERNAME': 'username',
-            'DOCUMENTCLOUD_PASSWORD': 'password',
-        }
+        conf = {}
         conn = {
             'database': mock.Mock(),
         }
@@ -61,10 +55,7 @@ class TestSyncTextFromDocumentCloud(object):
 
     @mock.patch('documentcloud.DocumentCloud')
     def test_ignores_documents_it_couldnt_load(self, dc_mock):
-        conf = {
-            'DOCUMENTCLOUD_USERNAME': 'username',
-            'DOCUMENTCLOUD_PASSWORD': 'password',
-        }
+        conf = {}
         conn = {
             'database': mock.Mock(),
         }
@@ -77,10 +68,7 @@ class TestSyncTextFromDocumentCloud(object):
 
     @mock.patch('documentcloud.DocumentCloud')
     def test_raises_stuff(self, dc_mock):
-        conf = {
-            'DOCUMENTCLOUD_USERNAME': 'username',
-            'DOCUMENTCLOUD_PASSWORD': 'password',
-        }
+        conf = {}
         conn = {
             'database': mock.Mock(),
         }
