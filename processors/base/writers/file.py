@@ -43,7 +43,7 @@ def write_file(conn, file_data):
         'source_url': file_data.get('source_url', obj['source_url']),
         'sha1': file_data.get('sha1', obj['sha1']),
         'documentcloud_id': file_data.get('documentcloud_id'),
-        'text': file_data.get('text'),
+        'pages': file_data.get('pages'),
     })
 
     if not helpers.validate_remote_url(obj['source_url']):

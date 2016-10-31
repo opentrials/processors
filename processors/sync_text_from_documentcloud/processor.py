@@ -14,21 +14,22 @@ def process(conf, conn):
     query = '''
         SELECT id, documentcloud_id FROM files
           WHERE documentcloud_id IS NOT NULL
+          ORDER BY pages DESC  -- Process files without pages first
     '''
     client = _documentcloud_client(conf)
     for row in conn['database'].query(query):
-        text = _get_text(client, row['documentcloud_id'])
-        if text:
+        pages = _get_pages(client, row['documentcloud_id'])
+        if pages:
             the_file = {
                 'id': row['id'].hex,
-                'text': text,
+                'pages': pages,
             }
             base.writers.write_file(conn, the_file)
 
 
-def _get_text(client, doc_id):
+def _get_pages(client, doc_id):
     doc = None
-    text = None
+    pages = None
 
     try:
         doc = client.documents.get(doc_id)
@@ -41,12 +42,16 @@ def _get_text(client, doc_id):
 
     try:
         if doc:
-            text = doc.get_full_text()
+            pages = [doc.get_page_text(page).strip()
+                     for page in range(1, doc.pages + 1)]
+            has_only_empty_pages = all([not page for page in pages])
+            if has_only_empty_pages:
+                pages = None
     except NotImplementedError:
         msg = 'Skipped extracting text from non-public document "%s"' % doc_id
         logger.debug(msg)
 
-    return text
+    return pages
 
 
 def _documentcloud_client(conf):

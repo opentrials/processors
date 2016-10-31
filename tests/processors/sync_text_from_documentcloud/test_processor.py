@@ -14,7 +14,7 @@ class TestSyncTextFromDocumentCloud(object):
 
     @mock.patch('processors.base.writers.write_file')
     @mock.patch('documentcloud.DocumentCloud')
-    def test_updates_files_with_documentcloud_text(self, dc_mock, write_file_mock):
+    def test_updates_files_with_documentcloud_stripped_pages(self, dc_mock, write_file_mock):
         conf = {
             'DOCUMENTCLOUD_USERNAME': 'username',
             'DOCUMENTCLOUD_PASSWORD': 'password',
@@ -28,14 +28,17 @@ class TestSyncTextFromDocumentCloud(object):
         }
         conn['database'].query.return_value = [the_file]
         _enable_documentcloud_mock(dc_mock)
-        dc_mock().documents.get().get_full_text.return_value = 'full text'
+        doc_mock = dc_mock.documents.get()
+        doc_mock.pages = 3
+        doc_mock.get_page_text.side_effect = lambda num: 'page %d\n' % num
+        dc_mock().documents.get.return_value = doc_mock
 
         processor.process(conf, conn)
 
         dc_mock().documents.get.assert_called_with(the_file['documentcloud_id'])
         write_file_mock.assert_called_with(conn, {
             'id': the_file['id'].hex,
-            'text': 'full text'
+            'pages': ['page 1', 'page 2', 'page 3']
         })
 
     @mock.patch('documentcloud.DocumentCloud')
