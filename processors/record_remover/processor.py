@@ -12,52 +12,97 @@ logger = logging.getLogger(__name__)
 # Module API
 
 def process(conf, conn):
-    """Remove records without trial.
-    """
 
-    count = 0
-    for trial in base.helpers.iter_rows(conn, 'database', 'trials', orderby='id'):
+    processor = _RecordRemover(conf, conn)
+    processor._remove_records_without_trial()
+    processor._remove_records_from_same_source()
 
-        # Count trials
-        count += 1
 
-        # Get all records
-        records = list(conn['database']['records'].find(trial_id=trial['id']))
+class _RecordRemover(object):
+    def __init__(self, conf, conn):
+        self._conf = conf
+        self._conn = conn
 
-        # Trial has no multiple records
-        if len(records) <= 1:
-            continue
+    def _remove_records_without_trial(self):
+        """Remove records without trial.
+        """
 
-        # Prepare identifier segments
-        segments = []
-        for record in records:
+        count = 0
+        for trial in base.helpers.iter_rows(self._conn, 'database', 'trials', orderby='id'):
 
-            # Get set of record identifiers
-            idset = set(record['identifiers'].items())
+            # Count trials
+            count += 1
 
-            # Find intersections -> update segments
-            intersection = False
-            for segment in segments:
-                if segment.intersection(idset):
-                    segment.update(idset)
-                    intersection = True
+            # Get all records
+            records = list(self._conn['database']['records'].find(trial_id=trial['id']))
 
-            # No intersection -> new segment
-            if not intersection:
-                segments.append(idset)
+            # Trial has no multiple records
+            if len(records) <= 1:
+                continue
 
-        # Sort segments and get the biggest segment
-        segments = list(sorted(segments, key=lambda s: len(s), reverse=True))
-        biggest_segment = segments[0]
+            # Prepare identifier segments
+            segments = []
+            for record in records:
 
-        # Delete all records without intersection with the biggest segment
-        for record in records:
-            idset = set(record['identifiers'].items())
-            if not biggest_segment.intersection(idset):
-                if conn['database']['records'].find_one(id=record['id']):
-                    conn['database']['records'].delete(id=record['id'])
-                    logger.info('Removed record: %s', record['identifiers'])
+                # Get set of record identifiers
+                idset = set(record['identifiers'].items())
+
+                # Find intersections -> update segments
+                intersection = False
+                for segment in segments:
+                    if segment.intersection(idset):
+                        segment.update(idset)
+                        intersection = True
+
+                # No intersection -> new segment
+                if not intersection:
+                    segments.append(idset)
+
+            # Sort segments and get the biggest segment
+            segments = list(sorted(segments, key=lambda s: len(s), reverse=True))
+            biggest_segment = segments[0]
+
+            # Delete all records without intersection with the biggest segment
+            for record in records:
+                idset = set(record['identifiers'].items())
+                if not biggest_segment.intersection(idset):
+                    if self._conn['database']['records'].find_one(id=record['id']):
+                        self._conn['database']['records'].delete(id=record['id'])
+                        logger.info('Removed record: %s', record['identifiers'])
+
+            # Log info
+            if count and not count % 100:
+                logger.info('Processed %s records', count)
+
+
+    def _remove_records_from_same_source(self):
+        """Remove records having the same source URL
+        """
+
+        # Identify duplicates by `source_url` from the records DB
+        query = """
+        SELECT r1.id, r2.id, r1.source_url
+        FROM records AS r1
+        INNER JOIN records AS r2
+            ON r1.source_url = r2.source_url
+        AND r1.id != r2.id
+        AND r1.id > r2.id
+        """
+
+        # Execute
+        count = 0
+        for record in self._conn['database'].query(query):
+            try:
+                self._conn['database']['records'].delete(id=record['id'].hex)
+            except Exception:
+                logger.exception('Can\'t delete record: %s', record['id'])
+            else:
+                logger.info('Deleted duplicated record for: %s', record['source_url'])
+                count += 1
+            if count and not count % 100:
+                logger.info('Removed %s redundant records', count)
+        logger.info('Removed %s redundant records', count)
 
         # Log info
         if count and not count % 100:
-            logger.info('Processed %s trials', count)
+            logger.info('Processed %s records', count)
