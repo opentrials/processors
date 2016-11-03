@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
+import urllib2
 import documentcloud
 logger = logging.getLogger(__name__)
 
@@ -21,11 +22,14 @@ def process(conf, conn):
     dc_ids = dc_remote_ids - dc_local_ids
 
     dc_client = _documentcloud_client(conf)
-    for dc_id in dc_ids:
-        logger.debug('Deleting from DocumentCloud: %s' % dc_id)
-        document = dc_client.documents.get(dc_id)
-        if document:
-            document.delete()
+    total = len(dc_ids)
+    for i, dc_id in enumerate(dc_ids):
+        count = '%d/%d' % (i + 1, total)
+        logger.debug('Deleting from DocumentCloud: %s (%s)', dc_id, count)
+        try:
+            dc_client.documents.delete(dc_id)
+        except (documentcloud.toolbox.DoesNotExistError, urllib2.HTTPError):
+            logger.exception('Ignoring error for %s', dc_id)
 
 
 def _documentcloud_projects(conf):
