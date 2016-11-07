@@ -116,3 +116,12 @@ class TestValidateRemoteURL(object):
     ])
     def test_invalid_url(self, url):
         assert not helpers.validate_remote_url(url)
+
+class TestSafePrepend(object):
+    @pytest.mark.parametrize('prepend_string, string, expected', [
+        ('EUCTR', '123456', 'EUCTR123456'),
+        ('EUCTR', 'EUCTR123456', 'EUCTR123456'),
+        ('EUCTR', None, None),
+    ])
+    def test_safe_prepend(self, prepend_string, string, expected):
+        assert helpers.safe_prepend(prepend_string, string) == expected

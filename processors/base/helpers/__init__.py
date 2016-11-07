@@ -250,3 +250,19 @@ def find_trial_by_identifiers(conn, identifiers, ignore_record_id=None):
         if trial:
             break
     return trial
+
+
+def safe_prepend(prepend_string, string):
+    """Prepend to string non-destructively
+    Ex: safe_prepend('EUCTR', 'EUCTR12345678') => 'EUCTR12345678'
+
+    Args:
+        prepend_string: string to prepend
+        string: string to prepend to
+    """
+    if string is None:
+        return None
+    if not string.startswith(prepend_string):
+        string = '%s%s' % (prepend_string, string)
+
+    return string

@@ -24,7 +24,7 @@ def extract_trial(record):
 
     # Get identifiers
     identifiers = base.helpers.clean_identifiers({
-        'jprn': 'JPRN-%s' % record['unique_trial_number'],
+        'jprn': base.helpers.safe_prepend('JPRN-', record['unique_trial_number']),
     })
 
     # Get public title
