@@ -21,7 +21,6 @@ def extract_source(record):
 
 
 def extract_trial(record):
-
     # Get identifiers
     identifiers = base.helpers.clean_identifiers({
         'euctr': 'EUCTR%s' % record['eudract_number'],
@@ -62,7 +61,7 @@ def extract_trial(record):
 
     # Get has_published_results
     has_published_results = False
-    if record['trial_results'] == 'View results':
+    if record['trial_results_url']:
         has_published_results = True
 
     trial = {
@@ -129,7 +128,7 @@ def extract_persons(record):
 
 def extract_documents(record):
     documents = []
-    results_url = record.get('trial_results')
+    results_url = record.get('trial_results_url')
     if results_url:
         document = {
             'name': 'Results',
