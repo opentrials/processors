@@ -11,7 +11,36 @@ import processors.nct.extractors as extractors
 
 
 class TestNCTExtractors(object):
-    STUB_RECORD = {
+    def test_stub_record_is_valid(self, stub_record):
+        extractors.extract_trial(stub_record)
+
+
+    @pytest.mark.parametrize('anticipated,actual,result', [
+        (500, 200, 500),
+        (0, 200, 0),
+        (None, 500, 500),
+        (None, None, None),
+    ])
+    def test_target_sample_size(self, anticipated, actual, result, stub_record):
+        stub_record.update({
+            'enrollment_anticipated': anticipated,
+            'enrollment_actual': actual,
+        })
+        trial = extractors.extract_trial(stub_record)
+
+        assert trial['target_sample_size'] == result
+
+
+    def test_extracted_identifiers(self, stub_record):
+        extracted_trial = extractors.extract_trial(stub_record)
+
+        expected_identifiers = {'nct': 'NCT12345678', 'isrctn': 'ISRCTN71203361'}
+        assert extracted_trial['identifiers'] == expected_identifiers
+
+
+@pytest.fixture
+def stub_record():
+    return {
         'nct_id': 'NCT12345678',
         'brief_title': 'Public title',
         'official_title': 'Scientific title',
@@ -29,30 +58,3 @@ class TestNCTExtractors(object):
         'secondary_ids': ['ISRCTN71203361'],
         'completion_date_actual': datetime.date(2016, 12, 12),
     }
-
-    def test_stub_record_is_valid(self):
-        record = copy.deepcopy(self.STUB_RECORD)
-        extractors.extract_trial(record)
-
-    @pytest.mark.parametrize('anticipated,actual,result', [
-        (500, 200, 500),
-        (0, 200, 0),
-        (None, 500, 500),
-        (None, None, None),
-    ])
-    def test_target_sample_size(self, anticipated, actual, result):
-        record = copy.deepcopy(self.STUB_RECORD)
-        record.update({
-            'enrollment_anticipated': anticipated,
-            'enrollment_actual': actual,
-        })
-        trial = extractors.extract_trial(record)
-
-        assert trial['target_sample_size'] == result
-
-    def test_extracted_identifiers(self):
-        record = copy.deepcopy(self.STUB_RECORD)
-        extracted_trial = extractors.extract_trial(record)
-
-        expected_identifiers = {'nct': 'NCT12345678', 'isrctn': 'ISRCTN71203361'}
-        assert extracted_trial['identifiers'] == expected_identifiers

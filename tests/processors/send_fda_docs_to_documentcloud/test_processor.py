@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import re
 import mock
 import datetime
 import pytest
@@ -22,11 +23,12 @@ class TestSendFDADocsToDocumentCloudProcessor(object):
         'DOCUMENTCLOUD_PROJECT': 'username',
     }
 
+
     @mock.patch('documentcloud.DocumentCloud')
     def test_process_file(self, dc_mock, file_stub, conn):
         doc_mock, project_mock = _setup_documentcloud_mock(dc_mock)
         doc_mock.file_hash = file_stub['sha1']
-        file_stub['fda_application_id'] = 'NDA00000-000'
+        application_type = re.match(r'^[A-Z]+', file_stub['fda_application_id']).group(0)
 
         processor = SendFDADocsToDocumentCloudProcessor(self.CONF, conn['database'])
         processor.process_file(file_stub)
@@ -36,12 +38,13 @@ class TestSendFDADocsToDocumentCloudProcessor(object):
         assert doc_mock.access == 'public'
         assert doc_mock.data == {
             'fda_application': file_stub['fda_application_id'],
-            'application_type': 'NDA',
+            'application_type': application_type,
             'supplement_number': str(file_stub['supplement_number']),
             'name': file_stub['name'],
             'type': file_stub['type'],
             'action_date': file_stub['action_date'].isoformat(),
         }
+
 
     @mock.patch('documentcloud.DocumentCloud')
     def test_doesnt_upload_file_if_it_wasnt_modified(self, dc_mock, file_stub, conn):
@@ -53,6 +56,7 @@ class TestSendFDADocsToDocumentCloudProcessor(object):
 
         dc_mock().documents.upload.assert_not_called()
 
+
     @mock.patch('documentcloud.DocumentCloud')
     def test_uploads_and_remove_old_file_if_it_was_modified(self, dc_mock, file_stub, conn):
         doc_mock, project_mock = _setup_documentcloud_mock(dc_mock)
@@ -63,6 +67,7 @@ class TestSendFDADocsToDocumentCloudProcessor(object):
 
         doc_mock.delete.assert_called()
         dc_mock().documents.upload.assert_called()
+
 
     @mock.patch('documentcloud.DocumentCloud')
     def test_doesnt_remove_file_if_it_has_no_file_hash(self, dc_mock, file_stub, conn):
@@ -79,35 +84,21 @@ class TestSendFDADocsToDocumentCloudProcessor(object):
 
 
 @pytest.fixture
-def file_stub():
-    return {
-        'documentcloud_id': 'dc_id',
-        'sha1': 'sha1',
-        'fda_application_id': 'NDA000000-000',
-        'supplement_number': 0,
-        'type': 'Review',
-        'name': 'Review',
-        'source_url': 'https://example.org/file.pdf',
-        'action_date': datetime.date(2016, 1, 1),
-    }
-
-
-@pytest.fixture
-def conn():
-    db = dataset.connect('sqlite:///:memory:')
-    _create_str_columns(db['files'], [
-        'documentcloud_id',
-        'sha1',
-        'fda_application_id',
-        'type',
-        'name',
-        'source_url',
-    ])
-    db['files'].create_column('supplement_number', sqlalchemy.Integer)
-    db['files'].create_column('action_date', sqlalchemy.Date)
+def file_stub(conn, fda_document):
+    document_record = conn['database']['documents'].find_one(id=fda_document)
+    file_record = conn['database']['files'].find_one(id=document_record['file_id'])
+    fda_approval_record = conn['database']['fda_approvals'].find_one(id=document_record['fda_approval_id'])
 
     return {
-        'database': db,
+        'id': file_record['id'],
+        'documentcloud_id': file_record['documentcloud_id'],
+        'sha1': file_record['sha1'],
+        'fda_application_id': fda_approval_record['fda_application_id'],
+        'supplement_number': fda_approval_record['supplement_number'],
+        'type': fda_approval_record['type'],
+        'name': document_record['name'],
+        'source_url': file_record['source_url'],
+        'action_date': fda_approval_record['action_date'],
     }
 
 
@@ -121,8 +112,3 @@ def _setup_documentcloud_mock(dc_mock):
     dc_mock().documents.upload.return_value = doc_mock
 
     return doc_mock, project_mock
-
-
-def _create_str_columns(table, columns):
-    for column in columns:
-        table.create_column(column, sqlalchemy.String)

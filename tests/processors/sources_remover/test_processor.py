@@ -9,20 +9,17 @@ import processors.sources_remover.processor as processor
 
 
 class TestSourcesRemoverProcessor(object):
-    def test_deletes_the_sources(self):
-        sources = [
-            'source_id1',
-            'source_id2',
-            'source_id3',
-        ]
+    def test_deletes_the_sources(self, conn, fda_source, nct_source):
+        sources = [fda_source, nct_source]
         conf = {
             'REMOVE_SOURCE_IDS': ', '.join(sources),
         }
-        conn = _conn_stub()
 
         processor.process(conf, conn)
 
-        conn['database']['sources'].delete.assert_called_with(id=tuple(sources))
+        sources = [source for source in conn['database']['source'].all()]
+        assert sources == []
+
 
     def test_rollbacks_if_received_exception(self):
         sources = [
@@ -40,6 +37,7 @@ class TestSourcesRemoverProcessor(object):
 
         conn['database'].begin.assert_called()
         conn['database'].rollback.assert_called()
+
 
     def test_does_nothing_if_therere_no_sources(self):
         conf = {}

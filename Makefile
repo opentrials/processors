@@ -26,6 +26,12 @@ test:
 	py.test
 	pylama processors
 
+dump_schema:
+	python -m schema_utils $(MAKECMDGOALS)
+
+restore_schema:
+	python -m schema_utils $(MAKECMDGOALS)
+
 up:
 	docker-compose up
 

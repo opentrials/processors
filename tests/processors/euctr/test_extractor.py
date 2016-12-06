@@ -82,28 +82,28 @@ class TestEUCTRExtractors(object):
         assert extracted_documents[0]['source_url'] == trial_results_url
 
 
-    @pytest.fixture
-    def stub_record(scope='module'):
-        return {
-            'eudract_number': '2013-030180-02',
-            'us_nct_clinicaltrials_gov_registry_number': 'NCT00020500',
-            'isrctn_international_standard_randomised_controlled_trial_numbe': None,
-            'who_universal_trial_reference_number_utrn': None,
-            'title_of_the_trial_for_lay_people_in_easily_understood_i_e_non_': 'Title',
-            'eudract_number_with_country': '2013-030180-02/IT',
-            'full_title_of_the_trial': 'Full title of trial',
-            'trial_status': 'Completed',
-            'subject_female': True,
-            'subject_male': True,
-            'trial_results': 'View results',
-            'trial_results_url': 'https://www.clinicaltrialsregister.eu/ctr-search/trial/2015-004907-22/results',
-            'trial_main_objective_of_the_trial': 'Heal everybody',
-            'date_on_which_this_record_was_first_entered_in_the_eudract_data': datetime.datetime(2012, 1, 1),
-            'date_of_the_global_end_of_the_trial': datetime.datetime(2016, 1, 1),
-            'public_title': 'Public title of trial',
-            'trial_principal_inclusion_criteria': 'everybody',
-            'trial_principal_exclusion_criteria': 'nobody',
-            'subject_in_the_whole_clinical_trial': 12,
-            'target_sample_size': 10000000,
-            'first_enrollment_date': None,
-        }
+@pytest.fixture
+def stub_record():
+    return {
+        'eudract_number': '2013-030180-02',
+        'us_nct_clinicaltrials_gov_registry_number': 'NCT00020500',
+        'isrctn_international_standard_randomised_controlled_trial_numbe': None,
+        'who_universal_trial_reference_number_utrn': None,
+        'title_of_the_trial_for_lay_people_in_easily_understood_i_e_non_': 'Title',
+        'eudract_number_with_country': '2013-030180-02/IT',
+        'full_title_of_the_trial': 'Full title of trial',
+        'trial_status': 'Completed',
+        'subject_female': True,
+        'subject_male': True,
+        'trial_results': 'View results',
+        'trial_results_url': 'https://www.clinicaltrialsregister.eu/ctr-search/trial/2015-004907-22/results',
+        'trial_main_objective_of_the_trial': 'Heal everybody',
+        'date_on_which_this_record_was_first_entered_in_the_eudract_data': datetime.datetime(2012, 1, 1),
+        'date_of_the_global_end_of_the_trial': datetime.datetime(2016, 1, 1),
+        'public_title': 'Public title of trial',
+        'trial_principal_inclusion_criteria': 'everybody',
+        'trial_principal_exclusion_criteria': 'nobody',
+        'subject_in_the_whole_clinical_trial': 12,
+        'target_sample_size': 10000000,
+        'first_enrollment_date': None,
+    }

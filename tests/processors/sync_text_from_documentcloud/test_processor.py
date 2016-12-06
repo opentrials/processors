@@ -12,18 +12,9 @@ import processors.sync_text_from_documentcloud.processor as processor
 
 class TestSyncTextFromDocumentCloud(object):
 
-    @mock.patch('processors.base.writers.write_file')
     @mock.patch('documentcloud.DocumentCloud')
-    def test_updates_files_with_documentcloud_stripped_pages(self, dc_mock, write_file_mock):
+    def test_updates_files_with_documentcloud_stripped_pages(self, dc_mock, conn, fda_file):
         conf = {}
-        conn = {
-            'database': mock.Mock(),
-        }
-        the_file = {
-            'id': uuid.uuid1(),
-            'documentcloud_id': '100-foo',
-        }
-        conn['database'].query.return_value = [the_file]
         _enable_documentcloud_mock(dc_mock)
         doc_mock = dc_mock.documents.get()
         doc_mock.pages = 3
@@ -31,12 +22,10 @@ class TestSyncTextFromDocumentCloud(object):
         dc_mock().documents.get.return_value = doc_mock
 
         processor.process(conf, conn)
+        updated_file = conn['database']['files'].find_one(id=fda_file)
 
-        dc_mock().documents.get.assert_called_with(the_file['documentcloud_id'])
-        write_file_mock.assert_called_with(conn, {
-            'id': the_file['id'].hex,
-            'pages': ['page 1', 'page 2', 'page 3']
-        })
+        assert updated_file['pages'] == ['page 1', 'page 2', 'page 3']
+
 
     @mock.patch('documentcloud.DocumentCloud')
     def test_ignores_documents_without_fulltext(self, dc_mock):

@@ -16,6 +16,8 @@ load_dotenv('.env')
 WAREHOUSE_URL = os.environ['WAREHOUSE_URL']
 DATABASE_URL = os.environ['DATABASE_URL']
 EXPLORERDB_URL = os.environ['EXPLORERDB_URL']
+TEST_WAREHOUSE_URL = os.environ['TEST_WAREHOUSE_URL']
+TEST_DATABASE_URL = os.environ['TEST_DATABASE_URL']
 
 # Logging
 

@@ -8,75 +8,74 @@ import mock
 import uuid
 import datetime
 import collections
+from copy import deepcopy
 import processors.merge_trials_identifiers.processor as processor
 
 
 class TestMergeTrialIdentifiersProcessor(object):
-    @mock.patch('datetime.datetime')
-    def test_updates_trial_with_records_identifiers(self, datetime_mock):
-        query_result = [
-            {
-                'id': uuid.uuid1(),
-                'trial_identifiers': {},
-                'records_identifiers': {'nct': 'NCT11111', 'ictrp': 'ICTRP000000'},
-            },
-        ]
-        db_mock = mock.MagicMock()
-        db_mock['trials'] = mock.Mock()
-        db_mock.query.return_value = query_result
-        datetime_mock.utcnow.return_value = 'the_date'
-
-        conf = {}
-        conn = {'database': db_mock}
-        processor.process(conf, conn)
-
-        expected_trial = {
-            'id': query_result[0]['id'].hex,
-            'identifiers': query_result[0]['records_identifiers'],
-            'updated_at': datetime.datetime.utcnow(),
+    def test_updates_trial_with_records_identifiers(self, conn, trial, record):
+        trial_attrs = {
+            'id': trial,
+            'identifiers': {},
         }
+        conn['database']['trials'].update(trial_attrs, ['id'])
+        trial_last_updated = datetime.datetime.utcnow()
+        record_attrs = {
+            'id': record,
+            'trial_id': trial,
+            'identifiers': {'nct': 'NCT11111', 'ictrp': 'ICTRP000000'},
+        }
+        conn['database']['records'].update(record_attrs, ['id'])
 
-        db_mock['trials'].update.assert_called_with(expected_trial, ['id'])
+        processor.process({}, conn)
+        updated_trial = conn['database']['trials'].find_one(id=trial)
 
-    def test_merges_identifiers(self):
-        query_result = [
-            {
-                'id': uuid.uuid1(),
-                'trial_identifiers': {'nct': 'NCT000000'},
-                'records_identifiers': {'ictrp': 'ICTRP000000'},
-            },
-        ]
-        db_mock = mock.MagicMock()
-        db_mock['trials'] = mock.Mock()
-        db_mock.query.return_value = query_result
+        assert updated_trial['identifiers'] == record_attrs['identifiers']
+        assert updated_trial['updated_at'].replace(tzinfo=None) > trial_last_updated
 
-        conf = {}
-        conn = {'database': db_mock}
-        processor.process(conf, conn)
 
-        expected_identifiers = {'nct': 'NCT000000', 'ictrp': 'ICTRP000000'}
-        updated_trial, _ = db_mock['trials'].update.call_args[0]
-        assert updated_trial.get('identifiers') == expected_identifiers
+    def test_merges_identifiers(self, conn, trial, record):
+        trial_attrs = {
+            'id': trial,
+            'identifiers': {'nct': 'NCT87654321'},
+        }
+        conn['database']['trials'].update(trial_attrs, ['id'])
+        trial_last_updated = datetime.datetime.utcnow()
+        record_attrs = {
+            'id': record,
+            'trial_id': trial ,
+            'identifiers': {'isrctn': 'ISRCTN71203361'},
+        }
+        conn['database']['records'].update(record_attrs, ['id'])
+        expected_identifiers = deepcopy(record_attrs['identifiers'])
+        expected_identifiers.update(trial_attrs['identifiers'])
 
-    def test_it_uses_records_identifiers_when_there_are_multiple_ids_from_same_source(self):
-        query_result = [
-            {
-                'id': uuid.uuid1(),
-                'trial_identifiers': {'nct': 'NCT00000'},
-                'records_identifiers': {'nct': 'NCT11111'},
-            },
-        ]
-        db_mock = mock.MagicMock()
-        db_mock['trials'] = mock.Mock()
-        db_mock.query.return_value = query_result
+        processor.process({}, conn)
+        updated_trial = conn['database']['trials'].find_one(id=trial)
 
-        conf = {}
-        conn = {'database': db_mock}
-        processor.process(conf, conn)
+        assert updated_trial['identifiers'] == expected_identifiers
+        assert updated_trial['updated_at'].replace(tzinfo=None) > trial_last_updated
 
-        expected_identifiers = query_result[0]['records_identifiers']
-        updated_trial, _ = db_mock['trials'].update.call_args[0]
-        assert updated_trial.get('identifiers') == expected_identifiers
+
+    def test_it_uses_records_identifiers_when_there_are_multiple_ids_from_same_source(self,
+        conn, trial, record):
+        trial_attrs = {
+            'id': trial,
+            'identifiers': {'nct': 'NCT87654321'},
+        }
+        conn['database']['trials'].update(trial_attrs, ['id'])
+        record_attrs = {
+            'id': record,
+            'trial_id': trial ,
+            'identifiers': {'nct': 'NCT12345678'},
+        }
+        conn['database']['records'].update(record_attrs, ['id'])
+
+        processor.process({}, conn)
+        updated_trial = conn['database']['trials'].find_one(id=trial)
+
+        assert updated_trial['identifiers'] == record_attrs['identifiers']
+
 
     def test_doesnt_update_identifiers_if_theyre_a_subset_of_the_trials_identifiers(self):
         query_result = [
@@ -95,6 +94,7 @@ class TestMergeTrialIdentifiersProcessor(object):
         processor.process(conf, conn)
 
         db_mock['trials'].update.assert_not_called()
+
 
     def test_ignores_identifiers_order(self):
         trial_identifiers = collections.OrderedDict([

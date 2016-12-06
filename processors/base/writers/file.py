@@ -40,8 +40,8 @@ def write_file(conn, file_data):
         }
 
     obj.update({
-        'source_url': file_data.get('source_url', obj['source_url']),
-        'sha1': file_data.get('sha1', obj['sha1']),
+        'source_url': file_data['source_url'] if 'source_url' in file_data else obj['source_url'],
+        'sha1': file_data['sha1'] if 'sha1' in file_data else obj['sha1'],
         'documentcloud_id': file_data.get('documentcloud_id', obj.get('documentcloud_id')),
         'pages': file_data.get('pages', obj.get('pages')),
     })
