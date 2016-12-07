@@ -87,6 +87,7 @@ CREATE TABLE trials (
 	source_id TEXT, 
 	status TEXT, 
 	completion_date DATE, 
+	results_exemption_date DATE, 
 	CONSTRAINT trials_pkey PRIMARY KEY (id), 
 	CONSTRAINT trials_source_id_foreign FOREIGN KEY(source_id) REFERENCES sources (id) ON UPDATE CASCADE
 );
@@ -210,12 +211,13 @@ CREATE TABLE records (
 	trial_id UUID, 
 	status TEXT, 
 	completion_date DATE, 
+	results_exemption_date DATE, 
 	CONSTRAINT trialrecords_pkey PRIMARY KEY (id), 
 	CONSTRAINT trialrecords_source_id_foreign FOREIGN KEY(source_id) REFERENCES sources (id) ON UPDATE CASCADE, 
 	CONSTRAINT trialrecords_trial_id_foreign FOREIGN KEY(trial_id) REFERENCES trials (id)
 );
-CREATE INDEX trialrecords_trial_id_index ON records (trial_id);
 CREATE INDEX records_identifiers_index ON records USING gin (identifiers);
+CREATE INDEX trialrecords_trial_id_index ON records (trial_id);
 CREATE TABLE trials_organisations (
 	trial_id UUID NOT NULL, 
 	organisation_id UUID NOT NULL, 
@@ -279,8 +281,8 @@ CREATE TABLE documents (
 	CONSTRAINT documents_source_id_foreign FOREIGN KEY(source_id) REFERENCES sources (id) ON UPDATE CASCADE, 
 	CONSTRAINT documents_fda_approval_id_file_id_name_unique UNIQUE (fda_approval_id, file_id, name)
 );
-CREATE UNIQUE INDEX non_fda_documents_type_file_id_unique ON documents (type, file_id);
 CREATE UNIQUE INDEX non_fda_documents_type_source_url_unique ON documents (type, source_url);
+CREATE UNIQUE INDEX non_fda_documents_type_file_id_unique ON documents (type, file_id);
 CREATE TABLE trials_interventions (
 	trial_id UUID NOT NULL, 
 	intervention_id UUID NOT NULL, 

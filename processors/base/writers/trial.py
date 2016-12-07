@@ -99,6 +99,7 @@ def write_trial(conn, trial, source_id, record_id):
             'secondary_outcomes': trial.get('primary_outcomes', None),
             'gender': trial.get('gender', None),
             'has_published_results': trial.get('has_published_results', None),
+            'results_exemption_date': trial.get('results_exemption_date'),
         })
 
     # Write object

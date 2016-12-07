@@ -352,9 +352,11 @@ CREATE TABLE nct (
 	condition_browse JSONB, 
 	intervention_browse JSONB, 
 	clinical_results JSONB, 
+	results_exemption_date DATE, 
 	CONSTRAINT nct_pkey PRIMARY KEY (nct_id), 
 	CONSTRAINT nct_meta_id_unique UNIQUE (meta_id)
 );
+CREATE INDEX ix_nct_9502f58393a4fc6d ON nct (nct_id);
 CREATE TABLE takeda (
 	meta_id UUID, 
 	meta_source TEXT, 
@@ -389,84 +391,6 @@ CREATE TABLE takeda (
 	other_available_languages TEXT, 
 	CONSTRAINT takeda_pkey PRIMARY KEY (takeda_trial_id), 
 	CONSTRAINT takeda_meta_id_unique UNIQUE (meta_id)
-);
-CREATE TABLE fdadl (
-	meta_id TEXT, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	product_ndc TEXT NOT NULL, 
-	product_type TEXT, 
-	generic_name TEXT, 
-	brand_name TEXT, 
-	last_updated DATE, 
-	fda_application_number TEXT, 
-	CONSTRAINT fda_pkey PRIMARY KEY (product_ndc), 
-	CONSTRAINT fda_meta_id_key UNIQUE (meta_id)
-);
-CREATE TABLE alembic_version (
-	version_num VARCHAR(32) NOT NULL
-);
-CREATE TABLE icdpcs (
-	meta_id TEXT, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	code TEXT NOT NULL, 
-	is_header BOOLEAN, 
-	short_description TEXT, 
-	long_description TEXT, 
-	version TEXT, 
-	last_updated DATE, 
-	CONSTRAINT icdpcs_pkey PRIMARY KEY (code), 
-	CONSTRAINT icdpcs_meta_id_key UNIQUE (meta_id)
-);
-CREATE TABLE pubmed (
-	meta_id TEXT, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	pmid TEXT NOT NULL, 
-	date_created DATE, 
-	date_completed DATE, 
-	date_revised DATE, 
-	country TEXT, 
-	medline_ta TEXT, 
-	nlm_unique_id TEXT, 
-	issn_linking TEXT, 
-	journal_issn TEXT, 
-	journal_title TEXT, 
-	journal_iso TEXT, 
-	article_title TEXT, 
-	article_abstract TEXT, 
-	article_authors TEXT[], 
-	article_language TEXT, 
-	article_publication_type_list TEXT[], 
-	article_vernacular_title TEXT, 
-	article_date DATE, 
-	publication_status TEXT, 
-	identifiers_list JSONB, 
-	mesh_headings JSONB, 
-	CONSTRAINT pubmed_pkey PRIMARY KEY (pmid), 
-	CONSTRAINT pubmed_meta_id_key UNIQUE (meta_id)
-);
-CREATE TABLE fda_dap (
-	meta_id TEXT, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	id TEXT, 
-	documents JSONB, 
-	approval_type TEXT, 
-	supplement_number INTEGER, 
-	action_date DATE, 
-	fda_application_num TEXT, 
-	notes TEXT, 
-	drug_name TEXT, 
-	active_ingredients TEXT, 
-	company TEXT, 
-	CONSTRAINT fda_dap_id_key UNIQUE (id), 
-	CONSTRAINT fda_dap_meta_id_key UNIQUE (meta_id)
 );
 CREATE TABLE euctr (
 	meta_id UUID, 
@@ -594,6 +518,84 @@ CREATE TABLE euctr (
 	trial_results_url TEXT, 
 	CONSTRAINT euctr_pkey PRIMARY KEY (eudract_number_with_country), 
 	CONSTRAINT euctr_meta_id_unique UNIQUE (meta_id)
+);
+CREATE TABLE alembic_version (
+	version_num VARCHAR(32) NOT NULL
+);
+CREATE TABLE icdpcs (
+	meta_id TEXT, 
+	meta_source TEXT, 
+	meta_created TIMESTAMP WITH TIME ZONE, 
+	meta_updated TIMESTAMP WITH TIME ZONE, 
+	code TEXT NOT NULL, 
+	is_header BOOLEAN, 
+	short_description TEXT, 
+	long_description TEXT, 
+	version TEXT, 
+	last_updated DATE, 
+	CONSTRAINT icdpcs_pkey PRIMARY KEY (code), 
+	CONSTRAINT icdpcs_meta_id_key UNIQUE (meta_id)
+);
+CREATE TABLE pubmed (
+	meta_id TEXT, 
+	meta_source TEXT, 
+	meta_created TIMESTAMP WITH TIME ZONE, 
+	meta_updated TIMESTAMP WITH TIME ZONE, 
+	pmid TEXT NOT NULL, 
+	date_created DATE, 
+	date_completed DATE, 
+	date_revised DATE, 
+	country TEXT, 
+	medline_ta TEXT, 
+	nlm_unique_id TEXT, 
+	issn_linking TEXT, 
+	journal_issn TEXT, 
+	journal_title TEXT, 
+	journal_iso TEXT, 
+	article_title TEXT, 
+	article_abstract TEXT, 
+	article_authors TEXT[], 
+	article_language TEXT, 
+	article_publication_type_list TEXT[], 
+	article_vernacular_title TEXT, 
+	article_date DATE, 
+	publication_status TEXT, 
+	identifiers_list JSONB, 
+	mesh_headings JSONB, 
+	CONSTRAINT pubmed_pkey PRIMARY KEY (pmid), 
+	CONSTRAINT pubmed_meta_id_key UNIQUE (meta_id)
+);
+CREATE TABLE fdadl (
+	meta_id TEXT, 
+	meta_source TEXT, 
+	meta_created TIMESTAMP WITH TIME ZONE, 
+	meta_updated TIMESTAMP WITH TIME ZONE, 
+	product_ndc TEXT NOT NULL, 
+	product_type TEXT, 
+	generic_name TEXT, 
+	brand_name TEXT, 
+	last_updated DATE, 
+	fda_application_number TEXT, 
+	CONSTRAINT fda_pkey PRIMARY KEY (product_ndc), 
+	CONSTRAINT fda_meta_id_key UNIQUE (meta_id)
+);
+CREATE TABLE fda_dap (
+	meta_id TEXT, 
+	meta_source TEXT, 
+	meta_created TIMESTAMP WITH TIME ZONE, 
+	meta_updated TIMESTAMP WITH TIME ZONE, 
+	id TEXT, 
+	documents JSONB, 
+	approval_type TEXT, 
+	supplement_number INTEGER, 
+	action_date DATE, 
+	fda_application_num TEXT, 
+	notes TEXT, 
+	drug_name TEXT, 
+	active_ingredients TEXT, 
+	company TEXT, 
+	CONSTRAINT fda_dap_id_key UNIQUE (id), 
+	CONSTRAINT fda_dap_meta_id_key UNIQUE (meta_id)
 );
 CREATE TABLE gsk (
 	meta_id UUID, 
