@@ -50,7 +50,7 @@ euctr:
   tags:
     - opentrials
 
-euctr_duplicates_remover:
+euctr-duplicates-remover:
   image: okibot/processors
   command: make start euctr_duplicates_remover
   # restart: always
