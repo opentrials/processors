@@ -69,6 +69,7 @@ def write_record(conn, record, source_id, trial_id, trial):
         'secondary_outcomes': trial.get('primary_outcomes'),
         'gender': trial.get('gender'),
         'has_published_results': trial.get('has_published_results'),
+        'results_exemption_date': trial.get('results_exemption_date'),
     })
 
     # Validate object
