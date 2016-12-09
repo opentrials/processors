@@ -80,7 +80,7 @@ class _RecordRemover(object):
 
         # Identify duplicates by `source_url` from the records DB
         query = """
-            SELECT r1.id
+            SELECT r1.id, r1.source_url
             FROM records AS r1
             INNER JOIN records AS r2
                 ON r1.source_url = r2.source_url
