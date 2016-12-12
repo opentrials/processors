@@ -47,8 +47,8 @@ CREATE TABLE organisations (
 	slug TEXT, 
 	CONSTRAINT organisations_pkey PRIMARY KEY (id), 
 	CONSTRAINT organisations_source_id_foreign FOREIGN KEY(source_id) REFERENCES sources (id) ON UPDATE CASCADE, 
-	CONSTRAINT organisations_slug_unique UNIQUE (slug), 
-	CONSTRAINT organisations_name_unique UNIQUE (name)
+	CONSTRAINT organisations_name_unique UNIQUE (name), 
+	CONSTRAINT organisations_slug_unique UNIQUE (slug)
 );
 CREATE TABLE locations (
 	id UUID NOT NULL, 
@@ -214,10 +214,11 @@ CREATE TABLE records (
 	results_exemption_date DATE, 
 	CONSTRAINT trialrecords_pkey PRIMARY KEY (id), 
 	CONSTRAINT trialrecords_source_id_foreign FOREIGN KEY(source_id) REFERENCES sources (id) ON UPDATE CASCADE, 
-	CONSTRAINT trialrecords_trial_id_foreign FOREIGN KEY(trial_id) REFERENCES trials (id)
+	CONSTRAINT trialrecords_trial_id_foreign FOREIGN KEY(trial_id) REFERENCES trials (id), 
+	CONSTRAINT records_source_url_unique UNIQUE (source_url)
 );
-CREATE INDEX records_identifiers_index ON records USING gin (identifiers);
 CREATE INDEX trialrecords_trial_id_index ON records (trial_id);
+CREATE INDEX records_identifiers_index ON records USING gin (identifiers);
 CREATE TABLE trials_organisations (
 	trial_id UUID NOT NULL, 
 	organisation_id UUID NOT NULL, 
