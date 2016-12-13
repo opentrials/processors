@@ -15,7 +15,6 @@ def process(conf, conn):
 
     processor = _RecordRemover(conf, conn)
     processor._remove_records_without_trial()
-    processor._remove_records_with_same_source_url()
 
 
 class _RecordRemover(object):
@@ -73,35 +72,3 @@ class _RecordRemover(object):
             # Log info
             if count and not count % 100:
                 logger.info('Processed %s records', count)
-
-    def _remove_records_with_same_source_url(self):
-        """Remove records having the same source URL
-        """
-
-        # Identify duplicates by `source_url` from the records DB
-        query = """
-            SELECT r1.id, r1.source_url
-            FROM records AS r1
-            INNER JOIN records AS r2
-                ON r1.source_url = r2.source_url
-            AND r1.id != r2.id
-            AND r1.id > r2.id
-        """
-
-        # Execute
-        count = 0
-        for record in self._conn['database'].query(query):
-            try:
-                self._conn['database']['records'].delete(id=record['id'].hex)
-            except Exception:
-                logger.exception('Can\'t delete record: %s', record['id'])
-            else:
-                logger.info('Deleted duplicated record for: %s', record['source_url'])
-                count += 1
-            if count and not count % 100:
-                logger.info('Removed %s redundant records', count)
-        logger.info('Removed %s redundant records', count)
-
-        # Log info
-        if count and not count % 100:
-            logger.info('Processed %s records', count)

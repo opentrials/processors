@@ -58,11 +58,14 @@ def first_trial(conn, trial, record):
     }
     new_trial.update(trial_attrs)
     new_record = deepcopy(record_object)
-    new_record.update(trial_attrs)
-    new_record.update({'trial_id': trial_attrs['id']})
-
+    new_record.update({
+        'trial_id': trial_attrs['id'],
+        'identifiers': trial_attrs['identifiers'],
+        'id': trial_attrs['id'],
+        'source_url': 'https://clinicaltrials.gov/ct2/show/NCT09090800',
+    })
     new_trial_id = conn['database']['trials'].insert(new_trial)
-    new_record_id = conn['database']['records'].insert(new_record)
+    conn['database']['records'].upsert(new_record, ['id'], ensure=False)
     return new_trial_id
 
 
@@ -77,9 +80,12 @@ def second_trial(conn, trial, record):
     }
     new_trial.update(trial_attrs)
     new_record = deepcopy(record_object)
-    new_record.update(trial_attrs)
-    new_record.update({'trial_id': trial_attrs['id']})
-
+    new_record.update({
+        'trial_id': trial_attrs['id'],
+        'identifiers': trial_attrs['identifiers'],
+        'id': trial_attrs['id'],
+        'source_url': 'https://clinicaltrials.gov/ct2/show/NCT24681012',
+    })
     new_trial_id = conn['database']['trials'].insert(new_trial)
-    new_record_id = conn['database']['records'].insert(new_record)
+    conn['database']['records'].upsert(new_record, ['id'], ensure=False)
     return new_trial_id

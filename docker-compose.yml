@@ -16,12 +16,6 @@ euctr:
     file: docker-cloud.yml
   restart: 'no'
 
-euctr-duplicates-remover:
-  extends:
-    service: euctr-duplicates-remover
-    file: docker-cloud.yml
-  restart: 'no'
-
 fdadl:
   extends:
     service: fdadl
