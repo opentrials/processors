@@ -28,15 +28,13 @@ class TestCochraneProcessor(object):
 
     def test_scrape_pubmed_id(self):
         reference = {
-            'year': '2007',
-            'title': ('Rivastigmine treatment as an add-on to antipsychotics in '
-                      'patients with schizophrenia and cognitive deficit'),
-            'authors': ('Chouinard S, Stip E, Poulin J, Melun JP, '
-                        'Godbout R, Guillem F, Cohen H')
+            'year': '2010',
+            'title': ('Supported employment: randomised controlled trial'),
+            'authors': ('Howard LM, Heslin M, Leese M, McCrone P, Rice C, Jarrett M, et al')
         }
         pmid = processor.scrape_pubmed_id(reference)
 
-        assert pmid == '17355738'
+        assert pmid == '20435968'
 
 
     def links_risk_of_bias_with_trial(self, conn, cochrane_review, trial_with_record):
