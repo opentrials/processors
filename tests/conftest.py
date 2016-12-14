@@ -22,6 +22,7 @@ from tests.fixtures.api.records import record
 from tests.fixtures.api.documents import fda_document
 
 from tests.fixtures.warehouse.cochrane_reviews import cochrane_review
+from tests.fixtures.warehouse.nct import nct_record
 
 @pytest.fixture
 def conn(request):

@@ -18,7 +18,7 @@ class TestRecordWriter(object):
         }
         trial_record = conn['database']['trials'].find_one(id=trial)
 
-        assert writers.write_record(conn, record, nct_source, trial, trial_record) is None
+        assert writers.write_record(conn, record, nct_source, trial, trial_record, False) is None
 
 
     def test_writes_record_with_valid_url(self, conn, trial, nct_source):
@@ -30,4 +30,4 @@ class TestRecordWriter(object):
         }
         trial_record = conn['database']['trials'].find_one(id=trial)
 
-        assert writers.write_record(conn, record, nct_source, trial, trial_record) is not None
+        assert writers.write_record(conn, record, nct_source, trial, trial_record, False) is not None

@@ -212,6 +212,7 @@ CREATE TABLE records (
 	status TEXT, 
 	completion_date DATE, 
 	results_exemption_date DATE, 
+	is_primary BOOLEAN, 
 	CONSTRAINT trialrecords_pkey PRIMARY KEY (id), 
 	CONSTRAINT trialrecords_source_id_foreign FOREIGN KEY(source_id) REFERENCES sources (id) ON UPDATE CASCADE, 
 	CONSTRAINT trialrecords_trial_id_foreign FOREIGN KEY(trial_id) REFERENCES trials (id), 
