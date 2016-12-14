@@ -40,8 +40,16 @@ def process_trials(conn, table, extractors):
             if trial_id is None:
                 continue
 
+            # Set current primary record to false
+            if is_primary:
+                current_primary = conn['database']['records'].find_one(trial_id=trial_id,
+                                                                       is_primary=True)
+                if current_primary:
+                    current_primary['is_primary'] = False
+                    conn['database']['records'].update(current_primary, ['id'])
+
             # Write record
-            writers.write_record(conn, record, source_id, trial_id, trial)
+            writers.write_record(conn, record, source_id, trial_id, trial, is_primary)
 
             # Extract and write documents
             extract_documents = extractors.get('extract_documents')

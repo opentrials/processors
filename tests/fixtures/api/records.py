@@ -33,6 +33,7 @@ def record(conn, nct_source):
         'source_url': 'https://clinicaltrials.gov/ct2/show/NCT00212927',
         'source_data': {},
         'trial_id': None,
+        'is_primary': True,
     }
     record_id = conn['database']['records'].insert(record)
     return record_id

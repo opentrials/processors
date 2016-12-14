@@ -12,15 +12,16 @@ logger = logging.getLogger(__name__)
 
 # Module API
 
-def write_record(conn, record, source_id, trial_id, trial):
+def write_record(conn, record, source_id, trial_id, trial, is_primary):
     """Write record to database.
 
     Args:
         conn (dict): connection dict
         record (dict): raw collected data
-        trial (dict): normalized data about trial
         source_id (str): related source id
-        primary (bool): if record primary
+        trial_id (uuid): related trial_id
+        trial (dict): related trial data
+        is_primary (bool): is the record primary
 
     Raises:
         KeyError: if data structure is not valid
@@ -70,6 +71,7 @@ def write_record(conn, record, source_id, trial_id, trial):
         'gender': trial.get('gender'),
         'has_published_results': trial.get('has_published_results'),
         'results_exemption_date': trial.get('results_exemption_date'),
+        'is_primary': is_primary,
     })
 
     # Validate object
