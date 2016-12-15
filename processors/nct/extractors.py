@@ -74,6 +74,7 @@ def extract_trial(record):
         'identifiers': identifiers,
         'registration_date': record['firstreceived_date'],
         'completion_date': record['completion_date_actual'],
+        'last_verification_date': record['verification_date'],
         'public_title': public_title,
         'brief_summary': record['brief_summary'],
         'scientific_title': record['official_title'],
