@@ -58,4 +58,5 @@ def stub_record():
         'secondary_ids': ['ISRCTN71203361'],
         'completion_date_actual': datetime.date(2016, 12, 12),
         'results_exemption_date': datetime.date(2016, 11, 9),
+        'verification_date': datetime.date(2016, 11, 18),
     }

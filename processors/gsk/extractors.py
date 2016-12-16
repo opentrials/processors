@@ -80,6 +80,7 @@ def extract_trial(record):
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
         'has_published_results': has_published_results,
+        'last_verification_date': record['record_verification_date'],
     }
     return trial
 
