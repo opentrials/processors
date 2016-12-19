@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import json
 import logging
 from .. import helpers
 logger = logging.getLogger(__name__)
@@ -49,7 +48,6 @@ def write_record(conn, record, source_id, trial_id, trial, is_primary):
         'trial_id': trial_id,
         'source_id': source_id,
         'source_url': record['meta_source'],
-        'source_data': json.loads(json.dumps(record, cls=helpers.JSONEncoder)),
         # ---
         'identifiers': trial['identifiers'],
         'registration_date': trial.get('registration_date'),

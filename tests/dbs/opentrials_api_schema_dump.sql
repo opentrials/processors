@@ -188,7 +188,6 @@ CREATE TABLE records (
 	id UUID NOT NULL, 
 	source_id TEXT NOT NULL, 
 	source_url TEXT NOT NULL, 
-	source_data JSONB NOT NULL, 
 	identifiers JSONB NOT NULL, 
 	registration_date DATE, 
 	public_title TEXT NOT NULL, 
@@ -284,8 +283,8 @@ CREATE TABLE documents (
 	CONSTRAINT documents_source_id_foreign FOREIGN KEY(source_id) REFERENCES sources (id) ON UPDATE CASCADE, 
 	CONSTRAINT documents_fda_approval_id_file_id_name_unique UNIQUE (fda_approval_id, file_id, name)
 );
-CREATE UNIQUE INDEX non_fda_documents_type_file_id_unique ON documents (type, file_id);
 CREATE UNIQUE INDEX non_fda_documents_type_source_url_unique ON documents (type, source_url);
+CREATE UNIQUE INDEX non_fda_documents_type_file_id_unique ON documents (type, file_id);
 CREATE TABLE trials_interventions (
 	trial_id UUID NOT NULL, 
 	intervention_id UUID NOT NULL, 
