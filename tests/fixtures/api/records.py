@@ -31,7 +31,6 @@ def record(conn, nct_source):
         'completion_date': '2006-10-13',
         'source_id': nct_source,
         'source_url': 'https://clinicaltrials.gov/ct2/show/NCT00212927',
-        'source_data': {},
         'trial_id': None,
         'is_primary': True,
     }
