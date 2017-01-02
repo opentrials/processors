@@ -32,6 +32,7 @@ def remove_trials_without_records(conf, conn):
 
     # Execute
     count = 0
+    error_count = 0
     for trial in conn['database'].query(query):
         trial_id = trial['id'].hex
         remover = _TrialRemover(conf, conn['database'], trial_id)
@@ -50,6 +51,7 @@ def remove_trials_without_records(conf, conn):
             conn['database'].rollback()
             logger.exception('Can\'t delete trial: %s and its relations due to error: %s',
                              trial['identifiers'], repr(exception))
+            error_count += 1
         else:
             conn['database'].commit()
             logger.info('Deleted trial without records: %s and its relations',
@@ -58,6 +60,8 @@ def remove_trials_without_records(conf, conn):
         if count and not count % 100:
             logger.info('Removed %s trials without records', count)
     logger.info('Removed %s trials without records', count)
+    if error_count > 0:
+        logger.warning('Failed to remove %s trials without records', error_count)
 
 
 class _TrialRemover(object):
