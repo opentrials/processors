@@ -20,6 +20,7 @@ from tests.fixtures.api.fda_applications import fda_application
 from tests.fixtures.api.organizations import organization
 from tests.fixtures.api.records import record
 from tests.fixtures.api.documents import fda_document
+from tests.fixtures.api.documents import document
 
 from tests.fixtures.warehouse.cochrane_reviews import cochrane_review
 from tests.fixtures.warehouse.nct import nct_record
