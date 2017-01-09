@@ -7,6 +7,8 @@
 
 The OpenTrials data processors set.
 
+This system is responsible with normalizing and enriching data in our `warehouse` and API `database` and managing our file storage.
+
 ## Documentation
 
 - [Overview](docs/overview.md)

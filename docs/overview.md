@@ -1,21 +1,24 @@
 # Overview
 
-This system is responsible for data processing
-in `warehouse`, `database`, `datastore` and possible other storages.
+OpenTrials project has 4 main components:
+  - [Collectors](https://github.com/opentrials/collectors): contains logic for gathering data (e.g. scrapers)
+  and manages the schema for our `warehouse` database that keeps the data collected from different sources
+  - [Processors](https://github.com/opentrials/processors): contains logic for processing and inserting data from `warehouse` into our API `database`
+  - [OpenTrials API](https://github.com/opentrials/api): manages the schema for our `database` and contains logic for exposing and indexing the data inside it
+  - [OpenTrials Explorer](https://github.com/opentrials/opentrials): displays data from our API and manages the `explorer` database that keeps users and user-related data
 
-## Stacks
+This system is responsible with normalizing and enriching data in our `warehouse` and API `database` and managing our file storage.
 
-The system provides the following stacks:
-- `make-initial-processing` - process anything initially
-- `processors` - continuous processing of updated elements
+----
 
-About Docker Cloud deployment see -
-https://github.com/respect31/docker-cloud-example.
+### Stack
+Processors are fully compatible with Python2.7.
+
+We use PostgreSQL for our databases and [Docker Cloud](https://github.com/respect31/docker-cloud-example) to deploy and run the processors in production.
 
 ## Processors
 
-The system's processors are independent python modules
-compatible to the following signature:
+Processors are independent python modules that share the following signature:
 
 ```python
 def process(conf, conn, *args):
@@ -27,43 +30,21 @@ Where arguments are:
 - `conn` - connections dict
 - `args` - processor arguments
 
-To run one of processors from command line:
+To run a processor from the command line:
 ```
-make start <name> [<args>]
+$ make start <name> [<args>]
 ```
 
 This code will trigger `processors.<name>.process(conf, conn, *args)` call.
 
-## Base library
+### Extractors
 
-For developers convenient in a `processors.base` module
-there are shared library of reusable components to write processors.
+One of the most common use cases for processors is to extract and standardize data from our
+`warehouse` database into entities that comply with the structure of our API `database`.
 
-### Processors
+Extractors are functions that map entity representations in different registries to OpenTrials API `database` schema.
 
-There are a few lower level processors based on
-main entity they process:
-- trial
-- publication
-- etc
-
-So if you're going to process trials from `warehouse`
-to `database` you could use this shared component.
-
-```python
-def process_trials(conn, table, extractors):
-    pass
-```
-
-Where `extractors` is a dictionary of functions
-getting `record` dict and returning dict of normalized
-data. For example extracting from `nct` record
-data about interventions.
-
-Extractor is a bridge between ideal entity representations
-and items stored in `warehouse`. It extracts unified
-data from not structured items. So extractor hides differenced
-between item representation in different registers:
+e.g. Given two registries NCT and EUCTR and their corresponding extractors: [NCT trial extractor](https://github.com/opentrials/processors/blob/master/processors/nct/extractors.py#L23) and [EUCTR trial extractor](https://github.com/opentrials/processors/blob/master/processors/euctr/extractors.py#L23)
 
 ```python
 # NCT
@@ -86,7 +67,7 @@ euctr_record = {
     'euro_title': 'name3',
      ...
 }
-trial = extract_record(euctr_record)
+trial = extract_trial(euctr_record)
 print(trial)
 {
     'primary_id': 'euctr20014',
@@ -95,55 +76,32 @@ print(trial)
 }
 ```
 
-### Readers
-
-There are storage readers:
-- record
-- object
-
-`record` reader just read records from `warehouse`
-optimizing memory and network usage.
-
-`object` reader reads data from `database` based
-on filters. It's a part of deduplication system.
-
-It gets `slug` and `facts` about some object
-and finds it in `database` (also `filter` could be applied).
-
-For example trial's `facts` is slugified register identifiers
-and scientific titles:
-```
-['nct21231', 'isrct23412', 'scientific_title']
-```
-
-On deduplication stage reader finds trials with this facts
-(we need to use GIN index here to do not have full scan in postgress)
-to associate item from some other register with one living in our database.
-
-If there is a match facts will be merged on a writing stage:
-```
-['nct21231', 'isrct23412', 'sa35434525', 'euctr2224']
-```
-
-The same for the persons for example where facts will be
-slugified `phones`, `email` etc (not fully implemented). But for persons
-we also check slugified `name` equality. Persons with the same slug and
-one of the facts equal is a one person:
-```
-'mr_smith'
-AND
-['53242345432', 'simthgailcom', 'nct13243241']
-```
-
 ### Writers
 
-For many of entities there are ready writers:
-- trial
-- person
-- publication
-- etc
+Writers are modules that hold logic for creating and updating entities in `database` *without creating duplicates*.
 
-Writers write normalized data to `database`
-updating deduplication system elements etc.
+In the folder `processors/base/writers` we already have writers for different database entities (e.g. `trial`, `person`, etc.) that you can use. See documentation in source code for how to use them.
 
-See documentation in source code to use it.
+### Base processors
+
+In the folder `processors/base/processors` there are a few lower level processors
+that contain the logic surrounding certain API `database` entities (e.g.  `trial`,  `publication` etc.). Their main role is to manage the Extractors and Writers.
+
+These base processors cannot be directly invoked from the command line, they are meant for use in other processors.
+
+e.g. `trial` processor extracts and writes a `trial` and also creates and links the `trial`'s related entities. It contains the following function:
+
+```python
+def process_trials(conn, table, extractors):
+    pass
+```
+Where arguments are:
+  - conn - connection dict
+  - table - name of table from `warehouse` that contains unstructured records
+  - extractors - dict of functions that map the unstructured records into `trials`, `documents` and other `trial`-related entities
+
+
+### What can go into a processor?
+
+Processors can perform any operation needed to manage data stores: removing records, linking records etc. Just make sure to keep the logic for gathering data
+from outside sources in the [Collectors](https://github.com/opentrials/collectors).
