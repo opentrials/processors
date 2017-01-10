@@ -17,40 +17,44 @@ def process(conf, conn):
     count = 0
     for publication in base.helpers.iter_rows(conn, 'database', 'publications',
             orderby='id', source_id='pubmed'):
+        try:
 
-        # Find identifiers
-        list_of_identifiers = base.helpers.find_list_of_identifiers(
-            publication['title'] + publication['abstract'])
+            # Find identifiers
+            list_of_identifiers = base.helpers.find_list_of_identifiers(
+                publication['title'] + publication['abstract'])
 
-        # Delete existent relationships
-        conn['database']['trials_publications'].delete(
-            publication_id=publication['id'])
+            # Delete existent relationships
+            conn['database']['trials_publications'].delete(
+                publication_id=publication['id'])
 
-        # Write new relationships
-        for identifiers in list_of_identifiers:
+            # Write new relationships
+            for identifiers in list_of_identifiers:
 
-            # Get trial
-            trial = base.helpers.find_trial_by_identifiers(
-                conn, identifiers=identifiers)
+                # Get trial
+                trial = base.helpers.find_trial_by_identifiers(
+                    conn, identifiers=identifiers)
 
-            # Found trial - add relationship
-            if trial:
-                base.writers.write_trial_relationship(
-                    conn, 'publication', publication, publication['id'], trial['id'])
-                logger.debug('Linked %s to "%s"',
-                    trial['identifiers'].values(), publication['title'][0:50])
+                # Found trial - add relationship
+                if trial:
+                    base.writers.write_trial_relationship(
+                        conn, 'publication', publication, publication['id'], trial['id'])
+                    logger.debug('Linked %s to "%s"',
+                        trial['identifiers'].values(), publication['title'][0:50])
 
-            # Not found trial - add trial stub
-            else:
-                trial = {
-                    'source_id': 'pubmed',
-                    'identifiers': identifiers,
-                    'public_title': identifiers.values()[0],
-                }
-                base.writers.write_trial(conn, trial, 'pubmed')
-                logger.debug('Added pubmed-only trial: %s', identifiers.values()[0])
+                # Not found trial - add trial stub
+                else:
+                    trial = {
+                        'source_id': 'pubmed',
+                        'identifiers': identifiers,
+                        'public_title': identifiers.values()[0],
+                    }
+                    base.writers.write_trial(conn, trial, 'pubmed')
+                    logger.debug('Added pubmed-only trial: %s', identifiers.values()[0])
 
-        # Log info
-        count += 1
-        if not count % 100:
-            logger.info('Processed for links %s pubmed publications', count)
+            # Log info
+            count += 1
+            if not count % 100:
+                logger.info('Processed for links %s pubmed publications', count)
+
+        except Exception as exception:
+            logger.exception(repr(exception), exc_info=True)
