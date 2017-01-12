@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
 import re
 import json
 import uuid
@@ -11,12 +12,20 @@ import string
 import logging
 import datetime
 import urlparse
+from iso3166 import countries
+from fuzzywuzzy import fuzz
+from regex import sub
 from . import pybossa_tasks_updater
 logger = logging.getLogger(__name__)
 PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
 
 
 # Module API
+
+EDIT_DISTANCE_THRESHOLD = 80
+COUNTRY_NAME_INDEX = 0
+COUNTRY_ALPHA3_INDEX = 4
+
 
 def get_variables(object, filter=None):
     """Exract variables from object to dict using name filter.
@@ -42,6 +51,7 @@ def slugify_string(string):
 class JSONEncoder(json.JSONEncoder):
     """JSON encoder with datetime, date set support.
     """
+
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -88,7 +98,8 @@ def clean_identifiers(identifiers):
     result = {}
     for key, value in identifiers.items():
         try:
-            new_value, num_changes = re.subn(r'^(\w+)\s+', r'\g<1>', value, re.IGNORECASE)
+            new_value, num_changes = re.subn(
+                r'^(\w+)\s+', r'\g<1>', value, re.IGNORECASE)
             if num_changes:
                 logger.debug('Removed whitespaces from identifier "%s" to "%s"',
                              value, new_value)
@@ -244,7 +255,8 @@ def find_trial_by_identifiers(conn, identifiers, ignore_record_id=None):
         for record in records:
             if (ignore_record_id and record['id'].hex == uuid.UUID(ignore_record_id).hex):
                 continue
-            trial = conn['database']['trials'].find_one(id=record['trial_id'].hex)
+            trial = conn['database']['trials'].find_one(
+                id=record['trial_id'].hex)
             if trial:
                 break
         if trial:
@@ -266,3 +278,38 @@ def safe_prepend(prepend_string, string):
         string = '%s%s' % (prepend_string, string)
 
     return string
+
+
+def get_canonical_location_name(location):
+    """Find the cannonical location name according to the
+    passed entry
+
+    Args:
+        location (str): the location to be normalized
+    """
+    # Try to fetch canonical name directly from the iso-3166 country list
+    try:
+        return countries.get(sub(ur"\p{P}+", "", location)).name
+    # If country isn't found on iso-3166 country list
+    except KeyError:
+        normalized = False
+        with open(os.path.join(os.path.dirname(__file__),
+         'data/countries.csv'), 'r') as csv_file:
+            # Store information about the current comparation
+            current_choice = location
+            current_match_score = float("-inf")
+            for country in csv_file:                      
+                country_infos = unicode(country, encoding="utf-8").split(",")
+                # Calculate levenshtein distance for all country informations
+                lev_distances = [fuzz.ratio(sub(
+                    ur"\p{P}+", "", location).lower(), country_info.lower())
+                                 for country_info in country_infos[0:5]]
+                # Update current choice if any distance is above the threshold
+                # and the current max score
+                if max(lev_distances) >= EDIT_DISTANCE_THRESHOLD and \
+                    max(lev_distances) > current_match_score:
+                    normalized = True
+                    current_choice = countries.get(
+                        country_infos[COUNTRY_ALPHA3_INDEX]).name
+                    current_match_score = max(lev_distances)
+            return current_choice

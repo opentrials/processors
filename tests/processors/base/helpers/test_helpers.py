@@ -125,3 +125,52 @@ class TestSafePrepend(object):
     ])
     def test_safe_prepend(self, prepend_string, string, expected):
         assert helpers.safe_prepend(prepend_string, string) == expected
+
+class TestLocationNormalizer(object):
+    @pytest.mark.parametrize("test_input,expected", [
+        ("China", "China"),
+        ("Brazil", "Brazil"),
+        ("United States", "United States"),
+        ("Japan", "Japan"),
+        ("Afghanistan", "Afghanistan"),
+        ("Colombia", "Colombia"),
+        ("Germany", "Germany"),
+        ("Kazakhstan", "Kazakhstan"),
+        ("Mozambique", "Mozambique"),
+        ("United Arab Emirates", "United Arab Emirates"),
+        ("United States of America","United States"),
+        #------
+        ("US","United States"),
+        ("ZMB","Zambia"),
+        ("UK","United Kingdom"),
+        ("UY","Uruguay"),
+        ("VAT","Holy See"),
+        ("YE","Yemen"),
+        ("KOR","Korea, Republic of"),
+        ("PE","Peru"),
+        ("NGA","Nigeria"),
+        ("ML","Mali"),
+        #------
+        ("Chnia","China"),
+        ("Thailland","Thailand"),
+        ("The Netherlands","Netherlands"),
+        ("Vietnam","Viet Nam"),
+        ("Cina","China"),
+        ("Chiina","China"),
+        ("nhina","China"),
+        ("Cote Divoire","Côte d'Ivoire"),
+        ("thauland","Thailand"),
+        ("Thaialnd","Thailand"),
+        #----
+        ("South America","South Africa"),
+        ("Global trial(North America)","Global trial(North America)"),
+        ("Asia(except Japan)","Asia(except Japan)"),
+        ("Europe","Europe"),        
+        ("Jiangsu","Jiangsu"),
+        ("Tianjin","Tianjin"),
+        ("Multinational","Multinational"),
+        ("Virgin Islands (U.S.)","Virgin Islands (U.S.)"),
+        ("Outside","Outside")])
+
+    def test_location_normalizer(self, test_input, expected):
+        assert helpers.get_canonical_location_name(test_input) == expected
