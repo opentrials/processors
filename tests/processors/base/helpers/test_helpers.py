@@ -128,6 +128,7 @@ class TestSafePrepend(object):
 
 class TestLocationNormalizer(object):
     @pytest.mark.parametrize("test_input,expected", [
+        # Locations normalized by ISO-3166 name standards
         ("China", "China"),
         ("Brazil", "Brazil"),
         ("United States", "United States"),
@@ -139,7 +140,8 @@ class TestLocationNormalizer(object):
         ("Mozambique", "Mozambique"),
         ("United Arab Emirates", "United Arab Emirates"),
         ("United States of America","United States"),
-        #------
+
+        # Locations normalized by ISO-3166 acronym standards
         ("US","United States"),
         ("ZMB","Zambia"),
         ("UK","United Kingdom"),
@@ -150,7 +152,23 @@ class TestLocationNormalizer(object):
         ("PE","Peru"),
         ("NGA","Nigeria"),
         ("ML","Mali"),
-        #------
+
+        # Locations normalized by ISO-3166 capital standards
+        ("Kabul","Afghanistan"),
+        ("Canberra","Australia"),
+        ("Dhaka","Bangladesh"),
+        ("Sucre","Bolivia, Plurinational State of"),
+        ("Brasilia","Brazil"),
+        ("San Jose","Costa Rica"),
+        ("Copenhagen","Denmark"),
+        ("Helsinki","Finland"),
+        ("Budapest","Hungary"),
+        ("Tarawa","Kiribati"),
+        ("Antananarivo","Madagascar"),
+        ("Yaren","Nauru"),
+        ("Oslo","Norway"),
+
+        # Locations normalized by Levenshtein distance (name)
         ("Chnia","China"),
         ("Thailland","Thailand"),
         ("The Netherlands","Netherlands"),
@@ -161,15 +179,28 @@ class TestLocationNormalizer(object):
         ("Cote Divoire","Côte d'Ivoire"),
         ("thauland","Thailand"),
         ("Thaialnd","Thailand"),
-        #----
-        ("South America","South Africa"),
+        ("Virgin Islands (U.S.)","Virgin Islands, U.S."),
+
+        # Locations normalized by Levenshtein distance (capital)
+        ("Asuncion","Paraguay"),
+        ("Ruanda","Angola"),
+        ("Brussells","Belgium"),
+        ("Otawa","Canada"),
+        ("Yamousoukro","Côte d'Ivoire"),
+        ("Sam Salvador","El Salvador"),
+        ("Peris","France"),
+        ("Acra","Ghana"),
+        ("Bagdad","Iraq"),
+        ("Podorica","Montenegro"),
+        ("Bucarest","Romania"),
+
+        # Locations not normalized (corner cases)
         ("Global trial(North America)","Global trial(North America)"),
         ("Asia(except Japan)","Asia(except Japan)"),
-        ("Europe","Europe"),        
+        ("Europe","Europe"),
         ("Jiangsu","Jiangsu"),
         ("Tianjin","Tianjin"),
         ("Multinational","Multinational"),
-        ("Virgin Islands (U.S.)","Virgin Islands (U.S.)"),
         ("Outside","Outside")])
 
     def test_location_normalizer(self, test_input, expected):
