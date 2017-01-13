@@ -13,3 +13,4 @@ pybossa-client
 pycountry
 fuzzywuzzy
 regex
+python-Levenshtein

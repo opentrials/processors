@@ -33,7 +33,7 @@ def write_location(conn, location, source_id, trial_id=None):
     timestamp = datetime.datetime.utcnow()
 
     # Get name
-    name = helpers.clean_string(location['name'])
+    name = helpers.get_canonical_location_name(location['name'])
     if len(name) <= 1:
         return None
 

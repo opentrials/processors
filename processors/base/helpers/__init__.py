@@ -25,6 +25,7 @@ PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
 EDIT_DISTANCE_THRESHOLD = 80
 COUNTRY_NAME_INDEX = 0
 COUNTRY_ALPHA3_INDEX = 4
+COUNTRY_CAPITAL_INDEX = 21
 
 
 def get_variables(object, filter=None):
@@ -287,29 +288,33 @@ def get_canonical_location_name(location):
     Args:
         location (str): the location to be normalized
     """
-    # Try to fetch canonical name directly from the iso-3166 country list
+    # Try to fetch canonical name directly from the iso-3166 country standard
     try:
         return countries.get(sub(ur"\p{P}+", "", location)).name
     # If country isn't found on iso-3166 country list
     except KeyError:
         normalized = False
+        clean_string = lambda u: sub(ur"\p{P}+", "", u).lower()
         with open(os.path.join(os.path.dirname(__file__),
          'data/countries.csv'), 'r') as csv_file:
-            # Store information about the current comparation
-            current_choice = location
-            current_match_score = float("-inf")
-            for country in csv_file:                      
+            # Store information about the current match
+            current_match, current_distance = location, float("-inf")
+            for country in csv_file:
                 country_infos = unicode(country, encoding="utf-8").split(",")
-                # Calculate levenshtein distance for all country informations
-                lev_distances = [fuzz.ratio(sub(
-                    ur"\p{P}+", "", location).lower(), country_info.lower())
-                                 for country_info in country_infos[0:5]]
-                # Update current choice if any distance is above the threshold
+                # Calculate levenshtein distance between the passed country
+                # and all country relevant informations
+                relevant_info = country_infos[0:5] + \
+                    [country_infos[COUNTRY_CAPITAL_INDEX]]
+                lev_distances = [fuzz.ratio(clean_string(location),
+                 country_info.lower()) for country_info in relevant_info]
+                # Update current match if any distance is above the threshold
                 # and the current max score
                 if max(lev_distances) >= EDIT_DISTANCE_THRESHOLD and \
-                    max(lev_distances) > current_match_score:
+                    max(lev_distances) > current_distance:
                     normalized = True
-                    current_choice = countries.get(
-                        country_infos[COUNTRY_ALPHA3_INDEX]).name
-                    current_match_score = max(lev_distances)
-            return current_choice
+                    current_match, current_distance = countries.get(
+                        country_infos[COUNTRY_ALPHA3_INDEX]).name,\
+                        max(lev_distances)
+            if not normalized:
+                logger.debug('Location "%s" not normalized', location)
+            return current_match
