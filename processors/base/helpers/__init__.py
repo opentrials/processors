@@ -15,9 +15,9 @@ import urlparse
 from iso3166 import countries
 from fuzzywuzzy import fuzz
 from regex import sub
-#from . import pybossa_tasks_updater
+from . import pybossa_tasks_updater
 logger = logging.getLogger(__name__)
-#PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
+PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
 
 
 # Module API
