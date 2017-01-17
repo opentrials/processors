@@ -15,9 +15,9 @@ import urlparse
 from iso3166 import countries
 from fuzzywuzzy import fuzz
 from regex import sub
-from . import pybossa_tasks_updater
+#from . import pybossa_tasks_updater
 logger = logging.getLogger(__name__)
-PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
+#PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
 
 
 # Module API
@@ -282,19 +282,20 @@ def safe_prepend(prepend_string, string):
 
 
 def get_canonical_location_name(location):
-    """Find the cannonical location name according to the
+    """Find the canonical location name according to the
     passed entry
 
     Args:
         location (str): the location to be normalized
     """
+
+    clean_string = lambda u: sub(ur"\p{P}+", "", u).lower()
     # Try to fetch canonical name directly from the iso-3166 country standard
     try:
-        return countries.get(sub(ur"\p{P}+", "", location)).name
+        return countries.get(clean_string(location)).name
     # If country isn't found on iso-3166 country list
     except KeyError:
         normalized = False
-        clean_string = lambda u: sub(ur"\p{P}+", "", u).lower()
         with open(os.path.join(os.path.dirname(__file__),
          'data/countries.csv'), 'r') as csv_file:
             # Store information about the current match
