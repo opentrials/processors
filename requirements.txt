@@ -14,3 +14,4 @@ pycountry
 fuzzywuzzy
 regex
 python-Levenshtein
+iso3166
