@@ -297,7 +297,7 @@ def get_canonical_location_name(location):
     except KeyError:
         normalized = False
         with open(os.path.join(os.path.dirname(__file__),
-         'data/countries.csv'), 'r') as csv_file:
+                               'data/countries.csv'), 'r') as csv_file:
             # Store information about the current match
             current_match, current_distance = location, float("-inf")
             for country in csv_file:
@@ -307,7 +307,7 @@ def get_canonical_location_name(location):
                 relevant_info = country_infos[0:5] + \
                     [country_infos[COUNTRY_CAPITAL_INDEX]]
                 lev_distances = [fuzz.ratio(clean_string(location),
-                 country_info.lower()) for country_info in relevant_info]
+                                            country_info.lower()) for country_info in relevant_info]
                 # Update current match if any distance is above the threshold
                 # and the current max score
                 if max(lev_distances) >= EDIT_DISTANCE_THRESHOLD and \
