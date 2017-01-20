@@ -153,21 +153,6 @@ class TestLocationNormalizer(object):
         ("NGA","Nigeria"),
         ("ML","Mali"),
 
-        # Locations normalized by ISO-3166 capital standards
-        ("Kabul","Afghanistan"),
-        ("Canberra","Australia"),
-        ("Dhaka","Bangladesh"),
-        ("Sucre","Bolivia, Plurinational State of"),
-        ("Brasilia","Brazil"),
-        ("San Jose","Costa Rica"),
-        ("Copenhagen","Denmark"),
-        ("Helsinki","Finland"),
-        ("Budapest","Hungary"),
-        ("Tarawa","Kiribati"),
-        ("Antananarivo","Madagascar"),
-        ("Yaren","Nauru"),
-        ("Oslo","Norway"),
-
         # Locations normalized by Levenshtein distance (name)
         ("Chnia","China"),
         ("Thailland","Thailand"),
@@ -180,19 +165,6 @@ class TestLocationNormalizer(object):
         ("thauland","Thailand"),
         ("Thaialnd","Thailand"),
         ("Virgin Islands (U.S.)","Virgin Islands, U.S."),
-
-        # Locations normalized by Levenshtein distance (capital)
-        ("Asuncion","Paraguay"),
-        ("Ruanda","Angola"),
-        ("Brussells","Belgium"),
-        ("Otawa","Canada"),
-        ("Yamousoukro","Côte d'Ivoire"),
-        ("Sam Salvador","El Salvador"),
-        ("Peris","France"),
-        ("Acra","Ghana"),
-        ("Bagdad","Iraq"),
-        ("Podorica","Montenegro"),
-        ("Bucarest","Romania"),
 
         # Locations not normalized (corner cases)
         ("Global trial(North America)","Global trial(North America)"),

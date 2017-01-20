@@ -1,6 +1,4 @@
 name,official_name_en,official_name_fr,ISO3166-1-Alpha-2,ISO3166-1-Alpha-3,ISO3166-1-numeric,ITU,MARC,WMO,DS,Dial,FIFA,FIPS,GAUL,IOC,ISO4217-currency_alphabetic_code,ISO4217-currency_country_name,ISO4217-currency_minor_unit,ISO4217-currency_name,ISO4217-currency_numeric_code,is_independent,Capital,Continent,TLD,Languages,geonameid,EDGAR
-,Channel Islands,Îles Anglo-Normandes,,,830,,,,,,,,,,,,,,,,,,,,,
-,Sark,Sercq,,,680,,,,,,,,,,,,,,,,,,,,,
 Afghanistan,Afghanistan,Afghanistan,AF,AFG,004,AFG,af,AF,AFG,93,AFG,AF,1,AFG,AFN,AFGHANISTAN,2,Afghani,971,Yes,Kabul,AS,.af,"fa-AF,ps,uz-AF,tk",1149361,B2
 Albania,Albania,Albanie,AL,ALB,008,ALB,aa,AB,AL,355,ALB,AL,3,ALB,ALL,ALBANIA,2,Lek,008,Yes,Tirana,EU,.al,"sq,el",783754,B3
 Algeria,Algeria,Algérie,DZ,DZA,012,ALG,ae,AL,DZ,213,ALG,AG,4,ALG,DZD,ALGERIA,2,Algerian Dinar,012,Yes,Algiers,AF,.dz,ar-DZ,2589581,B4

@@ -12,12 +12,13 @@ import string
 import logging
 import datetime
 import urlparse
-from iso3166 import countries
-from fuzzywuzzy import fuzz
-from regex import sub
-from . import pybossa_tasks_updater
+import csv
+import iso3166
+
+from fuzzywuzzy import process, fuzz
+#from . import pybossa_tasks_updater
 logger = logging.getLogger(__name__)
-PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
+#PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
 
 
 # Module API
@@ -25,7 +26,6 @@ PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
 EDIT_DISTANCE_THRESHOLD = 75
 COUNTRY_NAME_INDEX = 0
 COUNTRY_ALPHA3_INDEX = 4
-COUNTRY_CAPITAL_INDEX = 21
 
 
 def get_variables(object, filter=None):
@@ -289,33 +289,46 @@ def get_canonical_location_name(location):
         location (str): the location to be normalized
     """
 
-    clean_string = lambda u: sub(ur"\p{P}+", "", u).lower()
+    # This auxiliar file is provided by the dataset repository of github.com and
+    # can be checked on its latest version on the project website
+    # See: https://github.com/datasets/country-codes/blob/master/data/country-codes.csv
+    #
+    # To create e new entry (or update an existing one), add a new line (or find the
+    # existing one) and fill in the informations according to the header (line 1) order and
+    # separating fields using comma
+    CSV_PATH = 'data/countries.csv'
+    ALPHA_3_HEADER = 'ISO3166-1-Alpha-3'
+    DISTANCE_SCORER = fuzz.token_sort_ratio
+    SCORE_INDEX = 1
+
+    clean_string = lambda u: re.sub(u"[^\w\d'\s]+", '', u).lower()
     # Try to fetch canonical name directly from the iso-3166 country standard
     try:
-        return countries.get(clean_string(location)).name
+        return iso3166.countries.get(clean_string(location)).name
     # If country isn't found on iso-3166 country list
     except KeyError:
-        normalized = False
-        with open(os.path.join(os.path.dirname(__file__),
-                               'data/countries.csv'), 'r') as csv_file:
+        with open(os.path.join(os.path.dirname(__file__), CSV_PATH), 'r') as csv_file:
+            reader = csv.DictReader(csv_file)
             # Store information about the current match
-            current_match, current_distance = location, float("-inf")
-            for country in csv_file:
-                country_infos = unicode(country, encoding="utf-8").split(",")
-                # Calculate levenshtein distance between the passed country
-                # and all country relevant informations
-                relevant_info = country_infos[0:5] + \
-                    [country_infos[COUNTRY_CAPITAL_INDEX]]
-                lev_distances = [fuzz.ratio(clean_string(location),
-                                            country_info.lower()) for country_info in relevant_info]
-                # Update current match if any distance is above the threshold
-                # and the current max score
-                if max(lev_distances) >= EDIT_DISTANCE_THRESHOLD and \
-                    max(lev_distances) > current_distance:
-                    normalized = True
-                    current_match, current_distance = countries.get(
-                        country_infos[COUNTRY_ALPHA3_INDEX]).name,\
-                        max(lev_distances)
-            if not normalized:
+            current_match = location
+            current_score = float("-inf")
+            for country in reader:
+                # Extract relevant comparative info from the current country
+                relevant_info = [unicode(country[field], encoding="utf-8")
+                                 for field in reader.fieldnames[0:5]]
+                # Do some string clean up and extract the most similar field (according
+                # to Levenshtein scoring) over all the location relevant informations
+                cleaned_location = clean_string(location)
+                location_info = [location_info.lower() for location_info in relevant_info]
+                choice = process.extractOne(cleaned_location, location_info, scorer=DISTANCE_SCORER)
+
+                # Update current match if the distance score is above the current max score
+                if choice[SCORE_INDEX] > current_score:
+                    current_match = iso3166.countries.get(country[ALPHA_3_HEADER]).name
+                    current_score = choice[SCORE_INDEX]
+
+            if current_score < EDIT_DISTANCE_THRESHOLD:
                 logger.debug('Location "%s" not normalized', location)
+                return location
+
             return current_match

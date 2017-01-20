@@ -11,6 +11,5 @@ PyPDF2
 python-documentcloud
 pybossa-client
 fuzzywuzzy
-regex
 python-Levenshtein
 iso3166
