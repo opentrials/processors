@@ -24,8 +24,6 @@ PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
 # Module API
 
 EDIT_DISTANCE_THRESHOLD = 75
-COUNTRY_NAME_INDEX = 0
-COUNTRY_ALPHA3_INDEX = 4
 
 
 def get_variables(object, filter=None):
