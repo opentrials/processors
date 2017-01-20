@@ -16,9 +16,9 @@ import csv
 import iso3166
 
 from fuzzywuzzy import process, fuzz
-#from . import pybossa_tasks_updater
+from . import pybossa_tasks_updater
 logger = logging.getLogger(__name__)
-#PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
+PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
 
 
 # Module API
@@ -294,7 +294,7 @@ def get_canonical_location_name(location):
     # See: https://github.com/datasets/country-codes/blob/master/data/country-codes.csv
     #
     # To create e new entry (or update an existing one), add a new line (or find the
-    # existing one) and fill in the informations according to the header (line 1) order and
+    # existing one) and fill in the informations according to the header (line 1) order,
     # separating fields using comma
     CSV_PATH = 'data/countries.csv'
     ALPHA_3_HEADER = 'ISO3166-1-Alpha-3'
