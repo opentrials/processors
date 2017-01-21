@@ -13,9 +13,10 @@ import logging
 import datetime
 import urlparse
 import csv
+import fuzzywuzzy.fuzz
+import fuzzywuzzy.process
 import iso3166
 
-from fuzzywuzzy import fuzz, process
 from . import pybossa_tasks_updater
 
 logger = logging.getLogger(__name__)
@@ -293,8 +294,7 @@ def get_canonical_location_name(location):
 
     # Extracted from: https://github.com/datasets/country-codes/blob/master/data/country-codes.csv
     CSV_PATH = os.path.join(os.path.dirname(__file__), 'data/countries.csv')
-    DISTANCE_SCORER = fuzz.token_sort_ratio
-    SCORE_INDEX = 1
+    DISTANCE_SCORER = fuzzywuzzy.fuzz.token_sort_ratio
 
     clean_string = lambda u: re.sub(u"[^\w\d'\s]+", '', u).lower()
     try:
@@ -311,7 +311,7 @@ def get_canonical_location_name(location):
 
                 cleaned_location = clean_string(location)
                 location_info = [clean_string(location_info) for location_info in relevant_info]
-                match, score = process.extractOne(cleaned_location, location_info, scorer=DISTANCE_SCORER)
+                _, score = fuzzywuzzy.process.extractOne(cleaned_location, location_info, scorer=DISTANCE_SCORER)
 
                 if score > current_score:
                     current_match = iso3166.countries.get(country['ISO3166-1-Alpha-3']).name
@@ -323,4 +323,3 @@ def get_canonical_location_name(location):
 
             logger.debug('Location "%s" normalized using Levenshtein distance', location)
             return current_match
-
