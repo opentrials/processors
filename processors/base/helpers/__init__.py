@@ -15,8 +15,9 @@ import urlparse
 import csv
 import iso3166
 
-from fuzzywuzzy import process, fuzz
+from fuzzywuzzy import fuzz, process
 from . import pybossa_tasks_updater
+
 logger = logging.getLogger(__name__)
 PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
 
@@ -287,46 +288,39 @@ def get_canonical_location_name(location):
         location (str): the location to be normalized
     """
 
-    # This auxiliar file is provided by the dataset repository of github.com and
-    # can be checked on its latest version on the project website
-    # See: https://github.com/datasets/country-codes/blob/master/data/country-codes.csv
-    #
-    # To create e new entry (or update an existing one), add a new line (or find the
-    # existing one) and fill in the informations according to the header (line 1) order,
-    # separating fields using comma
-    CSV_PATH = 'data/countries.csv'
-    ALPHA_3_HEADER = 'ISO3166-1-Alpha-3'
+    if location is None:
+        return None
+
+    # Extracted from: https://github.com/datasets/country-codes/blob/master/data/country-codes.csv
+    CSV_PATH = os.path.join(os.path.dirname(__file__), 'data/countries.csv')
     DISTANCE_SCORER = fuzz.token_sort_ratio
     SCORE_INDEX = 1
 
     clean_string = lambda u: re.sub(u"[^\w\d'\s]+", '', u).lower()
-    # Try to fetch canonical name directly from the iso-3166 country standard
     try:
+        logger.debug('Location "%s" normalized using ISO-3166 standard', location)
         return iso3166.countries.get(clean_string(location)).name
-    # If country isn't found on iso-3166 country list
     except KeyError:
-        with open(os.path.join(os.path.dirname(__file__), CSV_PATH), 'r') as csv_file:
+        with open(CSV_PATH, 'r') as csv_file:
             reader = csv.DictReader(csv_file)
-            # Store information about the current match
             current_match = location
-            current_score = float("-inf")
+            current_score = float('-inf')
             for country in reader:
-                # Extract relevant comparative info from the current country
-                relevant_info = [unicode(country[field], encoding="utf-8")
+                relevant_info = [unicode(country[field], encoding='utf-8')
                                  for field in reader.fieldnames[0:5]]
-                # Do some string clean up and extract the most similar field (according
-                # to Levenshtein scoring) over all the location relevant informations
-                cleaned_location = clean_string(location)
-                location_info = [location_info.lower() for location_info in relevant_info]
-                choice = process.extractOne(cleaned_location, location_info, scorer=DISTANCE_SCORER)
 
-                # Update current match if the distance score is above the current max score
-                if choice[SCORE_INDEX] > current_score:
-                    current_match = iso3166.countries.get(country[ALPHA_3_HEADER]).name
-                    current_score = choice[SCORE_INDEX]
+                cleaned_location = clean_string(location)
+                location_info = [clean_string(location_info) for location_info in relevant_info]
+                match, score = process.extractOne(cleaned_location, location_info, scorer=DISTANCE_SCORER)
+
+                if score > current_score:
+                    current_match = iso3166.countries.get(country['ISO3166-1-Alpha-3']).name
+                    current_score = score
 
             if current_score < EDIT_DISTANCE_THRESHOLD:
                 logger.debug('Location "%s" not normalized', location)
                 return location
 
+            logger.debug('Location "%s" normalized using Levenshtein distance', location)
             return current_match
+

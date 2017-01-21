@@ -129,51 +129,23 @@ class TestSafePrepend(object):
 class TestLocationNormalizer(object):
     @pytest.mark.parametrize("test_input,expected", [
         # Locations normalized by ISO-3166 name standards
-        ("China", "China"),
         ("Brazil", "Brazil"),
-        ("United States", "United States"),
-        ("Japan", "Japan"),
-        ("Afghanistan", "Afghanistan"),
-        ("Colombia", "Colombia"),
-        ("Germany", "Germany"),
-        ("Kazakhstan", "Kazakhstan"),
-        ("Mozambique", "Mozambique"),
-        ("United Arab Emirates", "United Arab Emirates"),
         ("United States of America","United States"),
 
         # Locations normalized by ISO-3166 acronym standards
         ("US","United States"),
-        ("ZMB","Zambia"),
         ("UK","United Kingdom"),
-        ("UY","Uruguay"),
-        ("VAT","Holy See"),
-        ("YE","Yemen"),
-        ("KOR","Korea, Republic of"),
-        ("PE","Peru"),
-        ("NGA","Nigeria"),
-        ("ML","Mali"),
 
         # Locations normalized by Levenshtein distance (name)
         ("Chnia","China"),
-        ("Thailland","Thailand"),
         ("The Netherlands","Netherlands"),
-        ("Vietnam","Viet Nam"),
-        ("Cina","China"),
-        ("Chiina","China"),
-        ("nhina","China"),
-        ("Cote Divoire","Côte d'Ivoire"),
         ("thauland","Thailand"),
-        ("Thaialnd","Thailand"),
-        ("Virgin Islands (U.S.)","Virgin Islands, U.S."),
 
         # Locations not normalized (corner cases)
-        ("Global trial(North America)","Global trial(North America)"),
         ("Asia(except Japan)","Asia(except Japan)"),
-        ("Europe","Europe"),
-        ("Jiangsu","Jiangsu"),
-        ("Tianjin","Tianjin"),
-        ("Multinational","Multinational"),
-        ("Outside","Outside")])
+        ("Outside","Outside"),
+        (None, None)])
+
 
     def test_location_normalizer(self, test_input, expected):
         assert helpers.get_canonical_location_name(test_input) == expected
