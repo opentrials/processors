@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import copy
 import datetime
 import pytest
 import processors.nct.extractors as extractors
@@ -13,7 +12,6 @@ import processors.nct.extractors as extractors
 class TestNCTExtractors(object):
     def test_stub_record_is_valid(self, stub_record):
         extractors.extract_trial(stub_record)
-
 
     @pytest.mark.parametrize('anticipated,actual,result', [
         (500, 200, 500),
@@ -30,12 +28,21 @@ class TestNCTExtractors(object):
 
         assert trial['target_sample_size'] == result
 
-
     def test_extracted_identifiers(self, stub_record):
         extracted_trial = extractors.extract_trial(stub_record)
 
         expected_identifiers = {'nct': 'NCT12345678', 'isrctn': 'ISRCTN71203361'}
         assert extracted_trial['identifiers'] == expected_identifiers
+
+    def test_eligibility_gender_converts_all_to_both(self, stub_record):
+        stub_record.update({
+            'eligibility': {
+                'gender': 'All',
+            },
+        })
+        trial = extractors.extract_trial(stub_record)
+
+        assert trial['gender'] == 'both'
 
 
 @pytest.fixture
