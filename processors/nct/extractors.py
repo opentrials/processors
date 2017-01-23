@@ -40,6 +40,7 @@ def extract_trial(record):
     # Get status and recruitment status
     statuses = {
         None: [None, None],
+        'Unknown status': ['unknown', 'unknown'],
         'Active, not recruiting': ['ongoing', 'not_recruiting'],
         'Approved for marketing': ['other', 'other'],
         'Available': ['ongoing', 'unknown'],

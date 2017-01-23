@@ -44,6 +44,15 @@ class TestNCTExtractors(object):
 
         assert trial['gender'] == 'both'
 
+    def test_overall_status_unknown_status(self, stub_record):
+        stub_record.update({
+            'overall_status': 'Unknown status',
+        })
+        trial = extractors.extract_trial(stub_record)
+
+        assert trial['status'] == 'unknown'
+        assert trial['recruitment_status'] == 'unknown'
+
 
 @pytest.fixture
 def stub_record():
