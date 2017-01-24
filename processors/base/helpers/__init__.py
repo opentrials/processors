@@ -129,12 +129,18 @@ def get_optimal_title(*titles):
 
 
 def clean_string(value):
-    """Cast falsy value to sring and strip whitespeces and other unwanted chars.
+    """Cast falsy value to string and strip whitespeces and other unwanted chars.
     """
     if not value:
         value = ''
     value = value.strip(string.whitespace + '."')
     return value
+
+
+def remove_string_punctuation(value):
+    """Remove punctuation characters from unicode string
+    """
+    return re.sub(u"[^\w\d'\s]+", '', value).lower()
 
 
 def find_list_of_identifiers(text):
@@ -296,8 +302,7 @@ def get_canonical_location_name(location):
     CSV_PATH = os.path.join(os.path.dirname(__file__), 'data/countries.csv')
     DISTANCE_SCORER = fuzzywuzzy.fuzz.token_sort_ratio
 
-    clean_string = lambda u: re.sub(u"[^\w\d'\s]+", '', u).lower()
-    cleaned_location = clean_string(location)
+    cleaned_location = remove_string_punctuation(location)
     current_match = location
 
     try:
@@ -310,7 +315,7 @@ def get_canonical_location_name(location):
                 relevant_info = [unicode(country[field], encoding='utf-8')
                                  for field in reader.fieldnames[0:5]]
 
-                location_info = [clean_string(location_info) for location_info in relevant_info]
+                location_info = [remove_string_punctuation(location_info) for location_info in relevant_info]
                 _, score = fuzzywuzzy.process.extractOne(cleaned_location, location_info, scorer=DISTANCE_SCORER)
 
                 if score > current_score:
