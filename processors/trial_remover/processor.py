@@ -50,7 +50,7 @@ def remove_trials_without_records(conf, conn):
         except Exception as exception:
             conn['database'].rollback()
             logger.exception('Can\'t delete trial: %s and its relations due to error: %s',
-                             trial['identifiers'], repr(exception))
+                             trial['identifiers'], repr(exception), exc_info=True)
             error_count += 1
         else:
             conn['database'].commit()

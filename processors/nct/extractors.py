@@ -40,6 +40,7 @@ def extract_trial(record):
     # Get status and recruitment status
     statuses = {
         None: [None, None],
+        'Unknown status': ['unknown', 'unknown'],
         'Active, not recruiting': ['ongoing', 'not_recruiting'],
         'Approved for marketing': ['other', 'other'],
         'Available': ['ongoing', 'unknown'],
@@ -58,8 +59,10 @@ def extract_trial(record):
 
     # Get gender
     gender = None
-    if (record['eligibility'] or {}).get('gender', None):
+    if (record['eligibility'] or {}).get('gender'):
         gender = record['eligibility']['gender'].lower()
+        if gender == 'all':
+            gender = 'both'
 
     # Get has_published_results
     has_published_results = False

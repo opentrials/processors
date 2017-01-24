@@ -24,8 +24,9 @@ def process(conf, conn):
     for record in base.helpers.iter_rows(conn, 'warehouse', 'fda_dap', orderby='id'):
         try:
             processor.process_record(record, source_id)
-        except Exception:
-            logger.exception('Failed processing record %s' % record['meta_id'])
+        except Exception as exception:
+            logger.exception('Failed to process record %s with error: %s',
+                             record['meta_id'], repr(exception), exc_info=True)
 
 
 def _create_source(conn):
