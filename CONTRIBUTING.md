@@ -21,16 +21,9 @@ set -a; source .env
 
   2. Populate test databases with their corresponding schema:
 
-    General command:
 
     ```
-    $ make restore_schema  TEST_DB_CONNECTION_URL  location/of/schema/file  drop_if_exists(True/False)
-    ```
-
-    Example:
-
-    ```
-    $ make restore_schema postgres://user:password@host:port/test_warehouse_db_name ./tests/dbs/warehouse_schema_dump.sql True
+    $ make restore_schemas
     ```
 
 #### Run tests:
@@ -51,16 +44,8 @@ $ make test
   If your code alters the schema of a database make sure to update its schema file in
   `tests/dbs`.
 
-  General command:
-
   ```
-  $ make dump_schema  DEVELOPMENT_DB_CONNECTION_URL  location/of/schema/file
-  ```
-
-  Example:
-
-  ```
-  make dump_schema postgres://user:password@host:port/development_database  ./tests/dbs/opentrials_api_schema_dump.sql
+  $ make dump_schemas
   ```
 
 ## Running

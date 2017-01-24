@@ -1,4 +1,3 @@
-six==1.9.0 # for docker-cloud
 python-dotenv
 dataset
 psycopg2
