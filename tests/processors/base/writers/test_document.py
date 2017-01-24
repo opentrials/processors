@@ -37,7 +37,7 @@ class TestDocumentWriter(object):
     def test_writes_url_only_document(self, conn):
         document = {
             'name': 'name',
-            'type': 'type',
+            'type': 'other',
             'source_url': 'https://clinicaltrials.gov/ct2/show/results/NCT00486265',
         }
 
@@ -47,7 +47,7 @@ class TestDocumentWriter(object):
     def test_skips_document_with_invalid_url(self, conn):
         document = {
             'name': 'name',
-            'type': 'type',
+            'type': 'other',
             'source_url': 'url',
         }
 
@@ -65,6 +65,7 @@ class TestDocumentWriter(object):
             'id': original_document['id'],
             'name': 'new name',
             'type': 'results',
+            'source_url': 'http://example.net',
         }
         table = conn['database']['documents']
         table.insert(original_document)
@@ -75,12 +76,14 @@ class TestDocumentWriter(object):
 
         assert document['name'] == new_document['name']
         assert document['type'] == new_document['type']
+        assert document['source_url'] == new_document['source_url']
 
 
     def test_creates_link_with_trial(self, conn, trial):
         document = {
             'id': '5b99281096b311e6a0ecf8165487599c',
             'trial_id': trial,
+            'source_url': 'http://example.com',
             'name': 'name',
             'type': 'csr',
         }

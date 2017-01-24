@@ -38,28 +38,28 @@ def process(conf, conn):
     failed = 0
 
     for result in conn['database'].query(query):
-
-        trial_identifiers = result['trial_identifiers']
-        identifiers = dict(trial_identifiers.items() +
-                           result['records_identifiers'].items())
-
-        if sorted(identifiers.items()) == sorted(trial_identifiers.items()):
-            continue
-
-        trial = {
-            'id': result['id'].hex,
-            'identifiers': identifiers,
-            'updated_at': datetime.datetime.utcnow(),
-        }
-
         try:
+            trial_identifiers = result['trial_identifiers']
+            identifiers = dict(trial_identifiers.items() +
+                               result['records_identifiers'].items())
+
+            if sorted(identifiers.items()) == sorted(trial_identifiers.items()):
+                continue
+
+            trial = {
+                'id': result['id'].hex,
+                'identifiers': identifiers,
+                'updated_at': datetime.datetime.utcnow(),
+            }
+
             conn['database']['trials'].update(trial, ['id'])
             count += 1
             logger.info("[{}] Trial {} was updated".format(count, trial['id']))
+
         except Exception as e:
             failed += 1
-            logger.warn("[!! {}] Trial {} could not be updated".format(count, trial['id']))
-            logger.debug(e)
+            logger.exception("[%s] Trial %s could not be updated due to error: %s",
+                             count, trial['id'], repr(e), exc_info=True)
 
     logger.info('{} trials updated'.format(count))
     logger.info('{} trials failed'.format(failed))

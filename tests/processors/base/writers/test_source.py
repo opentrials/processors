@@ -12,7 +12,7 @@ class TestSourceWriter(object):
         source = {
             'id': 'id',
             'name': 'name',
-            'type': 'type',
+            'type': 'other',
             'source_url': 'invalid_url',
             'terms_and_conditions_url': 'http://example.org',
         }
@@ -24,7 +24,7 @@ class TestSourceWriter(object):
         source = {
             'id': 'id',
             'name': 'name',
-            'type': 'type',
+            'type': 'other',
             'source_url': 'http://example.org',
             'terms_and_conditions_url': 'invalid_url',
         }
@@ -36,7 +36,7 @@ class TestSourceWriter(object):
         source = {
             'id': 'id',
             'name': 'name',
-            'type': 'type',
+            'type': 'other',
             'source_url': 'https://clinicaltrials.gov',
             'terms_and_conditions_url': 'https://clinicaltrials.gov/ct2/about-site/terms-conditions',
         }
@@ -48,7 +48,7 @@ class TestSourceWriter(object):
         source = {
             'id': 'id',
             'name': 'name',
-            'type': 'type',
+            'type': 'other',
         }
 
         assert writers.write_source(conn, source) is not None

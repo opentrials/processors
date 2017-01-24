@@ -1,752 +1,1211 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+SET search_path = public, pg_catalog;
+
+DROP INDEX IF EXISTS public.ix_nct_9502f58393a4fc6d;
+DROP INDEX IF EXISTS public.ix_jprn_4e2a0ce8f4508948;
+DROP INDEX IF EXISTS public.ix_isrctn_5630355bbd51c4b7;
+DROP INDEX IF EXISTS public.ix_gsk_ae14dbea0172b852;
+DROP INDEX IF EXISTS public.ix_euctr_86a28cd2542cd0c4;
+DROP INDEX IF EXISTS public.ix_actrn_9b88700fa823eea2;
+ALTER TABLE IF EXISTS ONLY public.takeda DROP CONSTRAINT IF EXISTS takeda_pkey;
+ALTER TABLE IF EXISTS ONLY public.takeda DROP CONSTRAINT IF EXISTS takeda_meta_id_unique;
+ALTER TABLE IF EXISTS ONLY public.pubmed DROP CONSTRAINT IF EXISTS pubmed_pkey;
+ALTER TABLE IF EXISTS ONLY public.pubmed DROP CONSTRAINT IF EXISTS pubmed_meta_id_key;
+ALTER TABLE IF EXISTS ONLY public.pfizer DROP CONSTRAINT IF EXISTS pfizer_pkey;
+ALTER TABLE IF EXISTS ONLY public.pfizer DROP CONSTRAINT IF EXISTS pfizer_meta_id_unique;
+ALTER TABLE IF EXISTS ONLY public.nct DROP CONSTRAINT IF EXISTS nct_pkey;
+ALTER TABLE IF EXISTS ONLY public.nct DROP CONSTRAINT IF EXISTS nct_meta_id_unique;
+ALTER TABLE IF EXISTS ONLY public.jprn DROP CONSTRAINT IF EXISTS jprn_pkey;
+ALTER TABLE IF EXISTS ONLY public.jprn DROP CONSTRAINT IF EXISTS jprn_meta_id_unique;
+ALTER TABLE IF EXISTS ONLY public.isrctn DROP CONSTRAINT IF EXISTS isrctn_pkey;
+ALTER TABLE IF EXISTS ONLY public.isrctn DROP CONSTRAINT IF EXISTS isrctn_meta_id_unique;
+ALTER TABLE IF EXISTS ONLY public.ictrp DROP CONSTRAINT IF EXISTS ictrp_pkey;
+ALTER TABLE IF EXISTS ONLY public.ictrp DROP CONSTRAINT IF EXISTS ictrp_meta_id_unique;
+ALTER TABLE IF EXISTS ONLY public.icdpcs DROP CONSTRAINT IF EXISTS icdpcs_pkey;
+ALTER TABLE IF EXISTS ONLY public.icdpcs DROP CONSTRAINT IF EXISTS icdpcs_meta_id_key;
+ALTER TABLE IF EXISTS ONLY public.icdcm DROP CONSTRAINT IF EXISTS icdcm_pkey;
+ALTER TABLE IF EXISTS ONLY public.icdcm DROP CONSTRAINT IF EXISTS icdcm_meta_id_key;
+ALTER TABLE IF EXISTS ONLY public.hra DROP CONSTRAINT IF EXISTS hra_meta_id_key;
+ALTER TABLE IF EXISTS ONLY public.gsk DROP CONSTRAINT IF EXISTS gsk_pkey;
+ALTER TABLE IF EXISTS ONLY public.gsk DROP CONSTRAINT IF EXISTS gsk_meta_id_unique;
+ALTER TABLE IF EXISTS ONLY public.fdadl DROP CONSTRAINT IF EXISTS fda_pkey;
+ALTER TABLE IF EXISTS ONLY public.fdadl DROP CONSTRAINT IF EXISTS fda_meta_id_key;
+ALTER TABLE IF EXISTS ONLY public.fda_dap DROP CONSTRAINT IF EXISTS fda_dap_meta_id_key;
+ALTER TABLE IF EXISTS ONLY public.fda_dap DROP CONSTRAINT IF EXISTS fda_dap_id_key;
+ALTER TABLE IF EXISTS ONLY public.euctr DROP CONSTRAINT IF EXISTS euctr_pkey;
+ALTER TABLE IF EXISTS ONLY public.euctr DROP CONSTRAINT IF EXISTS euctr_meta_id_unique;
+ALTER TABLE IF EXISTS ONLY public.cochrane_reviews DROP CONSTRAINT IF EXISTS cochrane_reviews_pkey;
+ALTER TABLE IF EXISTS ONLY public.actrn DROP CONSTRAINT IF EXISTS actrn_pkey;
+ALTER TABLE IF EXISTS ONLY public.actrn DROP CONSTRAINT IF EXISTS actrn_meta_id_unique;
+DROP TABLE IF EXISTS public.takeda;
+DROP TABLE IF EXISTS public.pubmed;
+DROP TABLE IF EXISTS public.pfizer;
+DROP TABLE IF EXISTS public.nct;
+DROP TABLE IF EXISTS public.jprn;
+DROP TABLE IF EXISTS public.isrctn;
+DROP TABLE IF EXISTS public.ictrp;
+DROP TABLE IF EXISTS public.icdpcs;
+DROP TABLE IF EXISTS public.icdcm;
+DROP TABLE IF EXISTS public.hra;
+DROP TABLE IF EXISTS public.gsk;
+DROP TABLE IF EXISTS public.fdadl;
+DROP TABLE IF EXISTS public.fda_dap;
+DROP TABLE IF EXISTS public.euctr;
+DROP TABLE IF EXISTS public.cochrane_reviews;
+DROP TABLE IF EXISTS public.alembic_version;
+DROP TABLE IF EXISTS public.actrn;
+DROP EXTENSION IF EXISTS plpgsql;
+DROP SCHEMA IF EXISTS public;
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
+--
+
+CREATE SCHEMA public;
+
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: actrn; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
 CREATE TABLE actrn (
-	meta_id UUID, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	trial_id TEXT NOT NULL, 
-	ethics_application_status TEXT, 
-	date_submitted DATE, 
-	date_registered DATE, 
-	type_of_registration TEXT, 
-	public_title TEXT, 
-	scientific_title TEXT, 
-	secondary_ids TEXT[], 
-	universal_trial_number_utn TEXT, 
-	trial_acronym TEXT, 
-	health_conditions_or_problems_studied TEXT, 
-	condition_category TEXT, 
-	condition_code TEXT, 
-	study_type TEXT, 
-	patient_registry BOOLEAN, 
-	target_follow_up_duration INTEGER, 
-	target_follow_up_type TEXT, 
-	description_of_intervention_s_exposure TEXT, 
-	intervention_codes TEXT[], 
-	comparator_control_treatment TEXT, 
-	control_group TEXT, 
-	primary_outcomes JSONB, 
-	secondary_outcomes JSONB, 
-	key_inclusion_criteria TEXT, 
-	minimum_age TEXT, 
-	maximum_age TEXT, 
-	gender TEXT, 
-	can_healthy_volunteers_participate BOOLEAN, 
-	key_exclusion_criteria TEXT, 
-	purpose_of_the_study TEXT, 
-	allocation_to_intervention TEXT, 
-	procedure_for_enrolling_a_subject_and_allocating_the_treatment_ TEXT, 
-	methods_used_to_generate_the_sequence_in_which_subjects_will_be TEXT, 
-	masking_blinding TEXT, 
-	who_is_are_masked_blinded TEXT, 
-	intervention_assignment TEXT, 
-	other_design_features TEXT, 
-	phase TEXT, 
-	type_of_endpoint_s TEXT, 
-	purpose TEXT, 
-	duration TEXT, 
-	selection TEXT, 
-	timing TEXT, 
-	statistical_methods_analysis TEXT, 
-	anticipated_date_of_first_participant_enrolment DATE, 
-	actual_date_of_first_participant_enrolment DATE, 
-	anticipated_date_last_participant_enrolled DATE, 
-	actual_date_last_participant_enrolled DATE, 
-	target_sample_size INTEGER, 
-	actual_sample_size INTEGER, 
-	recruitment_status TEXT, 
-	recruitment_state_s TEXT, 
-	primary_sponsor JSONB, 
-	sponsors JSONB, 
-	ethics_applications JSONB, 
-	brief_summary TEXT, 
-	trial_website TEXT, 
-	trial_related_presentations_publications TEXT, 
-	public_notes TEXT, 
-	attachments TEXT[], 
-	principal_investigator JSONB, 
-	public_queries JSONB, 
-	scientific_queries JSONB, 
-	CONSTRAINT actrn_pkey PRIMARY KEY (trial_id), 
-	CONSTRAINT actrn_meta_id_unique UNIQUE (meta_id)
+    trial_id character varying(255) NOT NULL,
+    scientific_title text,
+    comparator_control_treatment text,
+    selection text,
+    attachments text[],
+    public_title text,
+    maximum_age text,
+    actual_date_of_first_participant_enrolment date,
+    can_healthy_volunteers_participate boolean,
+    duration text,
+    ethics_applications jsonb,
+    type_of_registration text,
+    key_exclusion_criteria text,
+    meta_updated timestamp with time zone,
+    key_inclusion_criteria text,
+    meta_created timestamp with time zone,
+    public_queries jsonb,
+    target_follow_up_type text,
+    meta_source text,
+    actual_date_last_participant_enrolled date,
+    health_conditions_or_problems_studied text,
+    study_type text,
+    primary_outcomes jsonb,
+    patient_registry boolean,
+    target_sample_size integer,
+    scientific_queries jsonb,
+    condition_code text,
+    meta_id uuid,
+    description_of_intervention_s_exposure text,
+    trial_related_presentations_publications text,
+    date_submitted date,
+    sponsors jsonb,
+    minimum_age text,
+    purpose text,
+    timing text,
+    date_registered date,
+    secondary_ids text[],
+    principal_investigator jsonb,
+    secondary_outcomes jsonb,
+    universal_trial_number_utn text,
+    condition_category text,
+    actual_sample_size integer,
+    intervention_codes text[],
+    control_group text,
+    gender text,
+    brief_summary text,
+    ethics_application_status text,
+    primary_sponsor jsonb,
+    recruitment_status text,
+    allocation_to_intervention text,
+    anticipated_date_of_first_participant_enrolment date,
+    purpose_of_the_study text,
+    methods_used_to_generate_the_sequence_in_which_subjects_will_be text,
+    masking_blinding text,
+    phase text,
+    who_is_are_masked_blinded text,
+    recruitment_state_s text,
+    type_of_endpoint_s text,
+    intervention_assignment text,
+    procedure_for_enrolling_a_subject_and_allocating_the_treatment_ text,
+    anticipated_date_last_participant_enrolled date,
+    trial_website text,
+    statistical_methods_analysis text,
+    other_design_features text,
+    trial_acronym text,
+    target_follow_up_duration integer,
+    public_notes text
 );
-CREATE TABLE jprn (
-	meta_id UUID, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	recruitment_status TEXT, 
-	unique_trial_number TEXT NOT NULL, 
-	title_of_the_study TEXT, 
-	date_of_formal_registrationdate_of_icmje_and_who DATE, 
-	date_and_time_of_last_update TIMESTAMP WITH TIME ZONE, 
-	official_scientific_title_of_the_study TEXT, 
-	title_of_the_study_brief_title TEXT, 
-	region TEXT, 
-	condition TEXT, 
-	classification_by_specialty TEXT, 
-	classification_by_malignancy TEXT, 
-	genomic_information BOOLEAN, 
-	narrative_objectives1 TEXT, 
-	basic_objectives2 TEXT, 
-	basic_objectives_others TEXT, 
-	trial_characteristics_1 TEXT, 
-	trial_characteristics_2 TEXT, 
-	developmental_phase TEXT, 
-	primary_outcomes TEXT, 
-	key_secondary_outcomes TEXT, 
-	study_type TEXT, 
-	basic_design TEXT, 
-	randomization TEXT, 
-	randomization_unit TEXT, 
-	blinding TEXT, 
-	control TEXT, 
-	stratification TEXT, 
-	dynamic_allocation TEXT, 
-	institution_consideration TEXT, 
-	blocking TEXT, 
-	concealment TEXT, 
-	no_of_arms INTEGER, 
-	purpose_of_intervention TEXT, 
-	type_of_intervention TEXT, 
-	interventions TEXT[], 
-	agelower_limit TEXT, 
-	ageupper_limit TEXT, 
-	gender TEXT, 
-	key_inclusion_criteria TEXT, 
-	key_exclusion_criteria TEXT, 
-	target_sample_size INTEGER, 
-	research_name_of_lead_principal_investigator TEXT, 
-	research_organization TEXT, 
-	research_division_name TEXT, 
-	research_address TEXT, 
-	research_tel TEXT, 
-	research_homepage_url TEXT, 
-	research_email TEXT, 
-	public_name_of_contact_person TEXT, 
-	public_organization TEXT, 
-	public_division_name TEXT, 
-	public_address TEXT, 
-	public_tel TEXT, 
-	public_homepage_url TEXT, 
-	public_email TEXT, 
-	name_of_primary_sponsor TEXT, 
-	source_of_funding TEXT, 
-	category_of_org TEXT, 
-	nation_of_funding TEXT, 
-	cosponsor TEXT, 
-	name_of_secondary_funers TEXT, 
-	secondary_study_ids BOOLEAN, 
-	secondary_study_id_1 TEXT, 
-	org_issuing_secondary_study_id_1 TEXT, 
-	secondary_study_id_2 TEXT, 
-	org_issuing_secondary_study_id_2 TEXT, 
-	ind_to_mhlw TEXT, 
-	institutions TEXT, 
-	date_of_protocol_fixation DATE, 
-	anticipated_trial_start_date DATE, 
-	last_followup_date DATE, 
-	date_of_closure_to_data_entry DATE, 
-	date_trial_data_considered_complete DATE, 
-	date_analysis_concluded DATE, 
-	url_releasing_protocol TEXT, 
-	publication_of_results TEXT, 
-	url_releasing_results TEXT, 
-	results TEXT, 
-	other_related_information TEXT, 
-	date_of_registration DATE, 
-	date_of_last_update TIMESTAMP WITH TIME ZONE, 
-	urljapanese TEXT, 
-	urlenglish TEXT, 
-	CONSTRAINT jprn_pkey PRIMARY KEY (unique_trial_number), 
-	CONSTRAINT jprn_meta_id_unique UNIQUE (meta_id)
-);
-CREATE TABLE cochrane_reviews (
-	meta_id TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE DEFAULT now(), 
-	meta_updated TIMESTAMP WITH TIME ZONE DEFAULT now(), 
-	meta_source TEXT, 
-	id UUID NOT NULL, 
-	study_type TEXT, 
-	file_name TEXT, 
-	robs JSONB, 
-	study_id TEXT, 
-	refs JSONB, 
-	doi_id TEXT, 
-	CONSTRAINT cochrane_reviews_pkey PRIMARY KEY (id)
-);
-CREATE TABLE isrctn (
-	meta_id UUID, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	isrctn_id TEXT NOT NULL, 
-	doi_isrctn_id TEXT, 
-	title TEXT, 
-	condition_category TEXT, 
-	date_applied DATE, 
-	date_assigned DATE, 
-	last_edited DATE, 
-	prospective_retrospective TEXT, 
-	overall_trial_status TEXT, 
-	recruitment_status TEXT, 
-	plain_english_summary TEXT, 
-	trial_website TEXT, 
-	contacts JSONB, 
-	eudract_number TEXT, 
-	clinicaltrials_gov_number TEXT, 
-	protocol_serial_number TEXT, 
-	scientific_title TEXT, 
-	acronym TEXT, 
-	study_hypothesis TEXT, 
-	ethics_approval TEXT, 
-	study_design TEXT, 
-	primary_study_design TEXT, 
-	secondary_study_design TEXT, 
-	trial_setting TEXT, 
-	trial_type TEXT, 
-	patient_information_sheet TEXT, 
-	condition TEXT, 
-	intervention TEXT, 
-	intervention_type TEXT, 
-	phase TEXT, 
-	drug_names TEXT, 
-	primary_outcome_measures TEXT, 
-	secondary_outcome_measures TEXT, 
-	overall_trial_start_date DATE, 
-	overall_trial_end_date DATE, 
-	reason_abandoned TEXT, 
-	participant_inclusion_criteria TEXT, 
-	participant_type TEXT, 
-	age_group TEXT, 
-	gender TEXT, 
-	target_number_of_participants TEXT, 
-	participant_exclusion_criteria TEXT, 
-	recruitment_start_date DATE, 
-	recruitment_end_date DATE, 
-	countries_of_recruitment TEXT, 
-	trial_participating_centre TEXT, 
-	sponsors JSONB, 
-	funders JSONB, 
-	publication_and_dissemination_plan TEXT, 
-	intention_to_publish_date DATE, 
-	participant_level_data TEXT, 
-	results_basic_reporting TEXT, 
-	publication_summary TEXT, 
-	publication_citations TEXT, 
-	CONSTRAINT isrctn_pkey PRIMARY KEY (isrctn_id), 
-	CONSTRAINT isrctn_meta_id_unique UNIQUE (meta_id)
-);
-CREATE TABLE ictrp (
-	meta_id UUID, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	register TEXT NOT NULL, 
-	last_refreshed_on DATE, 
-	main_id TEXT NOT NULL, 
-	date_of_registration TEXT, 
-	primary_sponsor TEXT, 
-	public_title TEXT, 
-	scientific_title TEXT, 
-	date_of_first_enrollment TEXT, 
-	target_sample_size INTEGER, 
-	recruitment_status TEXT, 
-	url TEXT, 
-	study_type TEXT, 
-	study_design TEXT, 
-	study_phase TEXT, 
-	countries_of_recruitment TEXT[], 
-	contacts JSONB, 
-	key_inclusion_exclusion_criteria TEXT, 
-	health_conditions_or_problems_studied TEXT[], 
-	interventions TEXT[], 
-	primary_outcomes TEXT[], 
-	secondary_outcomes TEXT[], 
-	secondary_ids TEXT[], 
-	sources_of_monetary_support TEXT[], 
-	secondary_sponsors TEXT[], 
-	CONSTRAINT ictrp_pkey PRIMARY KEY (main_id), 
-	CONSTRAINT ictrp_meta_id_unique UNIQUE (meta_id)
-);
-CREATE TABLE pfizer (
-	meta_id UUID, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	title TEXT, 
-	study_type TEXT, 
-	organization_id TEXT, 
-	nct_id TEXT NOT NULL, 
-	status TEXT, 
-	study_start_date DATE, 
-	study_end_date DATE, 
-	eligibility_criteria TEXT, 
-	gender TEXT, 
-	age_range TEXT, 
-	healthy_volunteers_allowed BOOLEAN, 
-	CONSTRAINT pfizer_pkey PRIMARY KEY (nct_id), 
-	CONSTRAINT pfizer_meta_id_unique UNIQUE (meta_id)
-);
-CREATE TABLE nct (
-	meta_id UUID, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	download_date TEXT, 
-	link_text TEXT, 
-	url TEXT, 
-	org_study_id TEXT, 
-	nct_id TEXT NOT NULL, 
-	secondary_ids TEXT[], 
-	nct_aliases TEXT[], 
-	brief_title TEXT, 
-	acronym TEXT, 
-	official_title TEXT, 
-	sponsors JSONB, 
-	source TEXT, 
-	oversight_info JSONB, 
-	brief_summary TEXT, 
-	detailed_description TEXT, 
-	overall_status TEXT, 
-	why_stopped TEXT, 
-	start_date DATE, 
-	completion_date_actual DATE, 
-	completion_date_anticipated DATE, 
-	primary_completion_date_actual DATE, 
-	primary_completion_date_anticipated DATE, 
-	phase TEXT, 
-	study_type TEXT, 
-	study_design TEXT, 
-	target_duration TEXT, 
-	primary_outcomes JSONB, 
-	secondary_outcomes JSONB, 
-	other_outcomes JSONB, 
-	number_of_arms INTEGER, 
-	number_of_groups INTEGER, 
-	enrollment_actual INTEGER, 
-	enrollment_anticipated INTEGER, 
-	conditions TEXT[], 
-	arm_groups JSONB, 
-	interventions JSONB, 
-	biospec_retention TEXT, 
-	biospec_desrc TEXT, 
-	eligibility JSONB, 
-	overall_officials JSONB, 
-	overall_contact JSONB, 
-	overall_contact_backup JSONB, 
-	locations JSONB, 
-	location_countries TEXT[], 
-	removed_countries TEXT[], 
-	links JSONB, 
-	"references" JSONB, 
-	results_references JSONB, 
-	verification_date DATE, 
-	lastchanged_date DATE, 
-	firstreceived_date DATE, 
-	firstreceived_results_date DATE, 
-	responsible_party JSONB, 
-	keywords TEXT[], 
-	is_fda_regulated BOOLEAN, 
-	is_section_801 BOOLEAN, 
-	has_expanded_access BOOLEAN, 
-	condition_browse JSONB, 
-	intervention_browse JSONB, 
-	clinical_results JSONB, 
-	results_exemption_date DATE, 
-	CONSTRAINT nct_pkey PRIMARY KEY (nct_id), 
-	CONSTRAINT nct_meta_id_unique UNIQUE (meta_id)
-);
-CREATE INDEX ix_nct_9502f58393a4fc6d ON nct (nct_id);
-CREATE TABLE takeda (
-	meta_id UUID, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	official_title TEXT, 
-	takeda_trial_id TEXT NOT NULL, 
-	trial_phase TEXT, 
-	condition TEXT, 
-	compound TEXT[], 
-	recruitment_status TEXT, 
-	nct_number TEXT, 
-	trial_type TEXT, 
-	other_trial_ids TEXT, 
-	acronym TEXT, 
-	brief_summary TEXT, 
-	detailed_description TEXT, 
-	trial_design TEXT, 
-	primary_outcome_measures TEXT, 
-	secondary_outcome_measures TEXT, 
-	trial_arms_groups_or_cohorts TEXT, 
-	gender TEXT, 
-	ages TEXT, 
-	enrollment_number_of_participants INTEGER, 
-	locations TEXT[], 
-	responsible_party TEXT, 
-	trial_sponsor TEXT, 
-	start_date DATE, 
-	completion_date DATE, 
-	eligibility_criteria TEXT, 
-	download_the_clinical_trial_summary TEXT, 
-	other_available_languages TEXT, 
-	CONSTRAINT takeda_pkey PRIMARY KEY (takeda_trial_id), 
-	CONSTRAINT takeda_meta_id_unique UNIQUE (meta_id)
-);
-CREATE TABLE euctr (
-	meta_id UUID, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	eudract_number_with_country TEXT NOT NULL, 
-	other_identifiers TEXT, 
-	national_competent_authority TEXT, 
-	clinical_trial_type TEXT, 
-	trial_status TEXT, 
-	date_on_which_this_record_was_first_entered_in_the_eudract_data DATE, 
-	trial_results TEXT, 
-	member_state_concerned TEXT, 
-	eudract_number TEXT, 
-	full_title_of_the_trial TEXT, 
-	title_of_the_trial_for_lay_people_in_easily_understood_i_e_non_ TEXT, 
-	name_or_abbreviated_title_of_the_trial_where_available TEXT, 
-	sponsor_s_protocol_code_number TEXT, 
-	us_nct_clinicaltrials_gov_registry_number TEXT, 
-	who_universal_trial_reference_number_utrn TEXT, 
-	isrctn_international_standard_randomised_controlled_trial_numbe TEXT, 
-	trial_is_part_of_a_paediatric_investigation_plan BOOLEAN, 
-	ema_decision_number_of_paediatric_investigation_plan TEXT, 
-	sponsors JSONB, 
-	imps JSONB, 
-	placebos JSONB, 
-	trial_medical_condition_s_being_investigated TEXT, 
-	trial_medical_condition_in_easily_understood_language TEXT, 
-	trial_therapeutic_area TEXT, 
-	trial_version TEXT, 
-	trial_level TEXT, 
-	trial_classification_code TEXT, 
-	trial_term TEXT, 
-	trial_system_organ_class TEXT, 
-	trial_condition_being_studied_is_a_rare_disease TEXT, 
-	trial_main_objective_of_the_trial TEXT, 
-	trial_secondary_objectives_of_the_trial TEXT, 
-	trial_trial_contains_a_sub_study BOOLEAN, 
-	trial_full_title_date_and_version_of_each_sub_study_and_their_r TEXT, 
-	trial_principal_inclusion_criteria TEXT, 
-	trial_principal_exclusion_criteria TEXT, 
-	trial_primary_end_point_s TEXT, 
-	trial_timepoint_s_of_evaluation_of_this_end_point TEXT, 
-	trial_secondary_end_point_s TEXT, 
-	trial_diagnosis BOOLEAN, 
-	trial_prophylaxis BOOLEAN, 
-	trial_therapy BOOLEAN, 
-	trial_safety BOOLEAN, 
-	trial_efficacy BOOLEAN, 
-	trial_pharmacokinetic BOOLEAN, 
-	trial_pharmacodynamic BOOLEAN, 
-	trial_bioequivalence BOOLEAN, 
-	trial_dose_response BOOLEAN, 
-	trial_pharmacogenetic BOOLEAN, 
-	trial_pharmacogenomic BOOLEAN, 
-	trial_pharmacoeconomic BOOLEAN, 
-	trial_others BOOLEAN, 
-	trial_other_scope_of_the_trial_description TEXT, 
-	trial_human_pharmacology_phase_i BOOLEAN, 
-	trial_first_administration_to_humans BOOLEAN, 
-	trial_bioequivalence_study BOOLEAN, 
-	trial_other_trial_type_description TEXT, 
-	trial_other BOOLEAN, 
-	trial_therapeutic_exploratory_phase_ii BOOLEAN, 
-	trial_therapeutic_confirmatory_phase_iii BOOLEAN, 
-	trial_therapeutic_use_phase_iv BOOLEAN, 
-	trial_controlled BOOLEAN, 
-	trial_randomised BOOLEAN, 
-	trial_open BOOLEAN, 
-	trial_single_blind BOOLEAN, 
-	trial_double_blind BOOLEAN, 
-	trial_parallel_group BOOLEAN, 
-	trial_cross_over BOOLEAN, 
-	trial_other_trial_design_description TEXT, 
-	trial_other_medicinal_product_s BOOLEAN, 
-	trial_placebo BOOLEAN, 
-	trial_comparator_description TEXT, 
-	trial_number_of_treatment_arms_in_the_trial INTEGER, 
-	trial_the_trial_involves_single_site_in_the_member_state_concer BOOLEAN, 
-	trial_the_trial_involves_multiple_sites_in_the_member_state_con BOOLEAN, 
-	trial_number_of_sites_anticipated_in_member_state_concerned INTEGER, 
-	trial_the_trial_involves_multiple_member_states BOOLEAN, 
-	trial_number_of_sites_anticipated_in_the_eea INTEGER, 
-	trial_trial_being_conducted_both_within_and_outside_the_eea BOOLEAN, 
-	trial_trial_being_conducted_completely_outside_of_the_eea BOOLEAN, 
-	trial_specify_the_countries_outside_of_the_eea_in_which_trial_s TEXT, 
-	trial_if_e_8_6_1_or_e_8_6_2_are_yes_specify_the_regions_in_whic TEXT, 
-	trial_trial_has_a_data_monitoring_committee BOOLEAN, 
-	trial_definition_of_the_end_of_the_trial_and_justification_wher TEXT, 
-	trial_in_the_member_state_concerned_years INTEGER, 
-	trial_in_the_member_state_concerned_months INTEGER, 
-	trial_in_the_member_state_concerned_days INTEGER, 
-	trial_in_all_countries_concerned_by_the_trial_years INTEGER, 
-	trial_in_all_countries_concerned_by_the_trial_months INTEGER, 
-	trial_in_all_countries_concerned_by_the_trial_days INTEGER, 
-	subject_childs INTEGER, 
-	subject_adults INTEGER, 
-	subject_elderly INTEGER, 
-	subject_female BOOLEAN, 
-	subject_male BOOLEAN, 
-	subject_healthy_volunteers BOOLEAN, 
-	subject_patients BOOLEAN, 
-	subject_specific_vulnerable_populations BOOLEAN, 
-	subject_women_of_childbearing_potential_not_using_contraception BOOLEAN, 
-	subject_women_of_childbearing_potential_using_contraception BOOLEAN, 
-	subject_pregnant_women BOOLEAN, 
-	subject_nursing_women BOOLEAN, 
-	subject_emergency_situation BOOLEAN, 
-	subject_subjects_incapable_of_giving_consent_personally BOOLEAN, 
-	subject_details_of_subjects_incapable_of_giving_consent TEXT, 
-	subject_others BOOLEAN, 
-	subject_details_of_other_specific_vulnerable_populations BOOLEAN, 
-	subject_in_the_member_state INTEGER, 
-	subject_in_the_eea INTEGER, 
-	subject_in_the_whole_clinical_trial INTEGER, 
-	subject_plans_for_treatment_or_care_after_the_subject_has_ended TEXT, 
-	competent_authority_decision TEXT, 
-	date_of_competent_authority_decision DATE, 
-	ethics_committee_opinion_of_the_trial_application TEXT, 
-	ethics_committee_opinion_reason_s_for_unfavourable_opinion TEXT, 
-	date_of_ethics_committee_opinion DATE, 
-	end_of_trial_status TEXT, 
-	date_of_the_global_end_of_the_trial DATE, 
-	trial_results_url TEXT, 
-	CONSTRAINT euctr_pkey PRIMARY KEY (eudract_number_with_country), 
-	CONSTRAINT euctr_meta_id_unique UNIQUE (meta_id)
-);
+
+
+--
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
 CREATE TABLE alembic_version (
-	version_num VARCHAR(32) NOT NULL
+    version_num character varying(32) NOT NULL
 );
-CREATE TABLE icdpcs (
-	meta_id TEXT, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	code TEXT NOT NULL, 
-	is_header BOOLEAN, 
-	short_description TEXT, 
-	long_description TEXT, 
-	version TEXT, 
-	last_updated DATE, 
-	CONSTRAINT icdpcs_pkey PRIMARY KEY (code), 
-	CONSTRAINT icdpcs_meta_id_key UNIQUE (meta_id)
+
+
+--
+-- Name: cochrane_reviews; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE cochrane_reviews (
+    meta_id text,
+    meta_created timestamp with time zone DEFAULT now(),
+    meta_updated timestamp with time zone DEFAULT now(),
+    meta_source text,
+    id uuid NOT NULL,
+    study_type text,
+    file_name text,
+    robs jsonb,
+    study_id text,
+    refs jsonb,
+    doi_id text
 );
-CREATE TABLE pubmed (
-	meta_id TEXT, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	pmid TEXT NOT NULL, 
-	date_created DATE, 
-	date_completed DATE, 
-	date_revised DATE, 
-	country TEXT, 
-	medline_ta TEXT, 
-	nlm_unique_id TEXT, 
-	issn_linking TEXT, 
-	journal_issn TEXT, 
-	journal_title TEXT, 
-	journal_iso TEXT, 
-	article_title TEXT, 
-	article_abstract TEXT, 
-	article_authors TEXT[], 
-	article_language TEXT, 
-	article_publication_type_list TEXT[], 
-	article_vernacular_title TEXT, 
-	article_date DATE, 
-	publication_status TEXT, 
-	identifiers_list JSONB, 
-	mesh_headings JSONB, 
-	CONSTRAINT pubmed_pkey PRIMARY KEY (pmid), 
-	CONSTRAINT pubmed_meta_id_key UNIQUE (meta_id)
+
+
+--
+-- Name: euctr; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE euctr (
+    eudract_number_with_country character varying(255) NOT NULL,
+    date_of_competent_authority_decision date,
+    trial_dose_response boolean,
+    trial_others boolean,
+    trial_the_trial_involves_single_site_in_the_member_state_concer boolean,
+    subject_women_of_childbearing_potential_not_using_contraception boolean,
+    clinical_trial_type text,
+    trial_is_part_of_a_paediatric_investigation_plan boolean,
+    trial_open boolean,
+    trial_cross_over boolean,
+    placebos jsonb,
+    member_state_concerned text,
+    trial_primary_end_point_s text,
+    trial_trial_being_conducted_both_within_and_outside_the_eea boolean,
+    trial_therapy boolean,
+    trial_single_blind boolean,
+    trial_secondary_objectives_of_the_trial text,
+    end_of_trial_status text,
+    ethics_committee_opinion_of_the_trial_application text,
+    trial_the_trial_involves_multiple_sites_in_the_member_state_con boolean,
+    meta_updated timestamp with time zone,
+    trial_trial_contains_a_sub_study boolean,
+    trial_prophylaxis boolean,
+    meta_created timestamp with time zone,
+    trial_therapeutic_use_phase_iv boolean,
+    national_competent_authority text,
+    subject_pregnant_women boolean,
+    eudract_number text,
+    subject_male boolean,
+    meta_source text,
+    trial_in_the_member_state_concerned_years integer,
+    trial_safety boolean,
+    trial_therapeutic_exploratory_phase_ii boolean,
+    trial_diagnosis boolean,
+    trial_human_pharmacology_phase_i boolean,
+    trial_bioequivalence_study boolean,
+    subject_healthy_volunteers boolean,
+    trial_the_trial_involves_multiple_member_states boolean,
+    trial_efficacy boolean,
+    trial_principal_exclusion_criteria text,
+    meta_id uuid,
+    trial_medical_condition_s_being_investigated text,
+    trial_pharmacogenomic boolean,
+    trial_bioequivalence boolean,
+    trial_pharmacodynamic boolean,
+    sponsors jsonb,
+    sponsor_s_protocol_code_number text,
+    trial_first_administration_to_humans boolean,
+    trial_pharmacogenetic boolean,
+    trial_therapeutic_confirmatory_phase_iii boolean,
+    subject_in_the_member_state integer,
+    date_on_which_this_record_was_first_entered_in_the_eudract_data date,
+    subject_others boolean,
+    trial_controlled boolean,
+    trial_trial_being_conducted_completely_outside_of_the_eea boolean,
+    trial_placebo boolean,
+    subject_subjects_incapable_of_giving_consent_personally boolean,
+    subject_in_the_eea integer,
+    subject_women_of_childbearing_potential_using_contraception boolean,
+    trial_principal_inclusion_criteria text,
+    imps jsonb,
+    trial_parallel_group boolean,
+    trial_pharmacoeconomic boolean,
+    trial_status text,
+    trial_condition_being_studied_is_a_rare_disease text,
+    subject_in_the_whole_clinical_trial integer,
+    trial_other_medicinal_product_s boolean,
+    competent_authority_decision text,
+    subject_female boolean,
+    trial_pharmacokinetic boolean,
+    full_title_of_the_trial text,
+    trial_in_all_countries_concerned_by_the_trial_years integer,
+    subject_nursing_women boolean,
+    trial_double_blind boolean,
+    trial_trial_has_a_data_monitoring_committee boolean,
+    subject_emergency_situation boolean,
+    trial_randomised boolean,
+    subject_specific_vulnerable_populations boolean,
+    subject_patients boolean,
+    trial_main_objective_of_the_trial text,
+    date_of_ethics_committee_opinion date,
+    trial_in_all_countries_concerned_by_the_trial_months integer,
+    trial_definition_of_the_end_of_the_trial_and_justification_wher text,
+    trial_in_the_member_state_concerned_months integer,
+    name_or_abbreviated_title_of_the_trial_where_available text,
+    subject_plans_for_treatment_or_care_after_the_subject_has_ended text,
+    subject_details_of_subjects_incapable_of_giving_consent text,
+    trial_version text,
+    trial_level text,
+    trial_classification_code text,
+    isrctn_international_standard_randomised_controlled_trial_numbe text,
+    trial_comparator_description text,
+    trial_number_of_sites_anticipated_in_the_eea integer,
+    date_of_the_global_end_of_the_trial date,
+    trial_number_of_sites_anticipated_in_member_state_concerned integer,
+    trial_term text,
+    trial_other_trial_design_description text,
+    trial_other_trial_type_description text,
+    trial_other_scope_of_the_trial_description text,
+    trial_full_title_date_and_version_of_each_sub_study_and_their_r text,
+    trial_therapeutic_area text,
+    trial_system_organ_class text,
+    trial_number_of_treatment_arms_in_the_trial integer,
+    trial_in_the_member_state_concerned_days integer,
+    subject_childs integer,
+    subject_details_of_other_specific_vulnerable_populations boolean,
+    trial_in_all_countries_concerned_by_the_trial_days integer,
+    subject_elderly integer,
+    us_nct_clinicaltrials_gov_registry_number text,
+    trial_medical_condition_in_easily_understood_language text,
+    title_of_the_trial_for_lay_people_in_easily_understood_i_e_non_ text,
+    subject_adults integer,
+    trial_secondary_end_point_s text,
+    trial_if_e_8_6_1_or_e_8_6_2_are_yes_specify_the_regions_in_whic text,
+    trial_timepoint_s_of_evaluation_of_this_end_point text,
+    ethics_committee_opinion_reason_s_for_unfavourable_opinion text,
+    ema_decision_number_of_paediatric_investigation_plan text,
+    trial_specify_the_countries_outside_of_the_eea_in_which_trial_s text,
+    who_universal_trial_reference_number_utrn text,
+    other_identifiers text,
+    trial_results text,
+    trial_other boolean,
+    trial_results_url text
 );
-CREATE TABLE fdadl (
-	meta_id TEXT, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	product_ndc TEXT NOT NULL, 
-	product_type TEXT, 
-	generic_name TEXT, 
-	brand_name TEXT, 
-	last_updated DATE, 
-	fda_application_number TEXT, 
-	CONSTRAINT fda_pkey PRIMARY KEY (product_ndc), 
-	CONSTRAINT fda_meta_id_key UNIQUE (meta_id)
-);
+
+
+--
+-- Name: fda_dap; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
 CREATE TABLE fda_dap (
-	meta_id TEXT, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	id TEXT, 
-	documents JSONB, 
-	approval_type TEXT, 
-	supplement_number INTEGER, 
-	action_date DATE, 
-	fda_application_num TEXT, 
-	notes TEXT, 
-	drug_name TEXT, 
-	active_ingredients TEXT, 
-	company TEXT, 
-	CONSTRAINT fda_dap_id_key UNIQUE (id), 
-	CONSTRAINT fda_dap_meta_id_key UNIQUE (meta_id)
+    meta_id text,
+    meta_source text,
+    meta_created timestamp with time zone,
+    meta_updated timestamp with time zone,
+    id text,
+    documents jsonb,
+    approval_type text,
+    supplement_number integer,
+    action_date date,
+    fda_application_num text,
+    notes text,
+    drug_name text,
+    active_ingredients text,
+    company text
 );
+
+
+--
+-- Name: fdadl; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE fdadl (
+    meta_id text,
+    meta_source text,
+    meta_created timestamp with time zone,
+    meta_updated timestamp with time zone,
+    product_ndc text NOT NULL,
+    product_type text,
+    generic_name text,
+    brand_name text,
+    last_updated date,
+    fda_application_number text
+);
+
+
+--
+-- Name: gsk; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
 CREATE TABLE gsk (
-	meta_id UUID, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	study_id TEXT NOT NULL, 
-	study_title TEXT, 
-	patient_level_data TEXT, 
-	clinicaltrials_gov_identifier TEXT, 
-	sponsor TEXT, 
-	collaborators TEXT[], 
-	study_recruitment_status TEXT, 
-	generic_name TEXT, 
-	trade_name TEXT, 
-	study_indication TEXT, 
-	first_received DATE, 
-	last_updated DATE, 
-	title TEXT, 
-	phase TEXT, 
-	acronym TEXT, 
-	secondary_ids TEXT[], 
-	fda_regulated_intervention BOOLEAN, 
-	section_801_clinical_trial BOOLEAN, 
-	delayed_posting BOOLEAN, 
-	ind_ide_protocol TEXT, 
-	ind_ide_grantor TEXT, 
-	ind_ide_number TEXT, 
-	ind_ide_serial_number TEXT, 
-	has_expanded_access BOOLEAN, 
-	study_type TEXT, 
-	oversight_authority TEXT[], 
-	brief_summary TEXT, 
-	detailed_description TEXT, 
-	record_verification_date DATE, 
-	status TEXT, 
-	why_study_stopped TEXT, 
-	study_start_date DATE, 
-	study_completion_date DATE, 
-	study_completion_date_type TEXT, 
-	primary_completion_date DATE, 
-	primary_completion_date_type TEXT, 
-	primary_purpose TEXT, 
-	study_design TEXT, 
-	time_perspective TEXT, 
-	biospecimen_retention TEXT, 
-	biospecimen_description TEXT, 
-	allocation TEXT, 
-	masking TEXT, 
-	masked_subject BOOLEAN, 
-	masked_caregiver BOOLEAN, 
-	masked_investigator BOOLEAN, 
-	masked_assessor BOOLEAN, 
-	study_design_assignment TEXT, 
-	study_classification_endpoint TEXT, 
-	primary_outcomes JSONB, 
-	secondary_outcomes JSONB, 
-	arms JSONB, 
-	interventions JSONB, 
-	conditions TEXT[], 
-	keywords TEXT[], 
-	study_population TEXT, 
-	sampling_method TEXT, 
-	eligibility_criteria TEXT, 
-	gender TEXT, 
-	minimum_age TEXT, 
-	maximum_age TEXT, 
-	enrollment INTEGER, 
-	enrollment_type TEXT, 
-	healthy_volunteers BOOLEAN, 
-	central_contact TEXT, 
-	central_contact_phone TEXT, 
-	central_contact_email TEXT, 
-	overall_study_official TEXT, 
-	overall_study_official_affiliation TEXT, 
-	overall_study_official_role TEXT, 
-	responsible_party_name_official_title TEXT, 
-	responsible_party_organization TEXT, 
-	contact_name TEXT, 
-	contact_phone TEXT, 
-	contact_email TEXT, 
-	protocol_id TEXT, 
-	clinical_study_id TEXT, 
-	official_study_title TEXT, 
-	study_indication_or_diseases TEXT, 
-	trade_name_product_name TEXT, 
-	study_indications TEXT, 
-	citation TEXT, 
-	publication_type TEXT, 
-	results_url TEXT, 
-	CONSTRAINT gsk_pkey PRIMARY KEY (study_id), 
-	CONSTRAINT gsk_meta_id_unique UNIQUE (meta_id)
+    study_id character varying(255) NOT NULL,
+    study_indication text,
+    collaborators text[],
+    meta_created timestamp with time zone,
+    generic_name text,
+    meta_source text,
+    citation text,
+    meta_id uuid,
+    study_recruitment_status text,
+    trade_name text,
+    sponsor text,
+    study_title text,
+    meta_updated timestamp with time zone,
+    record_verification_date date,
+    last_updated date,
+    eligibility_criteria text,
+    first_received date,
+    masked_subject boolean,
+    overall_study_official_affiliation text,
+    masked_investigator boolean,
+    patient_level_data text,
+    title text,
+    masked_caregiver boolean,
+    official_study_title text,
+    responsible_party_organization text,
+    conditions text[],
+    responsible_party_name_official_title text,
+    study_type text,
+    clinical_study_id text,
+    phase text,
+    protocol_id text,
+    masked_assessor boolean,
+    overall_study_official text,
+    overall_study_official_role text,
+    study_indication_or_diseases text,
+    publication_type text,
+    clinicaltrials_gov_identifier text,
+    trade_name_product_name text,
+    study_indications text,
+    maximum_age text,
+    oversight_authority text[],
+    keywords text[],
+    contact_name text,
+    study_completion_date date,
+    ind_ide_protocol text,
+    sampling_method text,
+    fda_regulated_intervention boolean,
+    primary_completion_date date,
+    primary_outcomes jsonb,
+    study_completion_date_type text,
+    contact_phone text,
+    status text,
+    primary_completion_date_type text,
+    ind_ide_number text,
+    study_population text,
+    time_perspective text,
+    minimum_age text,
+    contact_email text,
+    study_start_date date,
+    central_contact_phone text,
+    central_contact text,
+    study_design text,
+    enrollment_type text,
+    enrollment integer,
+    ind_ide_serial_number text,
+    healthy_volunteers boolean,
+    biospecimen_retention text,
+    gender text,
+    brief_summary text,
+    central_contact_email text,
+    interventions jsonb,
+    arms jsonb,
+    primary_purpose text,
+    detailed_description text,
+    has_expanded_access boolean,
+    study_classification_endpoint text,
+    delayed_posting boolean,
+    masking text,
+    secondary_outcomes jsonb,
+    allocation text,
+    section_801_clinical_trial boolean,
+    secondary_ids text[],
+    study_design_assignment text,
+    ind_ide_grantor text,
+    acronym text,
+    biospecimen_description text,
+    why_study_stopped text,
+    results_url text
 );
+
+
+--
+-- Name: hra; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
 CREATE TABLE hra (
-	meta_id TEXT, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	hra_id TEXT, 
-	publication_date DATE, 
-	updated_date DATE, 
-	comittee_name TEXT, 
-	comittee_ref_number TEXT, 
-	iras_proj_id TEXT, 
-	contact_name TEXT, 
-	contact_email TEXT, 
-	application_title TEXT, 
-	study_type_id TEXT, 
-	study_type TEXT, 
-	sponsor_org TEXT, 
-	research_programme TEXT, 
-	data_coll_arrangements TEXT, 
-	establishment_org TEXT, 
-	establishment_org_address_1 TEXT, 
-	establishment_org_address_2 TEXT, 
-	establishment_org_address_3 TEXT, 
-	establishment_org_post_code TEXT, 
-	decision TEXT, 
-	decision_date TIMESTAMP WITH TIME ZONE, 
-	human_tissue_license TEXT, 
-	rtb_title TEXT, 
-	research_database_title TEXT, 
-	application_full_title TEXT, 
-	isrctn_id TEXT, 
-	nct_id TEXT, 
-	additional_ref_numbers TEXT, 
-	duration_of_study_in_uk TEXT, 
-	research_summary TEXT, 
-	euctr_id TEXT, 
-	social_value TEXT, 
-	recuitment_arrangements TEXT, 
-	risk_and_benefit TEXT, 
-	participants_protection_and_care TEXT, 
-	informed_consent TEXT, 
-	applicant_and_staff_suitability TEXT, 
-	independent_review TEXT, 
-	supporting_info_suitability TEXT, 
-	other_comments TEXT, 
-	research_summary_suitability TEXT, 
-	CONSTRAINT hra_meta_id_key UNIQUE (meta_id)
+    meta_id text,
+    meta_source text,
+    meta_created timestamp with time zone,
+    meta_updated timestamp with time zone,
+    hra_id text,
+    publication_date date,
+    updated_date date,
+    comittee_name text,
+    comittee_ref_number text,
+    iras_proj_id text,
+    contact_name text,
+    contact_email text,
+    application_title text,
+    study_type_id text,
+    study_type text,
+    sponsor_org text,
+    research_programme text,
+    data_coll_arrangements text,
+    establishment_org text,
+    establishment_org_address_1 text,
+    establishment_org_address_2 text,
+    establishment_org_address_3 text,
+    establishment_org_post_code text,
+    decision text,
+    decision_date timestamp with time zone,
+    human_tissue_license text,
+    rtb_title text,
+    research_database_title text,
+    application_full_title text,
+    isrctn_id text,
+    nct_id text,
+    additional_ref_numbers text,
+    duration_of_study_in_uk text,
+    research_summary text,
+    euctr_id text,
+    social_value text,
+    recuitment_arrangements text,
+    risk_and_benefit text,
+    participants_protection_and_care text,
+    informed_consent text,
+    applicant_and_staff_suitability text,
+    independent_review text,
+    supporting_info_suitability text,
+    other_comments text,
+    research_summary_suitability text
 );
+
+
+--
+-- Name: icdcm; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
 CREATE TABLE icdcm (
-	meta_id TEXT, 
-	meta_source TEXT, 
-	meta_created TIMESTAMP WITH TIME ZONE, 
-	meta_updated TIMESTAMP WITH TIME ZONE, 
-	name TEXT NOT NULL, 
-	"desc" TEXT, 
-	terms TEXT[], 
-	version TEXT, 
-	last_updated DATE, 
-	CONSTRAINT icdcm_pkey PRIMARY KEY (name), 
-	CONSTRAINT icdcm_meta_id_key UNIQUE (meta_id)
+    meta_id text,
+    meta_source text,
+    meta_created timestamp with time zone,
+    meta_updated timestamp with time zone,
+    name text NOT NULL,
+    "desc" text,
+    terms text[],
+    version text,
+    last_updated date
 );
+
+
+--
+-- Name: icdpcs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE icdpcs (
+    meta_id text,
+    meta_source text,
+    meta_created timestamp with time zone,
+    meta_updated timestamp with time zone,
+    code text NOT NULL,
+    is_header boolean,
+    short_description text,
+    long_description text,
+    version text,
+    last_updated date
+);
+
+
+--
+-- Name: ictrp; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE ictrp (
+    meta_id uuid,
+    meta_source text,
+    meta_created timestamp with time zone,
+    meta_updated timestamp with time zone,
+    register text NOT NULL,
+    last_refreshed_on date,
+    main_id text NOT NULL,
+    date_of_registration text,
+    primary_sponsor text,
+    public_title text,
+    scientific_title text,
+    date_of_first_enrollment text,
+    target_sample_size integer,
+    recruitment_status text,
+    url text,
+    study_type text,
+    study_design text,
+    study_phase text,
+    countries_of_recruitment text[],
+    contacts jsonb,
+    key_inclusion_exclusion_criteria text,
+    health_conditions_or_problems_studied text[],
+    interventions text[],
+    primary_outcomes text[],
+    secondary_outcomes text[],
+    secondary_ids text[],
+    sources_of_monetary_support text[],
+    secondary_sponsors text[]
+);
+
+
+--
+-- Name: isrctn; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE isrctn (
+    isrctn_id character varying(255) NOT NULL,
+    scientific_title text,
+    target_number_of_participants text,
+    participant_inclusion_criteria text,
+    protocol_serial_number text,
+    clinicaltrials_gov_number text,
+    funders jsonb,
+    prospective_retrospective text,
+    age_group text,
+    participant_level_data text,
+    date_assigned date,
+    intervention text,
+    meta_created timestamp with time zone,
+    participant_exclusion_criteria text,
+    eudract_number text,
+    title text,
+    meta_source text,
+    recruitment_start_date date,
+    trial_setting text,
+    secondary_outcome_measures text,
+    study_hypothesis text,
+    meta_updated timestamp with time zone,
+    intention_to_publish_date date,
+    meta_id uuid,
+    ethics_approval text,
+    acronym text,
+    trial_participating_centre text,
+    plain_english_summary text,
+    sponsors jsonb,
+    overall_trial_start_date date,
+    overall_trial_status text,
+    recruitment_status text,
+    doi_isrctn_id text,
+    last_edited date,
+    overall_trial_end_date date,
+    condition text,
+    trial_type text,
+    secondary_study_design text,
+    study_design text,
+    countries_of_recruitment text,
+    intervention_type text,
+    gender text,
+    contacts jsonb,
+    primary_outcome_measures text,
+    date_applied date,
+    recruitment_end_date date,
+    condition_category text,
+    participant_type text,
+    patient_information_sheet text,
+    publication_and_dissemination_plan text,
+    primary_study_design text,
+    trial_website text,
+    publication_summary text,
+    phase text,
+    drug_names text,
+    reason_abandoned text,
+    publication_citations text,
+    results_basic_reporting text
+);
+
+
+--
+-- Name: jprn; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE jprn (
+    unique_trial_number character varying(255) NOT NULL,
+    control text,
+    type_of_intervention text,
+    source_of_funding text,
+    interventions text[],
+    secondary_study_ids boolean,
+    condition text,
+    agelower_limit text,
+    research_tel text,
+    ageupper_limit text,
+    date_of_formal_registrationdate_of_icmje_and_who date,
+    anticipated_trial_start_date date,
+    key_exclusion_criteria text,
+    research_division_name text,
+    meta_created timestamp with time zone,
+    title_of_the_study_brief_title text,
+    basic_objectives2 text,
+    meta_source text,
+    randomization text,
+    research_organization text,
+    key_inclusion_criteria text,
+    date_of_registration date,
+    primary_outcomes text,
+    date_and_time_of_last_update timestamp with time zone,
+    date_of_last_update timestamp with time zone,
+    target_sample_size integer,
+    classification_by_specialty text,
+    meta_updated timestamp with time zone,
+    narrative_objectives1 text,
+    urljapanese text,
+    meta_id uuid,
+    no_of_arms integer,
+    public_name_of_contact_person text,
+    study_type text,
+    official_scientific_title_of_the_study text,
+    genomic_information boolean,
+    recruitment_status text,
+    category_of_org text,
+    title_of_the_study text,
+    research_name_of_lead_principal_investigator text,
+    research_email text,
+    blinding text,
+    urlenglish text,
+    gender text,
+    region text,
+    publication_of_results text,
+    name_of_primary_sponsor text,
+    classification_by_malignancy text,
+    basic_design text,
+    purpose_of_intervention text,
+    research_address text,
+    date_of_protocol_fixation date,
+    dynamic_allocation text,
+    trial_characteristics_2 text,
+    nation_of_funding text,
+    concealment text,
+    trial_characteristics_1 text,
+    developmental_phase text,
+    last_followup_date date,
+    randomization_unit text,
+    key_secondary_outcomes text,
+    institution_consideration text,
+    institutions text,
+    cosponsor text,
+    stratification text,
+    blocking text,
+    url_releasing_results text,
+    basic_objectives_others text,
+    other_related_information text,
+    date_analysis_concluded date,
+    date_of_closure_to_data_entry date,
+    date_trial_data_considered_complete date,
+    results text,
+    public_email text,
+    public_tel text,
+    public_homepage_url text,
+    name_of_secondary_funers text,
+    url_releasing_protocol text,
+    secondary_study_id_1 text,
+    org_issuing_secondary_study_id_1 text,
+    research_homepage_url text,
+    ind_to_mhlw text,
+    org_issuing_secondary_study_id_2 text,
+    secondary_study_id_2 text,
+    public_division_name text,
+    public_address text,
+    public_organization text
+);
+
+
+--
+-- Name: nct; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE nct (
+    nct_id character varying(255) NOT NULL,
+    is_fda_regulated boolean,
+    interventions jsonb,
+    link_text text,
+    locations jsonb,
+    responsible_party jsonb,
+    keywords text[],
+    has_expanded_access boolean,
+    meta_created timestamp with time zone,
+    source text,
+    overall_contact jsonb,
+    meta_source text,
+    eligibility jsonb,
+    primary_outcomes jsonb,
+    org_study_id text,
+    enrollment_anticipated integer,
+    conditions text[],
+    start_date date,
+    arm_groups jsonb,
+    meta_id uuid,
+    download_date text,
+    acronym text,
+    sponsors jsonb,
+    study_type text,
+    study_design text,
+    overall_status text,
+    phase text,
+    firstreceived_date date,
+    meta_updated timestamp with time zone,
+    location_countries text[],
+    url text,
+    condition_browse jsonb,
+    oversight_info jsonb,
+    number_of_groups integer,
+    official_title text,
+    intervention_browse jsonb,
+    brief_title text,
+    verification_date date,
+    brief_summary text,
+    lastchanged_date date,
+    is_section_801 boolean,
+    detailed_description text,
+    overall_officials jsonb,
+    secondary_outcomes jsonb,
+    secondary_ids text[],
+    number_of_arms integer,
+    biospec_retention text,
+    links jsonb,
+    other_outcomes jsonb,
+    overall_contact_backup jsonb,
+    enrollment_actual integer,
+    primary_completion_date_actual date,
+    primary_completion_date_anticipated date,
+    completion_date_anticipated date,
+    completion_date_actual date,
+    "references" jsonb,
+    target_duration text,
+    results_references jsonb,
+    why_stopped text,
+    firstreceived_results_date date,
+    clinical_results jsonb,
+    nct_aliases text[],
+    removed_countries text[],
+    biospec_desrc text,
+    results_exemption_date date
+);
+
+
+--
+-- Name: pfizer; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE pfizer (
+    meta_id uuid,
+    meta_source text,
+    meta_created timestamp with time zone,
+    meta_updated timestamp with time zone,
+    title text,
+    study_type text,
+    organization_id text,
+    nct_id text NOT NULL,
+    status text,
+    study_start_date date,
+    study_end_date date,
+    eligibility_criteria text,
+    gender text,
+    age_range text,
+    healthy_volunteers_allowed boolean
+);
+
+
+--
+-- Name: pubmed; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE pubmed (
+    meta_id text,
+    meta_source text,
+    meta_created timestamp with time zone,
+    meta_updated timestamp with time zone,
+    pmid text NOT NULL,
+    date_created date,
+    date_completed date,
+    date_revised date,
+    country text,
+    medline_ta text,
+    nlm_unique_id text,
+    issn_linking text,
+    journal_issn text,
+    journal_title text,
+    journal_iso text,
+    article_title text,
+    article_abstract text,
+    article_authors text[],
+    article_language text,
+    article_publication_type_list text[],
+    article_vernacular_title text,
+    article_date date,
+    publication_status text,
+    identifiers_list jsonb,
+    mesh_headings jsonb
+);
+
+
+--
+-- Name: takeda; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE takeda (
+    meta_id uuid,
+    meta_source text,
+    meta_created timestamp with time zone,
+    meta_updated timestamp with time zone,
+    official_title text,
+    takeda_trial_id text NOT NULL,
+    trial_phase text,
+    condition text,
+    compound text[],
+    recruitment_status text,
+    nct_number text,
+    trial_type text,
+    other_trial_ids text,
+    acronym text,
+    brief_summary text,
+    detailed_description text,
+    trial_design text,
+    primary_outcome_measures text,
+    secondary_outcome_measures text,
+    trial_arms_groups_or_cohorts text,
+    gender text,
+    ages text,
+    enrollment_number_of_participants integer,
+    locations text[],
+    responsible_party text,
+    trial_sponsor text,
+    start_date date,
+    completion_date date,
+    eligibility_criteria text,
+    download_the_clinical_trial_summary text,
+    other_available_languages text
+);
+
+
+--
+-- Name: actrn_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY actrn
+    ADD CONSTRAINT actrn_meta_id_unique UNIQUE (meta_id);
+
+
+--
+-- Name: actrn_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY actrn
+    ADD CONSTRAINT actrn_pkey PRIMARY KEY (trial_id);
+
+
+--
+-- Name: cochrane_reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY cochrane_reviews
+    ADD CONSTRAINT cochrane_reviews_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: euctr_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY euctr
+    ADD CONSTRAINT euctr_meta_id_unique UNIQUE (meta_id);
+
+
+--
+-- Name: euctr_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY euctr
+    ADD CONSTRAINT euctr_pkey PRIMARY KEY (eudract_number_with_country);
+
+
+--
+-- Name: fda_dap_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY fda_dap
+    ADD CONSTRAINT fda_dap_id_key UNIQUE (id);
+
+
+--
+-- Name: fda_dap_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY fda_dap
+    ADD CONSTRAINT fda_dap_meta_id_key UNIQUE (meta_id);
+
+
+--
+-- Name: fda_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY fdadl
+    ADD CONSTRAINT fda_meta_id_key UNIQUE (meta_id);
+
+
+--
+-- Name: fda_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY fdadl
+    ADD CONSTRAINT fda_pkey PRIMARY KEY (product_ndc);
+
+
+--
+-- Name: gsk_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY gsk
+    ADD CONSTRAINT gsk_meta_id_unique UNIQUE (meta_id);
+
+
+--
+-- Name: gsk_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY gsk
+    ADD CONSTRAINT gsk_pkey PRIMARY KEY (study_id);
+
+
+--
+-- Name: hra_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY hra
+    ADD CONSTRAINT hra_meta_id_key UNIQUE (meta_id);
+
+
+--
+-- Name: icdcm_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY icdcm
+    ADD CONSTRAINT icdcm_meta_id_key UNIQUE (meta_id);
+
+
+--
+-- Name: icdcm_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY icdcm
+    ADD CONSTRAINT icdcm_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: icdpcs_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY icdpcs
+    ADD CONSTRAINT icdpcs_meta_id_key UNIQUE (meta_id);
+
+
+--
+-- Name: icdpcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY icdpcs
+    ADD CONSTRAINT icdpcs_pkey PRIMARY KEY (code);
+
+
+--
+-- Name: ictrp_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY ictrp
+    ADD CONSTRAINT ictrp_meta_id_unique UNIQUE (meta_id);
+
+
+--
+-- Name: ictrp_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY ictrp
+    ADD CONSTRAINT ictrp_pkey PRIMARY KEY (main_id);
+
+
+--
+-- Name: isrctn_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY isrctn
+    ADD CONSTRAINT isrctn_meta_id_unique UNIQUE (meta_id);
+
+
+--
+-- Name: isrctn_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY isrctn
+    ADD CONSTRAINT isrctn_pkey PRIMARY KEY (isrctn_id);
+
+
+--
+-- Name: jprn_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY jprn
+    ADD CONSTRAINT jprn_meta_id_unique UNIQUE (meta_id);
+
+
+--
+-- Name: jprn_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY jprn
+    ADD CONSTRAINT jprn_pkey PRIMARY KEY (unique_trial_number);
+
+
+--
+-- Name: nct_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY nct
+    ADD CONSTRAINT nct_meta_id_unique UNIQUE (meta_id);
+
+
+--
+-- Name: nct_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY nct
+    ADD CONSTRAINT nct_pkey PRIMARY KEY (nct_id);
+
+
+--
+-- Name: pfizer_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY pfizer
+    ADD CONSTRAINT pfizer_meta_id_unique UNIQUE (meta_id);
+
+
+--
+-- Name: pfizer_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY pfizer
+    ADD CONSTRAINT pfizer_pkey PRIMARY KEY (nct_id);
+
+
+--
+-- Name: pubmed_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY pubmed
+    ADD CONSTRAINT pubmed_meta_id_key UNIQUE (meta_id);
+
+
+--
+-- Name: pubmed_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY pubmed
+    ADD CONSTRAINT pubmed_pkey PRIMARY KEY (pmid);
+
+
+--
+-- Name: takeda_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY takeda
+    ADD CONSTRAINT takeda_meta_id_unique UNIQUE (meta_id);
+
+
+--
+-- Name: takeda_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY takeda
+    ADD CONSTRAINT takeda_pkey PRIMARY KEY (takeda_trial_id);
+
+
+--
+-- Name: ix_actrn_9b88700fa823eea2; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX ix_actrn_9b88700fa823eea2 ON actrn USING btree (trial_id);
+
+
+--
+-- Name: ix_euctr_86a28cd2542cd0c4; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX ix_euctr_86a28cd2542cd0c4 ON euctr USING btree (eudract_number_with_country);
+
+
+--
+-- Name: ix_gsk_ae14dbea0172b852; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX ix_gsk_ae14dbea0172b852 ON gsk USING btree (study_id);
+
+
+--
+-- Name: ix_isrctn_5630355bbd51c4b7; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX ix_isrctn_5630355bbd51c4b7 ON isrctn USING btree (isrctn_id);
+
+
+--
+-- Name: ix_jprn_4e2a0ce8f4508948; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX ix_jprn_4e2a0ce8f4508948 ON jprn USING btree (unique_trial_number);
+
+
+--
+-- Name: ix_nct_9502f58393a4fc6d; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX ix_nct_9502f58393a4fc6d ON nct USING btree (nct_id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
