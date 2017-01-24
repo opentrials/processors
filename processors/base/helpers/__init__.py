@@ -297,19 +297,19 @@ def get_canonical_location_name(location):
     DISTANCE_SCORER = fuzzywuzzy.fuzz.token_sort_ratio
 
     clean_string = lambda u: re.sub(u"[^\w\d'\s]+", '', u).lower()
+    cleaned_location = clean_string(location)
+    current_match = location
+
     try:
-        logger.debug('Location "%s" normalized using ISO-3166 standard', location)
-        return iso3166.countries.get(clean_string(location)).name
+        current_match = iso3166.countries.get(cleaned_location).name
     except KeyError:
         with open(CSV_PATH, 'r') as csv_file:
             reader = csv.DictReader(csv_file)
-            current_match = location
             current_score = float('-inf')
             for country in reader:
                 relevant_info = [unicode(country[field], encoding='utf-8')
                                  for field in reader.fieldnames[0:5]]
 
-                cleaned_location = clean_string(location)
                 location_info = [clean_string(location_info) for location_info in relevant_info]
                 _, score = fuzzywuzzy.process.extractOne(cleaned_location, location_info, scorer=DISTANCE_SCORER)
 
@@ -321,5 +321,6 @@ def get_canonical_location_name(location):
                 logger.debug('Location "%s" not normalized', location)
                 return location
 
-            logger.debug('Location "%s" normalized using Levenshtein distance', location)
-            return current_match
+    logger.debug('Location "%s" normalized as "%s"', cleaned_location, current_match)
+
+    return current_match
