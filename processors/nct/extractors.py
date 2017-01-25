@@ -73,6 +73,9 @@ def extract_trial(record):
     if target_sample_size is None:
         target_sample_size = record.get('enrollment_actual')
 
+    # Get study phase
+    study_phase = base.normalizers.get_normalized_phase(record['phase'])
+
     trial = {
         'identifiers': identifiers,
         'registration_date': record['firstreceived_date'],
@@ -89,7 +92,7 @@ def extract_trial(record):
         'first_enrollment_date': record['start_date'],
         'study_type': record['study_type'],
         'study_design': record['study_design'],
-        'study_phase': record['phase'],
+        'study_phase': study_phase,
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,

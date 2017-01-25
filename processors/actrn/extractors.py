@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 
 from .. import base
 
-
 # Module API
+
 
 def extract_source(record):
     source = {
@@ -68,6 +68,9 @@ def extract_trial(record):
     # Get has_published_results
     has_published_results = None
 
+    # Get study phase
+    study_phase = base.normalizers.get_normalized_phase(record['phase'])
+
     trial = {
         'identifiers': identifiers,
         'registration_date': record['date_registered'],
@@ -84,7 +87,7 @@ def extract_trial(record):
         'target_sample_size': record['target_sample_size'],
         'first_enrollment_date': record['anticipated_date_of_first_participant_enrolment'],
         'study_type': record['study_type'],
-        'study_phase': record['phase'],
+        'study_phase': study_phase,
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
