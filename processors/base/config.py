@@ -10,14 +10,21 @@ import logging.config
 from dotenv import load_dotenv
 load_dotenv('.env')
 
+# Environment
+
+ENV = os.environ.get('PYTHON_ENV', 'development')
+if os.environ.get('CI'):
+    ENV = 'testing'
 
 # Storage
 
-WAREHOUSE_URL = os.environ['WAREHOUSE_URL']
-DATABASE_URL = os.environ['DATABASE_URL']
-EXPLORERDB_URL = os.environ['EXPLORERDB_URL']
-TEST_WAREHOUSE_URL = os.environ.get('TEST_WAREHOUSE_URL')
-TEST_DATABASE_URL = os.environ.get('TEST_DATABASE_URL')
+if ENV == 'testing':
+    WAREHOUSE_URL = os.environ['TEST_WAREHOUSE_URL']
+    DATABASE_URL = os.environ['TEST_DATABASE_URL']
+else:
+    WAREHOUSE_URL = os.environ['WAREHOUSE_URL']
+    DATABASE_URL = os.environ['DATABASE_URL']
+    EXPLORERDB_URL = os.environ['EXPLORERDB_URL']
 
 # Logging
 
