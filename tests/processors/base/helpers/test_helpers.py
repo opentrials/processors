@@ -125,3 +125,27 @@ class TestSafePrepend(object):
     ])
     def test_safe_prepend(self, prepend_string, string, expected):
         assert helpers.safe_prepend(prepend_string, string) == expected
+
+class TestLocationNormalizer(object):
+    @pytest.mark.parametrize("test_input,expected", [
+        # Locations normalized by ISO-3166 name standards
+        ("Brazil", "Brazil"),
+        ("United States of America","United States"),
+
+        # Locations normalized by ISO-3166 acronym standards
+        ("US","United States"),
+        ("UK","United Kingdom"),
+
+        # Locations normalized by Levenshtein distance (name)
+        ("Chnia","China"),
+        ("The Netherlands","Netherlands"),
+        ("thauland","Thailand"),
+
+        # Locations not normalized (corner cases)
+        ("Asia(except Japan)","Asia(except Japan)"),
+        ("Outside","Outside"),
+        (None, None)])
+
+
+    def test_location_normalizer(self, test_input, expected):
+        assert helpers.get_canonical_location_name(test_input) == expected
