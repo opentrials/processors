@@ -133,6 +133,9 @@ def extract_trial(record):
         if not registration_date:
             logger.warn("Failed to parse date '%s'" % date_of_registration)
 
+    # Get study phase
+    study_phase = base.normalizers.get_normalized_phase(record['study_phase'])
+
     trial = {
         'identifiers': identifiers,
         'public_title': public_title,
@@ -143,7 +146,7 @@ def extract_trial(record):
         'target_sample_size': record['target_sample_size'],
         'study_type': record['study_type'],
         'study_design': record['study_design'],
-        'study_phase': record['study_phase'],
+        'study_phase': study_phase,
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,

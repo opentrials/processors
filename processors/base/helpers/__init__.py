@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
 import re
 import json
 import uuid
@@ -11,12 +12,21 @@ import string
 import logging
 import datetime
 import urlparse
+import csv
+import fuzzywuzzy.fuzz
+import fuzzywuzzy.process
+import iso3166
+
 from . import pybossa_tasks_updater
+
 logger = logging.getLogger(__name__)
 PyBossaTasksUpdater = pybossa_tasks_updater.PyBossaTasksUpdater
 
 
 # Module API
+
+EDIT_DISTANCE_THRESHOLD = 75
+
 
 def get_variables(object, filter=None):
     """Exract variables from object to dict using name filter.
@@ -42,6 +52,7 @@ def slugify_string(string):
 class JSONEncoder(json.JSONEncoder):
     """JSON encoder with datetime, date set support.
     """
+
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -88,7 +99,8 @@ def clean_identifiers(identifiers):
     result = {}
     for key, value in identifiers.items():
         try:
-            new_value, num_changes = re.subn(r'^(\w+)\s+', r'\g<1>', value, re.IGNORECASE)
+            new_value, num_changes = re.subn(
+                r'^(\w+)\s+', r'\g<1>', value, re.IGNORECASE)
             if num_changes:
                 logger.debug('Removed whitespaces from identifier "%s" to "%s"',
                              value, new_value)
@@ -117,12 +129,18 @@ def get_optimal_title(*titles):
 
 
 def clean_string(value):
-    """Cast falsy value to sring and strip whitespeces and other unwanted chars.
+    """Cast falsy value to string and strip whitespeces and other unwanted chars.
     """
     if not value:
         value = ''
     value = value.strip(string.whitespace + '."')
     return value
+
+
+def remove_string_punctuation(value):
+    """Remove punctuation characters from unicode string
+    """
+    return re.sub(u"[^\w\d'\s]+", '', value).lower()
 
 
 def find_list_of_identifiers(text):
@@ -244,7 +262,8 @@ def find_trial_by_identifiers(conn, identifiers, ignore_record_id=None):
         for record in records:
             if (ignore_record_id and record['id'].hex == uuid.UUID(ignore_record_id).hex):
                 continue
-            trial = conn['database']['trials'].find_one(id=record['trial_id'].hex)
+            trial = conn['database']['trials'].find_one(
+                id=record['trial_id'].hex)
             if trial:
                 break
         if trial:
@@ -266,3 +285,47 @@ def safe_prepend(prepend_string, string):
         string = '%s%s' % (prepend_string, string)
 
     return string
+
+
+def get_canonical_location_name(location):
+    """Find the canonical location name according to the
+    passed entry
+
+    Args:
+        location (str): the location to be normalized
+    """
+
+    if location is None:
+        return None
+
+    # Extracted from: https://github.com/datasets/country-codes/blob/master/data/country-codes.csv
+    CSV_PATH = os.path.join(os.path.dirname(__file__), 'data/countries.csv')
+    DISTANCE_SCORER = fuzzywuzzy.fuzz.token_sort_ratio
+
+    cleaned_location = remove_string_punctuation(location)
+    current_match = location
+
+    try:
+        current_match = iso3166.countries.get(cleaned_location).name
+    except KeyError:
+        with open(CSV_PATH, 'r') as csv_file:
+            reader = csv.DictReader(csv_file)
+            current_score = float('-inf')
+            for country in reader:
+                relevant_info = [unicode(country[field], encoding='utf-8')
+                                 for field in reader.fieldnames[0:5]]
+
+                location_info = [remove_string_punctuation(location_info) for location_info in relevant_info]
+                _, score = fuzzywuzzy.process.extractOne(cleaned_location, location_info, scorer=DISTANCE_SCORER)
+
+                if score > current_score:
+                    current_match = iso3166.countries.get(country['ISO3166-1-Alpha-3']).name
+                    current_score = score
+
+            if current_score < EDIT_DISTANCE_THRESHOLD:
+                logger.debug('Location "%s" not normalized', location)
+                return location
+
+    logger.debug('Location "%s" normalized as "%s"', cleaned_location, current_match)
+
+    return current_match

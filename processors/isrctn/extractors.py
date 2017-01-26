@@ -62,6 +62,9 @@ def extract_trial(record):
     if record['results_basic_reporting']:
         has_published_results = True
 
+    # Get study phase
+    study_phase = base.normalizers.get_normalized_phase(record['phase'])
+
     trial = {
         'identifiers': identifiers,
         'registration_date': record['date_applied'],
@@ -79,7 +82,7 @@ def extract_trial(record):
         'first_enrollment_date': record['overall_trial_start_date'],
         'study_type': record['primary_study_design'],
         'study_design': record['study_design'],
-        'study_phase': record['phase'],
+        'study_phase': study_phase,
         'primary_outcomes': record['primary_outcome_measures'],
         'secondary_outcomes': record['secondary_outcome_measures'],
         'gender': gender,

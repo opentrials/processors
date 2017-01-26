@@ -9,3 +9,6 @@ boto3
 PyPDF2
 python-documentcloud
 pybossa-client
+fuzzywuzzy
+python-Levenshtein
+iso3166
