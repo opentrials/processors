@@ -29,7 +29,7 @@ class TestRemoveUnknownDocumentCloudDocsProcessor(object):
         dc_mock().documents.delete.assert_has_calls([
             mock.call('300'),
             mock.call('100'),
-        ])
+        ], any_order=True)
 
 
     @mock.patch('documentcloud.DocumentCloud')

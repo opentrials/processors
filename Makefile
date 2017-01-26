@@ -6,9 +6,6 @@ all: list
 build:
 	docker build -t okibot/processors .
 
-install:
-	pip install --upgrade -r requirements.dev.txt
-
 list:
 	@grep '^\.PHONY' Makefile | cut -d' ' -f2- | tr ' ' '\n'
 
@@ -23,8 +20,7 @@ start:
 	python -m processors.base.cli $(filter-out $@,$(MAKECMDGOALS))
 
 test:
-	py.test
-	pylama processors
+	tox
 
 dump_schemas:
 	python tests/dbs/dump_or_restore_schemas.py dump
