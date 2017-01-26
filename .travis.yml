@@ -20,7 +20,8 @@ services:
   - postgresql
 
 install:
-  - make install
+  - pip install tox
+  - pip install python-dotenv  # Required for "restore_schemas"
 
 before_script:
   - psql -c 'create database opentrials_api_test;' -U postgres
@@ -28,8 +29,7 @@ before_script:
   - make restore_schemas
 
 script:
-  - make test
-  - make build
+  - make test && make build
 
 deploy:
   - provider: script

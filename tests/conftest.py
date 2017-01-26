@@ -35,9 +35,10 @@ def conn(request):
          a `dataset.Database()` instance
     """
 
-    conn = {}
-    conn['database'] = dataset.connect(config.TEST_DATABASE_URL)
-    conn['warehouse'] = dataset.connect(config.TEST_WAREHOUSE_URL)
+    conn = {
+        'database': dataset.connect(config.DATABASE_URL),
+        'warehouse': dataset.connect(config.WAREHOUSE_URL),
+    }
 
     APISession = sessionmaker(bind=conn['database'].engine)
     api_session = APISession()
