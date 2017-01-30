@@ -12,11 +12,11 @@ import processors.base.writers as writers
 
 
 class TestDocumentWriter(object):
-    def test_returns_the_document_id(self, conn):
+    def test_returns_the_document_id(self, conn, document_category):
         document = {
             'name': 'name',
-            'type': 'csr',
             'source_url': 'https://clinicaltrials.gov/ct2/show/results/NCT00486265',
+            'document_category_id': document_category,
         }
 
         document_id = writers.write_document(conn, document)
@@ -24,48 +24,48 @@ class TestDocumentWriter(object):
         assert conn['database']['documents'].find_one(id=document_id)
 
 
-    def test_writes_file_only_document(self, conn, file_fixture):
+    def test_writes_file_only_document(self, conn, file_fixture, document_category):
         document = {
             'name': 'name',
-            'type': 'csr',
             'file_id': file_fixture,
+            'document_category_id': document_category,
         }
 
         assert writers.write_document(conn, document) is not None
 
 
-    def test_writes_url_only_document(self, conn):
+    def test_writes_url_only_document(self, conn, document_category):
         document = {
             'name': 'name',
-            'type': 'other',
             'source_url': 'https://clinicaltrials.gov/ct2/show/results/NCT00486265',
+            'document_category_id': document_category,
         }
 
         assert writers.write_document(conn, document) is not None
 
 
-    def test_skips_document_with_invalid_url(self, conn):
+    def test_skips_document_with_invalid_url(self, conn, document_category):
         document = {
             'name': 'name',
-            'type': 'other',
             'source_url': 'url',
+            'document_category_id': document_category,
         }
 
         assert writers.write_document(conn, document) is None
 
 
-    def test_updates_existing_document_by_id(self, conn):
+    def test_updates_existing_document_by_id(self, conn, document_category):
         original_document = {
             'id': '5b99281096b311e6a0ecf8165487599c',
             'name': 'name',
-            'type': 'csr',
             'source_url': 'http://example.org',
+            'document_category_id': document_category,
         }
         new_document = {
             'id': original_document['id'],
             'name': 'new name',
-            'type': 'results',
             'source_url': 'http://example.net',
+            'document_category_id': document_category,
         }
         table = conn['database']['documents']
         table.insert(original_document)
@@ -75,17 +75,16 @@ class TestDocumentWriter(object):
         document = table.find_one(id=original_document['id'])
 
         assert document['name'] == new_document['name']
-        assert document['type'] == new_document['type']
         assert document['source_url'] == new_document['source_url']
 
 
-    def test_creates_link_with_trial(self, conn, trial):
+    def test_creates_link_with_trial(self, conn, trial, document_category):
         document = {
             'id': '5b99281096b311e6a0ecf8165487599c',
             'trial_id': trial,
             'source_url': 'http://example.com',
             'name': 'name',
-            'type': 'csr',
+            'document_category_id': document_category,
         }
 
         writers.write_document(conn, document)
@@ -96,13 +95,13 @@ class TestDocumentWriter(object):
         )
 
 
-    def test_updates_documents_with_same_type_and_file_id(self, conn, file_fixture):
+    def test_updates_documents_with_same_type_and_file_id(self, conn, file_fixture, document_category):
         document_id = '5b99281096b311e6a0ecf8165487599c'
         document = {
             'id': document_id,
             'name': 'name',
-            'type': 'csr',
             'file_id': file_fixture,
+            'document_category_id': document_category,
         }
         writers.write_document(conn, document)
 
@@ -113,13 +112,13 @@ class TestDocumentWriter(object):
         assert uuid.UUID(new_document_id).hex == document_id
 
 
-    def test_updates_documents_with_same_type_and_url(self, conn):
+    def test_updates_documents_with_same_type_and_url(self, conn, document_category):
         document_id = '5b99281096b311e6a0ecf8165487599c'
         document = {
             'id': document_id,
             'name': 'name',
-            'type': 'csr',
             'source_url': 'http://example.org',
+            'document_category_id': document_category,
         }
         writers.write_document(conn, document)
 
@@ -130,14 +129,14 @@ class TestDocumentWriter(object):
         assert uuid.UUID(new_document_id).hex == document_id
 
 
-    def test_updates_fda_documents(self, conn, file_fixture, fda_approval):
+    def test_updates_fda_documents(self, conn, file_fixture, fda_approval, document_category):
         document_id = '5b99281096b311e6a0ecf8165487599c'
         document = {
             'id': document_id,
             'name': 'name',
-            'type': 'csr',
             'file_id': file_fixture,
             'fda_approval_id': fda_approval,
+            'document_category_id': document_category,
         }
         writers.write_document(conn, document)
 

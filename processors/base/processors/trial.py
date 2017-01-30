@@ -54,10 +54,15 @@ def process_trials(conn, table, extractors):
             # Extract and write documents
             extract_documents = extractors.get('extract_documents')
             if extract_documents:
+
+                # Extract and write document category
+                doc_category = extractors.get('extract_document_category')(record)
+                doc_category_id = writers.write_document_category(conn, doc_category)
                 for document in extract_documents(record):
                     document.update({
                         'trial_id': trial_id,
                         'source_id': source_id,
+                        'document_category_id': doc_category_id,
                     })
                     writers.write_document(conn, document)
 

@@ -41,8 +41,8 @@ def write_document(conn, document):
     # Update object
     obj.update({
         'source_id': document.get('source_id'),
+        'document_category_id': document.get('document_category_id'),
         'name': document['name'],
-        'type': document['type'],
         'fda_approval_id': document.get('fda_approval_id'),
         'file_id': document.get('file_id'),
         'source_url': document.get('source_url'),
@@ -117,12 +117,12 @@ def _find_document(db, document):
     elif document.get('file_id'):
         result = db['documents'].find_one(
             file_id=document['file_id'],
-            type=document['type']
+            document_category_id=document['document_category_id']
         )
     else:
         result = db['documents'].find_one(
             source_url=document['source_url'],
-            type=document['type']
+            document_category_id=document['document_category_id']
         )
 
     return result

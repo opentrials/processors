@@ -165,8 +165,15 @@ def extract_documents(record):
         identifier = identifiers['nct']
         document = {
             'name': 'Results',
-            'type': 'results',
             'source_url': 'https://clinicaltrials.gov/ct2/show/results/' + identifier,
         }
         documents.append(document)
     return documents
+
+
+def extract_document_category(record):
+    return {
+        'id': 22,
+        'name': 'Clinical study report',
+        'group': 'Results',
+    }
