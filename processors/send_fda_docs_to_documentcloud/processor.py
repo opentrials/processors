@@ -36,7 +36,7 @@ def process(conf, conn):
             the_file['id'] = the_file['id'].hex
             processor.process_file(the_file)
             logger.debug('Processed file %s' % the_file['id'])
-        except:
+        except Exception:
             logger.exception('Failed processing file %s' % the_file['id'])
 
 
