@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import uuid
 import logging
 from .. import helpers
+from .. import config
 logger = logging.getLogger(__name__)
 
 
@@ -78,9 +79,10 @@ def write_document(conn, document):
 
         db.commit()
     except Exception:
+        config.SENTRY.captureException(extra={
+            'document': document,
+        })
         db.rollback()
-        msg = 'Error creating document: {}'.format(document['name'][0:50])
-        logger.error(msg, exc_info=True)
     else:
         # Log debug
         logger.debug(

@@ -99,8 +99,8 @@ def process(conf, conn):
             count += len(trials)
             logger.info('Exported %s trials', count)
 
-        except Exception as exception:
-            logger.exception('Interaction error: %s, %s', trial_ids, repr(exception))
+        except Exception:
+            base.config.SENTRY.captureException()
             time.sleep(5*60)
             continue
 

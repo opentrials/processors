@@ -15,6 +15,7 @@ import zipfile
 import hashlib
 import tempfile
 import requests
+from .. import base
 logger = logging.getLogger(__name__)
 
 
@@ -107,8 +108,8 @@ def process(conf, conn):
             # Log finished for contrib
             logger.info('Finished extration from contrib "%s"', contrib_id)
 
-        except Exception as exception:
-            logger.exception(repr(exception), exc_info=True)
+        except Exception:
+            base.config.SENTRY.captureException()
 
 # Internal
 

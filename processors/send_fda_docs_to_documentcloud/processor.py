@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 
 import re
 import logging
+from .. import base
 import documentcloud
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,9 @@ def process(conf, conn):
             processor.process_file(the_file)
             logger.debug('Processed file %s' % the_file['id'])
         except Exception:
-            logger.exception('Failed processing file %s' % the_file['id'])
+            base.config.SENTRY.captureException(extra={
+                'file_id': the_file['id'],
+            })
 
 
 class _SendFDADocsToDocumentCloudProcessor(object):
