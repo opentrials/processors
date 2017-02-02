@@ -219,17 +219,17 @@ def iter_rows(conn, dataset, table, orderby, bufsize=100, **filter):
 
     """
     offset = 0
+    count = conn[dataset][table].count(**filter)
+    # FIXME: This doesn't avoid changing the received filter param
     query = filter
     query['order_by'] = orderby
-    while True:
-        query['_offset'] = offset
-        query['_limit'] = bufsize
-        count = conn[dataset][table].find(return_count=True, **query)
-        if not count:
-            break
-        rows = conn[dataset][table].find(**query)
+    while offset < count:
+        query.update({
+            '_offset': offset,
+            '_limit': bufsize,
+        })
         offset += bufsize
-        for row in rows:
+        for row in conn[dataset][table].find(**query):
             # Fixing hex representation
             for field in ['id', 'meta_id']:
                 if field in row:
