@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
+from .. import base
 logger = logging.getLogger(__name__)
 
 
@@ -17,8 +18,8 @@ def process(conf, conn):
             logger.debug('Removing sources %s', source_ids)
             db.begin()
             db['sources'].delete(id=source_ids)
-        except Exception as e:
-            logger.error('Error: %s', e.message, exc_info=1)
+        except Exception:
+            base.config.SENTRY.captureException()
             logger.debug('Rolling back')
             db.rollback()
         else:

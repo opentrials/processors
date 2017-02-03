@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import datetime
 import logging
+from .. import base
 logger = logging.getLogger(__name__)
 
 
@@ -56,10 +57,11 @@ def process(conf, conn):
             count += 1
             logger.info("[{}] Trial {} was updated".format(count, trial['id']))
 
-        except Exception as e:
+        except Exception:
+            base.config.SENTRY.captureException(extra={
+                'identifiers': result['trial_identifiers'],
+            })
             failed += 1
-            logger.exception("[%s] Trial %s could not be updated due to error: %s",
-                             count, trial['id'], repr(e), exc_info=True)
 
     logger.info('{} trials updated'.format(count))
     logger.info('{} trials failed'.format(failed))

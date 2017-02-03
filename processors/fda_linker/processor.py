@@ -44,8 +44,10 @@ def process(conf, conn):
                 else:
                     logger.debug('Attempt to link FDA document "%s" failed. No trial found with identifiers %s',
                         document_log_name, identifiers)
-        except Exception as exception:
-            logger.exception(repr(exception), exc_info=True)
+        except Exception:
+            base.config.SENTRY.captureException(extra={
+                'document': document,
+            })
 
     logger.info('Linked %s FDA documents to trials', count)
 

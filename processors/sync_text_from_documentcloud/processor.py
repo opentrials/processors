@@ -37,8 +37,9 @@ def _get_pages(client, doc_id):
         is_http_error_403 = (getattr(e, 'code', None) == 403)
         if is_http_error_403:
             raise e
-        msg = 'Exception when loading document %s: %s' % (doc_id, e.message)
-        logger.warn(msg)
+        base.config.SENTRY.captureException(extra={
+            'documentcloud_id': doc_id,
+        })
 
     try:
         if doc:
@@ -48,7 +49,9 @@ def _get_pages(client, doc_id):
             if has_only_empty_pages:
                 pages = None
     except NotImplementedError:
-        msg = 'Skipped extracting text from non-public document "%s"' % doc_id
-        logger.debug(msg)
+        msg = 'Skipped extracting text from non-public document'
+        base.config.SENTRY.captureException(message=msg, extra={
+            'documentcloud_id': doc_id,
+        })
 
     return pages

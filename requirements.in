@@ -1,0 +1,15 @@
+python-dotenv
+dataset==0.7.1
+psycopg2
+requests
+sqlalchemy
+datapackage==0.6.1
+jsontableschema-sql
+boto3
+PyPDF2
+python-documentcloud
+pybossa-client
+fuzzywuzzy
+python-Levenshtein
+iso3166
+raven

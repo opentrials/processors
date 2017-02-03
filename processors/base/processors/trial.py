@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import logging
 from .. import helpers
+from .. import config
 from .. import writers
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,6 @@ def process_trials(conn, table, extractors):
     source = extractors['extract_source'](None)
     source_id = writers.write_source(conn, source)
 
-    errors = 0
     success = 0
     for record in helpers.iter_rows(conn, 'warehouse', table, orderby='meta_id'):
 
@@ -116,12 +116,11 @@ def process_trials(conn, table, extractors):
                     writers.write_trial_relationship(
                         conn, 'person', person, person_id, trial_id)
 
-        except Exception as exception:
-            errors += 1
+        except Exception:
             conn['database'].rollback()
-            logger.exception('Processing error: %s [%s]',
-                repr(exception), errors)
-
+            config.SENTRY.captureException(extra={
+                'record': record,
+            })
         else:
             success += 1
             conn['database'].commit()

@@ -49,8 +49,10 @@ def process(conf, conn):
                     elif len(unique_trials) > 1:
                         logger.debug(('Several matching trials found for reference %s.'
                                      ' Matched trials ids: %s.'), reference, unique_trials)
-        except Exception as exception:
-            logger.exception(repr(exception), exc_info=True)
+        except Exception:
+            base.config.SENTRY.captureException(extra={
+                'study_id': study_id,
+            })
 
 
 def match_by_identifier(conn, id_name, id_value):

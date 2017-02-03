@@ -45,5 +45,5 @@ def process(conf, conn):
             if not count % 100:
                 logger.info('Processed for links %s hra publications', count)
 
-        except Exception as exception:
-            logger.exception(repr(exception), exc_info=True)
+        except Exception:
+            base.config.SENTRY.captureException()

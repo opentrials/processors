@@ -73,5 +73,5 @@ class _RecordRemover(object):
                 if count and not count % 100:
                     logger.info('Processed %s records', count)
 
-            except Exception as e:
-                logger.exception(repr(e), exc_info=True)
+            except Exception:
+                base.config.SENTRY.captureException()

@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
+from .. import base
 logger = logging.getLogger(__name__)
 
 
@@ -47,10 +48,11 @@ def remove_trials_without_records(conf, conn):
             remover._delete_related_publications()
             remover._delete_related_risk_of_biases()
             remover._delete_trial()
-        except Exception as exception:
+        except Exception:
+            base.config.SENTRY.captureException(extra={
+                'trial_id': trial_id,
+            })
             conn['database'].rollback()
-            logger.exception('Can\'t delete trial: %s and its relations due to error: %s',
-                             trial['identifiers'], repr(exception), exc_info=True)
             error_count += 1
         else:
             conn['database'].commit()

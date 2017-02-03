@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
+from .. import config
 from .. import helpers
 from .. import writers
 logger = logging.getLogger(__name__)
@@ -26,7 +27,6 @@ def process_publications(conn, table, extractors):
     source = extractors['extract_source'](None)
     source_id = writers.write_source(conn, source)
 
-    errors = 0
     success = 0
     for record in helpers.iter_rows(conn, 'warehouse', table, orderby='meta_id'):
 
@@ -39,12 +39,9 @@ def process_publications(conn, table, extractors):
             for publication in publications:
                 writers.write_publication(conn, publication, source_id)
 
-        except Exception as exception:
-            errors += 1
+        except Exception:
+            config.SENTRY.captureException()
             conn['database'].rollback()
-            logger.exception('Processing error: %s [%s]',
-                repr(exception), errors)
-
         else:
             success += 1
             conn['database'].commit()
