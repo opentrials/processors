@@ -1,9 +1,9 @@
-.PHONY: all build install list push start test up
+.PHONY: all build list start test up
 
 all: list
 
 build:
-	docker build -t okibot/processors .
+	docker build -t opentrials/processors .
 
 list:
 	@grep '^\.PHONY' Makefile | cut -d' ' -f2- | tr ' ' '\n'
