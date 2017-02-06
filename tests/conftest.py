@@ -21,6 +21,7 @@ from tests.fixtures.api.organizations import organization
 from tests.fixtures.api.records import record
 from tests.fixtures.api.documents import fda_document
 from tests.fixtures.api.documents import document
+from tests.fixtures.api.document_categories import document_category
 
 from tests.fixtures.warehouse.cochrane_reviews import cochrane_review
 from tests.fixtures.warehouse.nct import nct_record

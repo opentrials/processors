@@ -132,8 +132,15 @@ def extract_documents(record):
     if results_url:
         document = {
             'name': 'Results',
-            'type': 'results',
             'source_url': results_url,
         }
         documents.append(document)
     return documents
+
+
+def extract_document_category(record):
+    return {
+        'id': 24,
+        'name': 'European Public Assessment Report (EPAR) document section',
+        'group': 'Results',
+    }

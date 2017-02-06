@@ -129,8 +129,15 @@ def extract_documents(record):
     if results_url:
         document = {
             'name': 'Results',
-            'type': 'results',
             'source_url': results_url,
         }
         documents.append(document)
     return documents
+
+
+def extract_document_category(record):
+    return {
+        'id': 23,
+        'name': 'Clinical study report synopsis',
+        'group': 'Results',
+    }
