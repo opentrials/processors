@@ -405,7 +405,6 @@ CREATE TABLE records (
     CONSTRAINT trialrecords_gender_check CHECK ((gender = ANY (ARRAY['both'::text, 'male'::text, 'female'::text])))
 );
 
-
 --
 -- Name: risk_of_bias_criterias; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
@@ -459,7 +458,6 @@ CREATE TABLE sources (
     terms_and_conditions_url text,
     CONSTRAINT sources_type_check CHECK ((type = ANY (ARRAY['register'::text, 'other'::text])))
 );
-
 
 --
 -- Name: trials; Type: TABLE; Schema: public; Owner: -; Tablespace: 
