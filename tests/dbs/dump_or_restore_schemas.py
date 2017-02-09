@@ -15,6 +15,11 @@ WAREHOUSE_SCHEMA_PATH = os.path.join(
     'warehouse_schema_dump.sql'
 )
 
+EXPLORER_SCHEMA_PATH = os.path.join(
+    os.path.dirname(__file__),
+    'explorer_schema_dump.sql'
+)
+
 
 def dump_schema(postgres_uri, path):
     return subprocess.check_call([
@@ -61,11 +66,13 @@ def drop_all_tables(postgres_uri):
 def dump_schemas():
     dump_schema(os.environ['DATABASE_URL'], DATABASE_SCHEMA_PATH)
     dump_schema(os.environ['WAREHOUSE_URL'], WAREHOUSE_SCHEMA_PATH)
+    dump_schema(os.environ['EXPLORER_URL'], EXPLORER_SCHEMA_PATH)
 
 
 def restore_schemas():
     restore_schema(os.environ['TEST_DATABASE_URL'], DATABASE_SCHEMA_PATH)
     restore_schema(os.environ['TEST_WAREHOUSE_URL'], WAREHOUSE_SCHEMA_PATH)
+    restore_schema(os.environ['TEST_EXPLORER_URL'], EXPLORER_SCHEMA_PATH)
 
 
 parser = argparse.ArgumentParser(

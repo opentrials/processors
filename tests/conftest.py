@@ -26,6 +26,9 @@ from tests.fixtures.api.document_categories import document_category
 from tests.fixtures.warehouse.cochrane_reviews import cochrane_review
 from tests.fixtures.warehouse.nct import nct_record
 
+from tests.fixtures.explorer.data_categories import data_category
+from tests.fixtures.explorer.data_contributions import data_contribution
+
 @pytest.fixture
 def conn(request):
     """Create connection dict for the test databases.
@@ -39,17 +42,22 @@ def conn(request):
     conn = {
         'database': dataset.connect(config.DATABASE_URL),
         'warehouse': dataset.connect(config.WAREHOUSE_URL),
+        'explorer': dataset.connect(config.EXPLORER_URL),
     }
 
     APISession = sessionmaker(bind=conn['database'].engine)
     api_session = APISession()
     WarehouseSession = sessionmaker(bind=conn['warehouse'].engine)
     warehouse_session = WarehouseSession()
+    ExplorerSession = sessionmaker(bind=conn['explorer'].engine)
+    explorer_session = ExplorerSession()
     def teardown():
         truncate_database(conn['database'].engine)
         truncate_database(conn['warehouse'].engine)
+        truncate_database(conn['explorer'].engine)
         api_session.close()
         warehouse_session.close()
+        explorer_session.close()
 
     request.addfinalizer(teardown)
     return conn

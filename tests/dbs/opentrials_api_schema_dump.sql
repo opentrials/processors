@@ -387,7 +387,7 @@ CREATE TABLE records (
     first_enrollment_date date,
     study_type text,
     study_design text,
-    study_phase text,
+    study_phase text[],
     primary_outcomes jsonb,
     secondary_outcomes jsonb,
     created_at timestamp with time zone,
@@ -401,9 +401,10 @@ CREATE TABLE records (
     last_verification_date date,
     is_primary boolean DEFAULT false,
     CONSTRAINT records_recruitment_status_check CHECK ((recruitment_status = ANY (ARRAY['recruiting'::text, 'not_recruiting'::text, 'unknown'::text, 'other'::text]))),
-    CONSTRAINT records_status_check CHECK ((status = ANY (ARRAY['ongoing'::text, 'withdrawn'::text, 'suspended'::text, 'terminated'::text, 'complete'::text, 'other'::text]))),
+    CONSTRAINT records_status_check CHECK ((status = ANY (ARRAY['ongoing'::text, 'withdrawn'::text, 'suspended'::text, 'terminated'::text, 'complete'::text, 'unknown'::text, 'other'::text]))),
     CONSTRAINT trialrecords_gender_check CHECK ((gender = ANY (ARRAY['both'::text, 'male'::text, 'female'::text])))
 );
+
 
 --
 -- Name: risk_of_bias_criterias; Type: TABLE; Schema: public; Owner: -; Tablespace: 
@@ -459,6 +460,7 @@ CREATE TABLE sources (
     CONSTRAINT sources_type_check CHECK ((type = ANY (ARRAY['register'::text, 'other'::text])))
 );
 
+
 --
 -- Name: trials; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
@@ -477,7 +479,7 @@ CREATE TABLE trials (
     first_enrollment_date date,
     study_type text,
     study_design text,
-    study_phase text,
+    study_phase text[],
     primary_outcomes jsonb,
     secondary_outcomes jsonb,
     created_at timestamp with time zone,
@@ -490,7 +492,7 @@ CREATE TABLE trials (
     results_exemption_date date,
     CONSTRAINT trials_gender_check CHECK ((gender = ANY (ARRAY['both'::text, 'male'::text, 'female'::text]))),
     CONSTRAINT trials_recruitment_status_check CHECK ((recruitment_status = ANY (ARRAY['recruiting'::text, 'not_recruiting'::text, 'unknown'::text, 'other'::text]))),
-    CONSTRAINT trials_status_check CHECK ((status = ANY (ARRAY['ongoing'::text, 'withdrawn'::text, 'suspended'::text, 'terminated'::text, 'complete'::text, 'other'::text])))
+    CONSTRAINT trials_status_check CHECK ((status = ANY (ARRAY['ongoing'::text, 'withdrawn'::text, 'suspended'::text, 'terminated'::text, 'complete'::text, 'unknown'::text, 'other'::text])))
 );
 
 
