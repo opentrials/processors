@@ -97,27 +97,12 @@ PYBOSSA_API_KEY = os.environ.get('PYBOSSA_API_KEY')
 PYBOSSA_PROJECT_INDICATIONS = os.environ.get('PYBOSSA_PROJECT_INDICATIONS')
 
 # Remove sources
+
 REMOVE_SOURCE_IDS = os.environ.get('REMOVE_SOURCE_IDS')
-
-# Contrib
-
-# Contributions mapping to upload
-CONTRIB = {
-    # Contribution ID
-    '9e4f1280-41bf-11e6-8971-f99af8d5a820': {
-        # Contribution type
-        'csr_synopsis': [
-            # Regex to extract primary_id from filename
-            r'(?P<primary_id>nct\d{3,})\.pdf',
-            # Hard-coded mapping for primary_id
-            ('some_document.pdf', 'ISRCT12345678'),
-        ],
-    },
-}
-
 
 # This provides aliases for document_categories in order to reduce the points of
 # change. Please use these aliases throughout the code.
+
 DOCUMENT_CATEGORIES = {
       'registry_entry': 19,
       'other': 20,
