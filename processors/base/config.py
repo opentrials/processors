@@ -24,10 +24,11 @@ SENTRY = raven.Client(os.environ.get('SENTRY_DSN'))
 if ENV == 'testing':
     WAREHOUSE_URL = os.environ['TEST_WAREHOUSE_URL']
     DATABASE_URL = os.environ['TEST_DATABASE_URL']
+    EXPLORER_URL = os.environ['TEST_EXPLORER_URL']
 else:
     WAREHOUSE_URL = os.environ['WAREHOUSE_URL']
     DATABASE_URL = os.environ['DATABASE_URL']
-    EXPLORERDB_URL = os.environ['EXPLORERDB_URL']
+    EXPLORER_URL = os.environ['EXPLORER_URL']
 
 # Logging
 

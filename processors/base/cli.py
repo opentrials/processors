@@ -22,7 +22,7 @@ def cli(argv):
     conn = {
         'database': dataset.connect(config.DATABASE_URL),
         'warehouse': dataset.connect(config.WAREHOUSE_URL),
-        'explorerdb': dataset.connect(config.EXPLORERDB_URL),
+        'explorer': dataset.connect(config.EXPLORER_URL),
     }
 
     # Get and call processor
