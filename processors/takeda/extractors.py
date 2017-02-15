@@ -137,7 +137,6 @@ def extract_documents(record):
 
 def extract_document_category(record):
     return {
-        'id': 23,
         'name': 'Clinical study report synopsis',
         'group': 'Results',
     }

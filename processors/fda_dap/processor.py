@@ -91,8 +91,8 @@ class FDADAPProcessor(object):
 
     def _upsert_document_category(self):
         document_category = {
-            'id': 20,
             'name': 'Other',
+            'group': None,
         }
         return base.writers.write_document_category(self._conn, document_category)
 

@@ -140,7 +140,6 @@ def extract_documents(record):
 
 def extract_document_category(record):
     return {
-        'id': 24,
         'name': 'European Public Assessment Report (EPAR) document section',
         'group': 'Results',
     }

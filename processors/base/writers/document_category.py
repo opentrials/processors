@@ -24,14 +24,29 @@ def write_document_category(conn, document_category):
     """
     create = False
     db = conn['database']
-    obj = db['document_categories'].find_one(id=document_category['id'])
 
-    # Create object
-    if not obj:
-        obj = {
-            'id': document_category['id'],
-        }
-        create = True
+    # This is used to sinchronize with `data_categories` of `data_contributions`
+    if document_category.get('id'):
+        obj = db['document_categories'].find_one(id=document_category['id'])
+        if not obj:
+            obj = {
+                'id': document_category['id'],
+            }
+            create = True
+
+    # This document category is not specific to data contributions
+    else:
+        obj = db['document_categories'].find_one(name=document_category['name'],
+            group=document_category['group'])
+        if not obj:
+            # Avoid ids that could be overwritten by syncronization with `data_categories`
+            max_id_query = 'SELECT max(id) FROM document_categories;'
+            max_id_result = [res['max'] for res in db.query(max_id_query)]
+            max_id = max_id_result[0] or 0
+            obj = {
+                'id': (max_id % 100) + 101,
+            }
+            create = True
 
     # Update object
     obj.update({
