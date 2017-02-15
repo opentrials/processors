@@ -36,32 +36,27 @@ def process(conf, conn):
 
     # Execute
     count = 0
-    failed = 0
 
     for result in conn['database'].query(query):
-        try:
-            trial_identifiers = result['trial_identifiers']
-            identifiers = dict(trial_identifiers.items() +
-                               result['records_identifiers'].items())
 
-            if sorted(identifiers.items()) == sorted(trial_identifiers.items()):
-                continue
+        trial_identifiers = result['trial_identifiers']
+        identifiers = dict(trial_identifiers.items() +
+                           result['records_identifiers'].items())
 
-            trial = {
-                'id': result['id'].hex,
-                'identifiers': identifiers,
-                'updated_at': datetime.datetime.utcnow(),
-            }
+        if sorted(identifiers.items()) == sorted(trial_identifiers.items()):
+            continue
 
-            conn['database']['trials'].update(trial, ['id'])
-            count += 1
-            logger.info("[{}] Trial {} was updated".format(count, trial['id']))
+        trial = {
+            'id': result['id'].hex,
+            'identifiers': identifiers,
+            'updated_at': datetime.datetime.utcnow(),
+        }
+        base.config.SENTRY.extra_context({
+            'trial': trial,
+        })
 
-        except Exception:
-            base.config.SENTRY.captureException(extra={
-                'identifiers': result['trial_identifiers'],
-            })
-            failed += 1
+        conn['database']['trials'].update(trial, ['id'])
+        count += 1
+        logger.info("[{}] Trial {} was updated".format(count, trial['id']))
 
     logger.info('{} trials updated'.format(count))
-    logger.info('{} trials failed'.format(failed))

@@ -22,12 +22,10 @@ def process(conf, conn):
 
     processor = FDADAPProcessor(conf, conn)
     for record in base.helpers.iter_rows(conn, 'warehouse', 'fda_dap', orderby='id'):
-        try:
-            processor.process_record(record, source_id)
-        except Exception:
-            base.config.SENTRY.captureException(extra={
-                'meta_id': record['meta_id'],
-            })
+        base.config.SENTRY.extra_context({
+            'meta_id': record['meta_id'],
+        })
+        processor.process_record(record, source_id)
 
 
 def _create_source(conn):

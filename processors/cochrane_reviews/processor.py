@@ -20,39 +20,37 @@ def process(conf, conn):
     study_ids = [study['study_id'] for study in studies]
 
     for study_id in study_ids:
-        try:
-            study_reviews = conn['warehouse']['cochrane_reviews'].find(study_id=study_id)
+        base.config.SENTRY.extra_context({
+            'study_id': study_id,
+        })
+        study_reviews = conn['warehouse']['cochrane_reviews'].find(study_id=study_id)
 
-            for file_name, rev_records in groupby(study_reviews, lambda r: r['file_name']):
-                rev_records = list(rev_records)
-                latest_rev = sorted(rev_records, key=lambda x: x['meta_updated'])[-1]
-                references = reduce(add, [rev['refs'] for rev in rev_records])
+        for file_name, rev_records in groupby(study_reviews, lambda r: r['file_name']):
+            rev_records = list(rev_records)
+            latest_rev = sorted(rev_records, key=lambda x: x['meta_updated'])[-1]
+            references = reduce(add, [rev['refs'] for rev in rev_records])
 
-                for reference in references:
-                    identifiers = extract_ref_identifiers(reference)
-                    matching_trials = []
-                    for id_name, id_value in identifiers.items():
-                        found_trials = match_by_identifier(conn, id_name, id_value)
-                        matching_trials.extend(found_trials)
+            for reference in references:
+                identifiers = extract_ref_identifiers(reference)
+                matching_trials = []
+                for id_name, id_value in identifiers.items():
+                    found_trials = match_by_identifier(conn, id_name, id_value)
+                    matching_trials.extend(found_trials)
 
-                    if len(matching_trials) == 0:
-                        matching_trials.extend(match_by_reference(conn, reference))
+                if len(matching_trials) == 0:
+                    matching_trials.extend(match_by_reference(conn, reference))
 
-                    unique_trials = set(matching_trials)
-                    if len(unique_trials) == 1:
-                        trial_id = matching_trials[0]
-                        extractors = base.helpers.get_variables(
-                            extractors_module, lambda x: x.startswith('extract_'))
-                        base.processors.process_risk_of_biases(conn, extractors,
-                                                               latest_rev, trial_id)
-                        break
-                    elif len(unique_trials) > 1:
-                        logger.debug(('Several matching trials found for reference %s.'
-                                     ' Matched trials ids: %s.'), reference, unique_trials)
-        except Exception:
-            base.config.SENTRY.captureException(extra={
-                'study_id': study_id,
-            })
+                unique_trials = set(matching_trials)
+                if len(unique_trials) == 1:
+                    trial_id = matching_trials[0]
+                    extractors = base.helpers.get_variables(
+                        extractors_module, lambda x: x.startswith('extract_'))
+                    base.processors.process_risk_of_biases(conn, extractors,
+                                                           latest_rev, trial_id)
+                    break
+                elif len(unique_trials) > 1:
+                    logger.debug(('Several matching trials found for reference %s.'
+                                 ' Matched trials ids: %s.'), reference, unique_trials)
 
 
 def match_by_identifier(conn, id_name, id_value):
