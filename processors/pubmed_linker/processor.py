@@ -17,46 +17,44 @@ def process(conf, conn):
     count = 0
     for publication in base.helpers.iter_rows(conn, 'database', 'publications',
             orderby='id', source_id='pubmed'):
-        try:
 
-            # Find identifiers
-            list_of_identifiers = base.helpers.find_list_of_identifiers(
-                publication['title'] + publication['abstract'])
+        base.config.SENTRY.extra_context({
+            'publication': publication,
+        })
 
-            # Delete existent relationships
-            conn['database']['trials_publications'].delete(
-                publication_id=publication['id'])
+        # Find identifiers
+        list_of_identifiers = base.helpers.find_list_of_identifiers(
+            publication['title'] + publication['abstract'])
 
-            # Write new relationships
-            for identifiers in list_of_identifiers:
+        # Delete existent relationships
+        conn['database']['trials_publications'].delete(
+            publication_id=publication['id'])
 
-                # Get trial
-                trial = base.helpers.find_trial_by_identifiers(
-                    conn, identifiers=identifiers)
+        # Write new relationships
+        for identifiers in list_of_identifiers:
 
-                # Found trial - add relationship
-                if trial:
-                    base.writers.write_trial_relationship(
-                        conn, 'publication', publication, publication['id'], trial['id'])
-                    logger.debug('Linked %s to "%s"',
-                        trial['identifiers'].values(), publication['title'][0:50])
+            # Get trial
+            trial = base.helpers.find_trial_by_identifiers(
+                conn, identifiers=identifiers)
 
-                # Not found trial - add trial stub
-                else:
-                    trial = {
-                        'source_id': 'pubmed',
-                        'identifiers': identifiers,
-                        'public_title': identifiers.values()[0],
-                    }
-                    base.writers.write_trial(conn, trial, 'pubmed')
-                    logger.debug('Added pubmed-only trial: %s', identifiers.values()[0])
+            # Found trial - add relationship
+            if trial:
+                base.writers.write_trial_relationship(
+                    conn, 'publication', publication, publication['id'], trial['id'])
+                logger.debug('Linked %s to "%s"',
+                    trial['identifiers'].values(), publication['title'][0:50])
 
-            # Log info
-            count += 1
-            if not count % 100:
-                logger.info('Processed for links %s pubmed publications', count)
+            # Not found trial - add trial stub
+            else:
+                trial = {
+                    'source_id': 'pubmed',
+                    'identifiers': identifiers,
+                    'public_title': identifiers.values()[0],
+                }
+                base.writers.write_trial(conn, trial, 'pubmed')
+                logger.debug('Added pubmed-only trial: %s', identifiers.values()[0])
 
-        except Exception:
-            base.config.SENTRY.captureException(extra={
-                'publication': publication,
-            })
+        # Log info
+        count += 1
+        if not count % 100:
+            logger.info('Processed for links %s pubmed publications', count)

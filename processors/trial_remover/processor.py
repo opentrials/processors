@@ -33,10 +33,12 @@ def remove_trials_without_records(conf, conn):
 
     # Execute
     count = 0
-    error_count = 0
     for trial in conn['database'].query(query):
         trial_id = trial['id'].hex
         remover = _TrialRemover(conf, conn['database'], trial_id)
+        base.config.SENTRY.extra_context({
+            'trial_id': trial_id,
+        })
         conn['database'].begin()
         try:
             remover._delete_related_documents()
@@ -49,11 +51,8 @@ def remove_trials_without_records(conf, conn):
             remover._delete_related_risk_of_biases()
             remover._delete_trial()
         except Exception:
-            base.config.SENTRY.captureException(extra={
-                'trial_id': trial_id,
-            })
             conn['database'].rollback()
-            error_count += 1
+            raise
         else:
             conn['database'].commit()
             logger.info('Deleted trial without records: %s and its relations',
@@ -62,8 +61,6 @@ def remove_trials_without_records(conf, conn):
         if count and not count % 100:
             logger.info('Removed %s trials without records', count)
     logger.info('Removed %s trials without records', count)
-    if error_count > 0:
-        logger.warning('Failed to remove %s trials without records', error_count)
 
 
 class _TrialRemover(object):

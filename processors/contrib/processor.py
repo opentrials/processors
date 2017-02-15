@@ -15,7 +15,6 @@ import zipfile
 import hashlib
 import tempfile
 import requests
-from .. import base
 logger = logging.getLogger(__name__)
 
 
@@ -37,82 +36,77 @@ def process(conf, conn):
 
     # Iterate contributions mapping
     for contrib_id, mappings in conf['CONTRIB'].items():
-        try:
+        # Log started for contrib
+        logger.info('Started extration from contrib "%s"', contrib_id)
 
-            # Log started for contrib
-            logger.info('Started extration from contrib "%s"', contrib_id)
+        # Prepare temp directory
+        dirpath = tempfile.mkdtemp()
 
-            # Prepare temp directory
-            dirpath = tempfile.mkdtemp()
+        # Get contribution and download documents
+        contrib = conn['explorerdb']['data_contributions'].find_one(id=contrib_id)
+        _download_documents(contrib['data_url'], dirpath)
 
-            # Get contribution and download documents
-            contrib = conn['explorerdb']['data_contributions'].find_one(id=contrib_id)
-            _download_documents(contrib['data_url'], dirpath)
+        # Process downloaded documents
+        for filename in os.listdir(dirpath):
 
-            # Process downloaded documents
-            for filename in os.listdir(dirpath):
+            # Extract primary_id
+            (type, primary_id) = _extract_metadata(filename, mappings)
+            if not primary_id:
+                logger.warning('Document "%s" is not in contrib mappings', filename)
+                continue
 
-                # Extract primary_id
-                (type, primary_id) = _extract_metadata(filename, mappings)
-                if not primary_id:
-                    logger.warning('Document "%s" is not in contrib mappings', filename)
-                    continue
+            # Retrieve record
+            record = conn['database']['records'].find_one(primary_id=primary_id)
+            if not record:
+                logger.warning('Document "%s" has no matched trial', filename)
+                continue
 
-                # Retrieve record
-                record = conn['database']['records'].find_one(primary_id=primary_id)
-                if not record:
-                    logger.warning('Document "%s" has no matched trial', filename)
-                    continue
+            # Build document url
+            filepath = os.path.join(dirpath, filename)
+            checksum = _calculate_checksum(filepath)
+            extension = os.path.splitext(filename)[1]
+            bucket = conf['AWS_S3_BUCKET']
+            key = 'documents/%s%s' % (checksum, extension)
+            source_url = _generate_url(resource, bucket, key)
 
-                # Build document url
-                filepath = os.path.join(dirpath, filename)
-                checksum = _calculate_checksum(filepath)
-                extension = os.path.splitext(filename)[1]
-                bucket = conf['AWS_S3_BUCKET']
-                key = 'documents/%s%s' % (checksum, extension)
-                source_url = _generate_url(resource, bucket, key)
+            # Get documents table
+            table = conn['database']['documents']
 
-                # Get documents table
-                table = conn['database']['documents']
+            # Get document identifier
+            create = True
+            document_id = uuid.uuid1().hex
+            document = table.find_one(
+                trial_id=record['trial_id'],
+                source_url=source_url
+            )
+            if document:
+                create = False
+                document_id = document['id']
 
-                # Get document identifier
-                create = True
-                document_id = uuid.uuid1().hex
-                document = table.find_one(
-                    trial_id=record['trial_id'],
-                    source_url=source_url
-                )
-                if document:
-                    create = False
-                    document_id = document['id']
+            # Upload document to S3
+            resource.Bucket(bucket).upload_file(filepath, key)
 
-                # Upload document to S3
-                resource.Bucket(bucket).upload_file(filepath, key)
+            # Write document to database
+            table.upsert({
+                'id': document_id,
+                'name': DOCUMENT_NAMES[type],
+                'trial_id': record['trial_id'],
+                'type': type,
+                'source_url': source_url,
+            }, keys=['id'], ensure=False)
 
-                # Write document to database
-                table.upsert({
-                    'id': document_id,
-                    'name': DOCUMENT_NAMES[type],
-                    'trial_id': record['trial_id'],
-                    'type': type,
-                    'source_url': source_url,
-                }, keys=['id'], ensure=False)
+            # Log success
+            logger.info('Document "%s" %s: %s',
+                filename, 'created' if create else 'updated', source_url)
 
-                # Log success
-                logger.info('Document "%s" %s: %s',
-                    filename, 'created' if create else 'updated', source_url)
+        # Remove temp directory
+        shutil.rmtree(dirpath)
 
-            # Remove temp directory
-            shutil.rmtree(dirpath)
+        # Log finished for contrib
+        logger.info('Finished extration from contrib "%s"', contrib_id)
 
-            # Log finished for contrib
-            logger.info('Finished extration from contrib "%s"', contrib_id)
-
-        except Exception:
-            base.config.SENTRY.captureException()
 
 # Internal
-
 
 def _download_documents(url, dirpath):
     """Download documents to dirpath and extract if needed.
