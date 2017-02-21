@@ -114,3 +114,40 @@ CONTRIB = {
         ],
     },
 }
+
+
+# This provides aliases for document_categories in order to reduce the points of
+# change. Please use these aliases throughout the code.
+DOCUMENT_CATEGORIES = {
+      'registry_entry': 19,
+      'other': 20,
+      'journal_article': 21,
+      'clinical_study_report': 22,
+      'clinical_study_report_synopsis': 23,
+      'epar_document_section': 24,
+      'fda_document_segment': 25,
+      'press_release_results': 26,
+      'conference_abstract_results': 27,
+      'report_funder': 28,
+      'case_report_form': 29,
+      'grant_application': 30,
+      'irb_hrec_approval': 31,
+      'investigator_brochure': 32,
+      'consent_form': 33,
+      'statistical_analysis_plan': 34,
+      'trial_protocol': 35,
+      'analytics_code': 36,
+      'trialist_webpage': 37,
+      'lay_summary_design': 38,
+      'lay_summary_results': 39,
+      'individual_patient_data': 40,
+      'systematic_review_data': 41,
+      'blog_post': 42,
+      'journal_article_critique': 43,
+      'systematic_review': 44,
+      'review_article': 45,
+      'news_article': 46,
+      'press_release_trial': 47,
+      'report_from_sponsor': 48,
+      'journal_article_reanalysis': 49,
+}
