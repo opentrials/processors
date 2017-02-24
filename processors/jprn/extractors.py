@@ -155,8 +155,4 @@ def extract_documents(record):
 
 
 def extract_document_category(record):
-    return {
-        'id': 22,
-        'name': 'Clinical study report',
-        'group': 'Results',
-    }
+    return base.config.DOCUMENT_CATEGORIES['clinical_study_report']

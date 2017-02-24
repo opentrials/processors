@@ -56,8 +56,7 @@ def process_trials(conn, table, extractors):
             if extract_documents:
 
                 # Extract and write document category
-                doc_category = extractors.get('extract_document_category')(record)
-                doc_category_id = writers.write_document_category(conn, doc_category)
+                doc_category_id = extractors.get('extract_document_category')(record)
                 for document in extract_documents(record):
                     document.update({
                         'trial_id': trial_id,
