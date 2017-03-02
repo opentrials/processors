@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 
 def extract_source():
     return {
-        'id': 'contrib',
+        'id': 'contribution',
         'name': 'Data Contribution',
         'type': 'other',
     }
