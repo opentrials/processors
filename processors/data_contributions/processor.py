@@ -36,11 +36,16 @@ def process(conf, conn):
         AND (data_url IS NOT NULL OR url IS NOT NULL)
     '''
     for contribution in conn['explorer'].query(for_processing):
+        base.config.SENTRY.extra_context({
+            'data_contribution': contribution,
+        })
         contribution = convert_ids(contribution)
         trial = conn['database']['trials'].find_one(id=contribution['trial_id'])
-        if not trial:
-            continue
-        _process_document(conn, contribution, extractors, source_id)
+        if trial:
+            _process_document(conn, contribution, extractors, source_id)
+        else:
+            msg = 'Ignoring data contribution "%s" because it refers unknown trial_id "%s"'
+            logging.info(msg, contribution['id'], contribution['trial_id'])
 
     # Remove documents from data_contributions
     for_removal = '''
@@ -49,6 +54,9 @@ def process(conf, conn):
         AND document_id IS NOT NULL
     '''
     for contribution in conn['explorer'].query(for_removal):
+        base.config.SENTRY.extra_context({
+            'data_contribution': contribution,
+        })
         contribution = convert_ids(contribution)
         _remove_document(conn, contribution)
 
@@ -82,10 +90,8 @@ def _process_document(conn, contribution, extractors, source_id):
             conn['explorer']['data_contributions'].update(contribution, ['id'])
         except sqlalchemy_exceptions.DBAPIError:
             conn['database'].rollback()
-            base.config.SENTRY.captureException(extra={
-                'data_contribution_id': contribution['id'],
-            })
             logger.debug('Could not process data contribution: %s', contribution['id'])
+            raise
         else:
             conn['database'].commit()
             logger.info('Sucessfully processed data contribution: %s', contribution['id'])
@@ -102,11 +108,8 @@ def _remove_document(conn, contribution):
         conn['explorer']['data_contributions'].update(contribution, ['id'])
     except sqlalchemy_exceptions.DBAPIError:
         conn['database'].rollback()
-        base.config.SENTRY.captureException(extra={
-            'data_contribution_id': contribution['id'],
-            'document_id': document_id,
-        })
         logger.debug('Could not remove contributed document: %s', document_id)
+        raise
     else:
         conn['database'].commit()
         logger.info('Sucessfully removed contributed document: %s', document_id)
@@ -121,7 +124,11 @@ def _document_is_valid(document):
         content_type = data_request.headers['Content-Type']
         if any(archive_type in content_type for archive_type in archive_mimetypes):
             is_valid = False
+            msg = 'Ignoring document "%s" because it is of invalid type "%s"'
+            logger.info(msg, document['source_url'], content_type)
     else:
+        msg = 'Ignoring document "%s" because it wasn\'t possible to download it'
+        logger.info(msg, document['source_url'])
         is_valid = False
     return is_valid
 
