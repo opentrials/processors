@@ -4,12 +4,6 @@ actrn:
     file: docker-cloud.yml
   restart: 'no'
 
-contrib:
-  extends:
-    service: contrib
-    file: docker-cloud.yml
-  restart: 'no'
-
 euctr:
   extends:
     service: euctr

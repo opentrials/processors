@@ -15,7 +15,7 @@ def test_clean_identifier():
     assert _clean_identifier('12345678', prefix='NCT') == 'NCT12345678'
     assert _clean_identifier('ISRCTN12345678', prefix='ISRCTN') == 'ISRCTN12345678'
     assert _clean_identifier('12345678', prefix='ISRCTN') == 'ISRCTN12345678'
-    assert _clean_identifier('n/a', prefix='NCT') == None
+    assert _clean_identifier('n/a', prefix='NCT') is None
 
 
 def test_url_from_title():

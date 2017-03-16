@@ -16,7 +16,7 @@ set -a; source .env
 ## Testing
 
 #### Set up testing environment
-  1. Create the test databases given as value for `TEST_WAREHOUSE_URL` and `TEST_DATABASE_URL`
+  1. Create the test databases given as value for `TEST_WAREHOUSE_URL`, `TEST_DATABASE_URL` and `TEST_EXPLORER_URL`
   in your `.env` file.
 
   2. Populate test databases with their corresponding schema:
