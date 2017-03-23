@@ -45,6 +45,19 @@ ALTER TABLE IF EXISTS ONLY public.documents DROP CONSTRAINT IF EXISTS documents_
 ALTER TABLE IF EXISTS ONLY public.documents DROP CONSTRAINT IF EXISTS documents_file_id_foreign;
 ALTER TABLE IF EXISTS ONLY public.documents DROP CONSTRAINT IF EXISTS documents_fda_approval_id_foreign;
 ALTER TABLE IF EXISTS ONLY public.documents DROP CONSTRAINT IF EXISTS documents_document_category_id_foreign;
+DROP TRIGGER IF EXISTS trials_set_updated_at ON public.trials;
+DROP TRIGGER IF EXISTS sources_set_updated_at ON public.sources;
+DROP TRIGGER IF EXISTS risk_of_biases_set_updated_at ON public.risk_of_biases;
+DROP TRIGGER IF EXISTS risk_of_bias_criterias_set_updated_at ON public.risk_of_bias_criterias;
+DROP TRIGGER IF EXISTS records_set_updated_at ON public.records;
+DROP TRIGGER IF EXISTS publications_set_updated_at ON public.publications;
+DROP TRIGGER IF EXISTS persons_set_updated_at ON public.persons;
+DROP TRIGGER IF EXISTS organisations_set_updated_at ON public.organisations;
+DROP TRIGGER IF EXISTS locations_set_updated_at ON public.locations;
+DROP TRIGGER IF EXISTS interventions_set_updated_at ON public.interventions;
+DROP TRIGGER IF EXISTS fda_approvals_set_updated_at ON public.fda_approvals;
+DROP TRIGGER IF EXISTS fda_applications_set_updated_at ON public.fda_applications;
+DROP TRIGGER IF EXISTS conditions_set_updated_at ON public.conditions;
 DROP INDEX IF EXISTS public.trials_documents_document_id_index;
 DROP INDEX IF EXISTS public.trialrecords_trial_id_index;
 DROP INDEX IF EXISTS public.records_identifiers_index;
@@ -122,6 +135,7 @@ DROP TABLE IF EXISTS public.fda_applications;
 DROP TABLE IF EXISTS public.documents;
 DROP TABLE IF EXISTS public.document_categories;
 DROP TABLE IF EXISTS public.conditions;
+DROP FUNCTION IF EXISTS public.set_updated_at();
 DROP EXTENSION IF EXISTS plpgsql;
 DROP SCHEMA IF EXISTS public;
 --
@@ -154,6 +168,20 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 SET search_path = public, pg_catalog;
 
+--
+-- Name: set_updated_at(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION set_updated_at() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+      NEW.updated_at := now();
+      RETURN NEW;
+    END;
+    $$;
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -165,8 +193,8 @@ SET default_with_oids = false;
 CREATE TABLE conditions (
     id uuid NOT NULL,
     name text NOT NULL,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     source_id text,
     slug text,
     description text,
@@ -225,8 +253,8 @@ CREATE TABLE fda_approvals (
     type text NOT NULL,
     action_date date NOT NULL,
     notes text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     fda_application_id text NOT NULL
 );
 
@@ -252,8 +280,8 @@ CREATE TABLE interventions (
     id uuid NOT NULL,
     name text NOT NULL,
     type text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     source_id text,
     slug text,
     description text,
@@ -312,8 +340,8 @@ CREATE TABLE locations (
     id uuid NOT NULL,
     name text NOT NULL,
     type text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     source_id text,
     slug text,
     CONSTRAINT locations_type_check CHECK ((type = ANY (ARRAY['country'::text, 'city'::text, 'other'::text])))
@@ -327,8 +355,8 @@ CREATE TABLE locations (
 CREATE TABLE organisations (
     id uuid NOT NULL,
     name text NOT NULL,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     source_id text,
     slug text
 );
@@ -341,8 +369,8 @@ CREATE TABLE organisations (
 CREATE TABLE persons (
     id uuid NOT NULL,
     name text NOT NULL,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     source_id text,
     slug text
 );
@@ -355,8 +383,8 @@ CREATE TABLE persons (
 CREATE TABLE publications (
     id uuid NOT NULL,
     source_id text NOT NULL,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     source_url text NOT NULL,
     title text NOT NULL,
     abstract text NOT NULL,
@@ -390,8 +418,8 @@ CREATE TABLE records (
     study_phase text[],
     primary_outcomes jsonb,
     secondary_outcomes jsonb,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     has_published_results boolean,
     gender text,
     trial_id uuid,
@@ -453,8 +481,8 @@ CREATE TABLE sources (
     id text NOT NULL,
     name text NOT NULL,
     type text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     source_url text,
     terms_and_conditions_url text,
     CONSTRAINT sources_type_check CHECK ((type = ANY (ARRAY['register'::text, 'other'::text])))
@@ -482,8 +510,8 @@ CREATE TABLE trials (
     study_phase text[],
     primary_outcomes jsonb,
     secondary_outcomes jsonb,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     has_published_results boolean,
     gender text,
     source_id text,
@@ -964,6 +992,97 @@ CREATE INDEX trialrecords_trial_id_index ON records USING btree (trial_id);
 --
 
 CREATE INDEX trials_documents_document_id_index ON trials_documents USING btree (document_id);
+
+
+--
+-- Name: conditions_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER conditions_set_updated_at BEFORE UPDATE ON conditions FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: fda_applications_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER fda_applications_set_updated_at BEFORE UPDATE ON fda_applications FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: fda_approvals_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER fda_approvals_set_updated_at BEFORE UPDATE ON fda_approvals FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: interventions_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER interventions_set_updated_at BEFORE UPDATE ON interventions FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: locations_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER locations_set_updated_at BEFORE UPDATE ON locations FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: organisations_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER organisations_set_updated_at BEFORE UPDATE ON organisations FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: persons_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER persons_set_updated_at BEFORE UPDATE ON persons FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: publications_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER publications_set_updated_at BEFORE UPDATE ON publications FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: records_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER records_set_updated_at BEFORE UPDATE ON records FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: risk_of_bias_criterias_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER risk_of_bias_criterias_set_updated_at BEFORE UPDATE ON risk_of_bias_criterias FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: risk_of_biases_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER risk_of_biases_set_updated_at BEFORE UPDATE ON risk_of_biases FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: sources_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER sources_set_updated_at BEFORE UPDATE ON sources FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: trials_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trials_set_updated_at BEFORE UPDATE ON trials FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
 
 --

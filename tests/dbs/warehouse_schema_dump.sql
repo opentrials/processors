@@ -11,6 +11,22 @@ SET client_min_messages = warning;
 
 SET search_path = public, pg_catalog;
 
+DROP TRIGGER IF EXISTS takeda_set_meta_updated ON public.takeda;
+DROP TRIGGER IF EXISTS pubmed_set_meta_updated ON public.pubmed;
+DROP TRIGGER IF EXISTS pfizer_set_meta_updated ON public.pfizer;
+DROP TRIGGER IF EXISTS nct_set_meta_updated ON public.nct;
+DROP TRIGGER IF EXISTS jprn_set_meta_updated ON public.jprn;
+DROP TRIGGER IF EXISTS isrctn_set_meta_updated ON public.isrctn;
+DROP TRIGGER IF EXISTS ictrp_set_meta_updated ON public.ictrp;
+DROP TRIGGER IF EXISTS icdpcs_set_meta_updated ON public.icdpcs;
+DROP TRIGGER IF EXISTS icdcm_set_meta_updated ON public.icdcm;
+DROP TRIGGER IF EXISTS hra_set_meta_updated ON public.hra;
+DROP TRIGGER IF EXISTS gsk_set_meta_updated ON public.gsk;
+DROP TRIGGER IF EXISTS fdadl_set_meta_updated ON public.fdadl;
+DROP TRIGGER IF EXISTS fda_dap_set_meta_updated ON public.fda_dap;
+DROP TRIGGER IF EXISTS euctr_set_meta_updated ON public.euctr;
+DROP TRIGGER IF EXISTS cochrane_reviews_set_meta_updated ON public.cochrane_reviews;
+DROP TRIGGER IF EXISTS actrn_set_meta_updated ON public.actrn;
 ALTER TABLE IF EXISTS ONLY public.takeda DROP CONSTRAINT IF EXISTS takeda_pkey;
 ALTER TABLE IF EXISTS ONLY public.takeda DROP CONSTRAINT IF EXISTS takeda_meta_id_unique;
 ALTER TABLE IF EXISTS ONLY public.pubmed DROP CONSTRAINT IF EXISTS pubmed_pkey;
@@ -59,6 +75,7 @@ DROP TABLE IF EXISTS public.euctr;
 DROP TABLE IF EXISTS public.cochrane_reviews;
 DROP TABLE IF EXISTS public.alembic_version;
 DROP TABLE IF EXISTS public.actrn;
+DROP FUNCTION IF EXISTS public.set_meta_updated();
 DROP EXTENSION IF EXISTS plpgsql;
 DROP SCHEMA IF EXISTS public;
 --
@@ -91,6 +108,20 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 SET search_path = public, pg_catalog;
 
+--
+-- Name: set_meta_updated(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION set_meta_updated() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+                    BEGIN
+                      NEW.meta_updated := now();
+                      RETURN NEW;
+                    END;
+                    $$;
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -102,8 +133,8 @@ SET default_with_oids = false;
 CREATE TABLE actrn (
     meta_id uuid,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     trial_id text NOT NULL,
     ethics_application_status text,
     date_submitted date,
@@ -185,8 +216,8 @@ CREATE TABLE alembic_version (
 
 CREATE TABLE cochrane_reviews (
     meta_id text,
-    meta_created timestamp with time zone DEFAULT now(),
-    meta_updated timestamp with time zone DEFAULT now(),
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     meta_source text,
     id uuid NOT NULL,
     study_type text,
@@ -205,8 +236,8 @@ CREATE TABLE cochrane_reviews (
 CREATE TABLE euctr (
     meta_id uuid,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     eudract_number_with_country text NOT NULL,
     other_identifiers text,
     national_competent_authority text,
@@ -336,8 +367,8 @@ CREATE TABLE euctr (
 CREATE TABLE fda_dap (
     meta_id text,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     id text,
     documents jsonb,
     approval_type text,
@@ -358,8 +389,8 @@ CREATE TABLE fda_dap (
 CREATE TABLE fdadl (
     meta_id text,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     product_ndc text NOT NULL,
     product_type text,
     generic_name text,
@@ -376,8 +407,8 @@ CREATE TABLE fdadl (
 CREATE TABLE gsk (
     meta_id uuid,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     study_id text NOT NULL,
     study_title text,
     patient_level_data text,
@@ -472,8 +503,8 @@ CREATE TABLE gsk (
 CREATE TABLE hra (
     meta_id text,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     hra_id text,
     publication_date date,
     updated_date date,
@@ -525,8 +556,8 @@ CREATE TABLE hra (
 CREATE TABLE icdcm (
     meta_id text,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     name text NOT NULL,
     "desc" text,
     terms text[],
@@ -542,8 +573,8 @@ CREATE TABLE icdcm (
 CREATE TABLE icdpcs (
     meta_id text,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     code text NOT NULL,
     is_header boolean,
     short_description text,
@@ -560,8 +591,8 @@ CREATE TABLE icdpcs (
 CREATE TABLE ictrp (
     meta_id uuid,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     register text NOT NULL,
     last_refreshed_on date,
     main_id text NOT NULL,
@@ -596,8 +627,8 @@ CREATE TABLE ictrp (
 CREATE TABLE isrctn (
     meta_id uuid,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     isrctn_id text NOT NULL,
     doi_isrctn_id text,
     title text,
@@ -662,8 +693,8 @@ CREATE TABLE isrctn (
 CREATE TABLE jprn (
     meta_id uuid,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     recruitment_status text,
     unique_trial_number text NOT NULL,
     title_of_the_study text,
@@ -757,8 +788,8 @@ CREATE TABLE jprn (
 CREATE TABLE nct (
     meta_id uuid,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     download_date text,
     link_text text,
     url text,
@@ -830,8 +861,8 @@ CREATE TABLE nct (
 CREATE TABLE pfizer (
     meta_id uuid,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     title text,
     study_type text,
     organization_id text,
@@ -853,8 +884,8 @@ CREATE TABLE pfizer (
 CREATE TABLE pubmed (
     meta_id text,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     pmid text NOT NULL,
     date_created date,
     date_completed date,
@@ -886,8 +917,8 @@ CREATE TABLE pubmed (
 CREATE TABLE takeda (
     meta_id uuid,
     meta_source text,
-    meta_created timestamp with time zone,
-    meta_updated timestamp with time zone,
+    meta_created timestamp with time zone DEFAULT now() NOT NULL,
+    meta_updated timestamp with time zone DEFAULT now() NOT NULL,
     official_title text,
     takeda_trial_id text NOT NULL,
     trial_phase text,
@@ -1164,6 +1195,121 @@ ALTER TABLE ONLY takeda
 
 ALTER TABLE ONLY takeda
     ADD CONSTRAINT takeda_pkey PRIMARY KEY (takeda_trial_id);
+
+
+--
+
+
+--
+-- Name: actrn_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER actrn_set_meta_updated BEFORE UPDATE ON actrn FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: cochrane_reviews_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER cochrane_reviews_set_meta_updated BEFORE UPDATE ON cochrane_reviews FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: euctr_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER euctr_set_meta_updated BEFORE UPDATE ON euctr FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: fda_dap_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER fda_dap_set_meta_updated BEFORE UPDATE ON fda_dap FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: fdadl_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER fdadl_set_meta_updated BEFORE UPDATE ON fdadl FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: gsk_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER gsk_set_meta_updated BEFORE UPDATE ON gsk FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: hra_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER hra_set_meta_updated BEFORE UPDATE ON hra FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: icdcm_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER icdcm_set_meta_updated BEFORE UPDATE ON icdcm FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: icdpcs_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER icdpcs_set_meta_updated BEFORE UPDATE ON icdpcs FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: ictrp_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER ictrp_set_meta_updated BEFORE UPDATE ON ictrp FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: isrctn_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER isrctn_set_meta_updated BEFORE UPDATE ON isrctn FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: jprn_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER jprn_set_meta_updated BEFORE UPDATE ON jprn FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: nct_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER nct_set_meta_updated BEFORE UPDATE ON nct FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: pfizer_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER pfizer_set_meta_updated BEFORE UPDATE ON pfizer FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: pubmed_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER pubmed_set_meta_updated BEFORE UPDATE ON pubmed FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
+
+
+--
+-- Name: takeda_set_meta_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER takeda_set_meta_updated BEFORE UPDATE ON takeda FOR EACH ROW EXECUTE PROCEDURE set_meta_updated();
 
 
 --

@@ -5,7 +5,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
-import datetime
 from .. import helpers
 logger = logging.getLogger(__name__)
 
@@ -27,7 +26,6 @@ def write_source(conn, source):
 
     """
     create = False
-    timestamp = datetime.datetime.utcnow()
 
     # Read object
     object = conn['database']['sources'].find_one(id=source['id'])
@@ -36,13 +34,10 @@ def write_source(conn, source):
     if not object:
         object = {}
         object['id'] = source['id']
-        object['created_at'] = timestamp
         create = True
 
     # Update object
     object.update({
-        'updated_at': timestamp,
-        # ---
         'name': source['name'],
         'type': source.get('type'),
         'source_url': source.get('source_url'),

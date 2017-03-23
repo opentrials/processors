@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 import uuid
 import logging
-import datetime
 logger = logging.getLogger(__name__)
 
 
@@ -25,7 +24,6 @@ def write_rob(conn, rob):
 
     """
     create = False
-    timestamp = datetime.datetime.utcnow()
 
     # Search for existing risk of bias
     ex_rob = conn['database']['risk_of_biases'].find_one(study_id=rob['study_id'],
@@ -35,7 +33,6 @@ def write_rob(conn, rob):
     if not ex_rob:
         ex_rob = {
             'id': uuid.uuid1().hex,
-            'created_at': timestamp,
             'source_url': rob['source_url'],
             'study_id': rob['study_id'],
         }
@@ -45,8 +42,6 @@ def write_rob(conn, rob):
     if ex_rob.get('trial_id') != rob.get('trial_id') or \
        ex_rob.get('source_id') != rob.get('source_id'):
         ex_rob.update({
-            'updated_at': timestamp,
-            # ---
             'trial_id': rob['trial_id'],
             'source_id': rob['source_id'],
         })
@@ -75,7 +70,6 @@ def write_rob_criteria(conn, rob_criteria):
         str/None: object identifier/if not written (skipped)
 
    """
-    timestamp = datetime.datetime.utcnow()
 
     # Search for existing risk of bias criteria
     rob_criteria_db = conn['database']['risk_of_bias_criterias']
@@ -85,8 +79,6 @@ def write_rob_criteria(conn, rob_criteria):
     if not ex_rob_crt:
         ex_rob_crt = {
             'id': uuid.uuid1().hex,
-            'created_at': timestamp,
-            'updated_at': timestamp,
             'name': rob_criteria['name'],
         }
 

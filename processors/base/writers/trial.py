@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 import uuid
 import logging
-import datetime
 from .. import helpers
 logger = logging.getLogger(__name__)
 
@@ -28,7 +27,6 @@ def write_trial(conn, trial, source_id, record_id):
 
     """
     create = False
-    timestamp = datetime.datetime.utcnow()
 
     # Get trial object (first try to ignore source record for better dedup)
     object = helpers.find_trial_by_identifiers(conn, trial['identifiers'],
@@ -40,7 +38,6 @@ def write_trial(conn, trial, source_id, record_id):
     if not object:
         object = {}
         object['id'] = uuid.uuid1().hex
-        object['created_at'] = timestamp
         create = True
 
     # Decide primary
@@ -67,11 +64,6 @@ def write_trial(conn, trial, source_id, record_id):
     )
     if records_count == 0:
         is_primary = True
-
-    # Update meta
-    object.update({
-        'updated_at': timestamp,
-    })
 
     # Update data only if it's primary
     if is_primary:

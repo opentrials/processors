@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 import uuid
 import logging
-import datetime
 from .. import helpers
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,6 @@ def write_publication(conn, publication, source_id):
 
     """
     create = False
-    timestamp = datetime.datetime.utcnow()
 
     # Get slug/read object
     slug = publication['slug']
@@ -39,14 +37,12 @@ def write_publication(conn, publication, source_id):
     if not obj:
         obj = {
             'id': uuid.uuid1().hex,
-            'created_at': timestamp,
             'slug': slug,
         }
         create = True
 
     # Update obj
     obj.update({
-        'updated_at': timestamp,
         'source_id': source_id,
         # ---
         'source_url': publication['source_url'],
