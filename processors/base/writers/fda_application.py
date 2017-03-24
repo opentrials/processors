@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 
 import logging
-import datetime
 from . import write_organisation
 from .. import helpers
 logger = logging.getLogger(__name__)
@@ -29,7 +28,6 @@ def write_fda_application(conn, fda_application, source_id):
         str/None: object identifier/if not written (skipped)
 
     """
-    timestamp = datetime.datetime.utcnow()
 
     if 'organisation' in fda_application:
         organisation_name = fda_application['organisation']
@@ -46,7 +44,6 @@ def write_fda_application(conn, fda_application, source_id):
             organisation_id = organisation['id']
         fda_application['organisation_id'] = organisation_id
 
-    fda_application['updated_at'] = timestamp
     conn['database']['fda_applications'].upsert(fda_application,
                                                 ['id'],
                                                 ensure=False)

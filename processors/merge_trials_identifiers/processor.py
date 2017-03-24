@@ -4,7 +4,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import datetime
 import logging
 from .. import base
 logger = logging.getLogger(__name__)
@@ -49,7 +48,6 @@ def process(conf, conn):
         trial = {
             'id': result['id'].hex,
             'identifiers': identifiers,
-            'updated_at': datetime.datetime.utcnow(),
         }
         base.config.SENTRY.extra_context({
             'trial': trial,

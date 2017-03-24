@@ -13,6 +13,8 @@ SET search_path = public, pg_catalog;
 
 ALTER TABLE IF EXISTS ONLY public.oauth_credentials DROP CONSTRAINT IF EXISTS oauth_credentials_user_id_foreign;
 ALTER TABLE IF EXISTS ONLY public.data_contributions DROP CONSTRAINT IF EXISTS data_contributions_user_id_foreign;
+DROP TRIGGER IF EXISTS users_set_updated_at ON public.users;
+DROP TRIGGER IF EXISTS data_contributions_set_updated_at ON public.data_contributions;
 DROP INDEX IF EXISTS public.users_email_index;
 ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_pkey;
 ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_email_unique;
@@ -27,6 +29,7 @@ DROP TABLE IF EXISTS public.knex_migrations_lock;
 DROP SEQUENCE IF EXISTS public.knex_migrations_id_seq;
 DROP TABLE IF EXISTS public.knex_migrations;
 DROP TABLE IF EXISTS public.data_contributions;
+DROP FUNCTION IF EXISTS public.set_updated_at();
 DROP EXTENSION IF EXISTS plpgsql;
 DROP SCHEMA IF EXISTS public;
 --
@@ -58,6 +61,20 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 SET search_path = public, pg_catalog;
+
+--
+-- Name: set_updated_at(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION set_updated_at() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+      NEW.updated_at := now();
+      RETURN NEW;
+    END;
+    $$;
+
 
 SET default_tablespace = '';
 
@@ -209,6 +226,20 @@ ALTER TABLE ONLY users
 --
 
 CREATE INDEX users_email_index ON users USING btree (email);
+
+
+--
+-- Name: data_contributions_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER data_contributions_set_updated_at BEFORE UPDATE ON data_contributions FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
+-- Name: users_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER users_set_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
 
 --

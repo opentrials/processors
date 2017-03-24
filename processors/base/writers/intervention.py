@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 import uuid
 import logging
-import datetime
 from .. import helpers
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,6 @@ def write_intervention(conn, intervention, source_id):
 
     """
     create = False
-    timestamp = datetime.datetime.utcnow()
 
     # Get name
     name = helpers.clean_string(intervention['name'])
@@ -44,7 +42,6 @@ def write_intervention(conn, intervention, source_id):
     if not obj:
         obj = {}
         obj['id'] = uuid.uuid1().hex
-        obj['created_at'] = timestamp
         obj['slug'] = slug
         create = True
 
@@ -53,7 +50,6 @@ def write_intervention(conn, intervention, source_id):
 
         # Update object
         obj.update({
-            'updated_at': timestamp,
             'source_id': source_id,
             # ---
             'name': name,

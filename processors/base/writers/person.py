@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 import uuid
 import logging
-import datetime
 from .. import helpers
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,6 @@ def write_person(conn, person, source_id, trial_id=None):
 
     """
     create = False
-    timestamp = datetime.datetime.utcnow()
 
     # Get name
     name = helpers.clean_string(person['name'])
@@ -46,7 +44,6 @@ def write_person(conn, person, source_id, trial_id=None):
     if not object:
         object = {}
         object['id'] = uuid.uuid1().hex
-        object['created_at'] = timestamp
         object['slug'] = slug
         create = True
 
@@ -55,7 +52,6 @@ def write_person(conn, person, source_id, trial_id=None):
 
         # Update object
         object.update({
-            'updated_at': timestamp,
             'source_id': source_id,
             # ---
             'name': name,
