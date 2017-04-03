@@ -28,7 +28,7 @@ def remove_trials_without_records(conf, conn):
     query = """
         SELECT trials.id, trials.identifiers
         FROM trials LEFT JOIN records ON records.trial_id = trials.id
-        WHERE records.trial_id IS NULL AND trials.source_id != 'pubmed'
+        WHERE records.trial_id IS NULL
     """
 
     # Execute

@@ -8,60 +8,58 @@ import re
 from .. import base
 
 
-# Module API
-
-
 def extract_source(record):
-    source = {
+    return {
         'id': 'hra',
         'name': 'Health Research Authority',
         'type': 'other',
         'source_url': 'http://www.hra.nhs.uk',
         'terms_and_conditions_url': 'http://www.hra.nhs.uk/terms-conditions/',
     }
-    return source
 
 
-def extract_publications(record):
+def extract_publication(record):
 
     # Get title
     title = base.helpers.get_optimal_title(
         record['application_title'],
         record['application_full_title'],
-        record['hra_id'])
+        record['hra_id']
+    )
 
     # Get URL for humans
     source_url = _url_from_title(record['application_title'])
 
     # Get abstract
     abstract = record['research_summary'] or title
-    identifiers = base.helpers.clean_identifiers({
-        'nct': _clean_identifier(record['nct_id'], prefix='NCT'),
-        'euctr': _clean_identifier(record['euctr_id'], prefix='EUCTR'),
-        'isrctn': _clean_identifier(record['isrctn_id'], prefix='ISRCTN'),
+
+    # Get identifiers
+    registry_ids = base.helpers.clean_identifiers({
+        'nct': base.helpers.safe_prepend('NCT', record['nct_id']),
+        'euctr': base.helpers.safe_prepend('EUCTR', record['euctr_id']),
+        'isrctn': base.helpers.safe_prepend('ISRCTN', record['isrctn_id']),
     })
-    if identifiers:
-        abstract += ' [%s]' % ('/'.join(sorted(identifiers.values())))
+    search_id_fields = [title, abstract]
+    identifiers = base.helpers.find_list_of_identifiers(' '.join(search_id_fields))
+    if registry_ids:
+        identifiers.append(registry_ids)
 
     # Get slug
     slug = base.helpers.slugify_string(
-        '%s_%s' % (title, record['publication_date']))
+        '%s_%s' % (title, record['publication_date'])
+    )
 
     # Extract publications
-    publications = []
-    publications.append({
+    return {
         'source_url': source_url,
         'title': title,
         'abstract': abstract,
         'date': record['publication_date'],
         # ---
         'slug': slug,
-    })
+        'identifiers': identifiers,
+    }
 
-    return publications
-
-
-# Internal
 
 def _url_from_title(title):
     """Creates an HRA URL from an application title
@@ -72,12 +70,3 @@ def _url_from_title(title):
     slug = slug.lower()
     url = 'http://www.hra.nhs.uk/news/research-summaries/' + slug
     return url
-
-
-def _clean_identifier(ident, prefix):
-    if ident:
-        ident = ident.strip()
-        if re.match(r'%s\d{3,}' % prefix, ident):
-            return ident
-        if re.match(r'\d{3,}', ident):
-            return '%s%s' % (prefix, ident)

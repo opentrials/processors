@@ -8,9 +8,8 @@ from .. import base
 from . import extractors as extractors_module
 
 
-# Module API
-
 def process(conf, conn):
     extractors = base.helpers.get_variables(
-        extractors_module, lambda x: x.startswith('extract_'))
+        extractors_module, lambda x: x.startswith('extract_')
+    )
     base.processors.process_publications(conn, 'pubmed', extractors)

@@ -127,7 +127,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: actrn; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: actrn; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE actrn (
@@ -202,7 +202,7 @@ CREATE TABLE actrn (
 
 
 --
--- Name: alembic_version; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE alembic_version (
@@ -211,7 +211,7 @@ CREATE TABLE alembic_version (
 
 
 --
--- Name: cochrane_reviews; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: cochrane_reviews; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE cochrane_reviews (
@@ -230,7 +230,7 @@ CREATE TABLE cochrane_reviews (
 
 
 --
--- Name: euctr; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: euctr; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE euctr (
@@ -361,7 +361,7 @@ CREATE TABLE euctr (
 
 
 --
--- Name: fda_dap; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: fda_dap; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE fda_dap (
@@ -383,7 +383,7 @@ CREATE TABLE fda_dap (
 
 
 --
--- Name: fdadl; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: fdadl; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE fdadl (
@@ -401,7 +401,7 @@ CREATE TABLE fdadl (
 
 
 --
--- Name: gsk; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: gsk; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE gsk (
@@ -497,7 +497,7 @@ CREATE TABLE gsk (
 
 
 --
--- Name: hra; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: hra; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE hra (
@@ -550,7 +550,7 @@ CREATE TABLE hra (
 
 
 --
--- Name: icdcm; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: icdcm; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE icdcm (
@@ -567,7 +567,7 @@ CREATE TABLE icdcm (
 
 
 --
--- Name: icdpcs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: icdpcs; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE icdpcs (
@@ -585,7 +585,7 @@ CREATE TABLE icdpcs (
 
 
 --
--- Name: ictrp; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: ictrp; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE ictrp (
@@ -621,7 +621,7 @@ CREATE TABLE ictrp (
 
 
 --
--- Name: isrctn; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: isrctn; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE isrctn (
@@ -687,7 +687,7 @@ CREATE TABLE isrctn (
 
 
 --
--- Name: jprn; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: jprn; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE jprn (
@@ -782,7 +782,7 @@ CREATE TABLE jprn (
 
 
 --
--- Name: nct; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: nct; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE nct (
@@ -855,7 +855,7 @@ CREATE TABLE nct (
 
 
 --
--- Name: pfizer; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: pfizer; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE pfizer (
@@ -878,7 +878,7 @@ CREATE TABLE pfizer (
 
 
 --
--- Name: pubmed; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: pubmed; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE pubmed (
@@ -905,13 +905,14 @@ CREATE TABLE pubmed (
     article_vernacular_title text,
     article_date date,
     publication_status text,
-    identifiers_list jsonb,
-    mesh_headings jsonb
+    article_ids jsonb,
+    mesh_headings jsonb,
+    registry_ids jsonb
 );
 
 
 --
--- Name: takeda; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: takeda; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE takeda (
@@ -950,7 +951,7 @@ CREATE TABLE takeda (
 
 
 --
--- Name: actrn_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: actrn_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY actrn
@@ -958,7 +959,7 @@ ALTER TABLE ONLY actrn
 
 
 --
--- Name: actrn_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: actrn_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY actrn
@@ -966,7 +967,7 @@ ALTER TABLE ONLY actrn
 
 
 --
--- Name: alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY alembic_version
@@ -974,7 +975,7 @@ ALTER TABLE ONLY alembic_version
 
 
 --
--- Name: cochrane_reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: cochrane_reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY cochrane_reviews
@@ -982,7 +983,7 @@ ALTER TABLE ONLY cochrane_reviews
 
 
 --
--- Name: euctr_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: euctr_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY euctr
@@ -990,7 +991,7 @@ ALTER TABLE ONLY euctr
 
 
 --
--- Name: euctr_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: euctr_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY euctr
@@ -998,7 +999,7 @@ ALTER TABLE ONLY euctr
 
 
 --
--- Name: fda_dap_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: fda_dap_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY fda_dap
@@ -1006,7 +1007,7 @@ ALTER TABLE ONLY fda_dap
 
 
 --
--- Name: fda_dap_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: fda_dap_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY fda_dap
@@ -1014,7 +1015,7 @@ ALTER TABLE ONLY fda_dap
 
 
 --
--- Name: fda_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: fda_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY fdadl
@@ -1022,7 +1023,7 @@ ALTER TABLE ONLY fdadl
 
 
 --
--- Name: fda_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: fda_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY fdadl
@@ -1030,7 +1031,7 @@ ALTER TABLE ONLY fdadl
 
 
 --
--- Name: gsk_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: gsk_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY gsk
@@ -1038,7 +1039,7 @@ ALTER TABLE ONLY gsk
 
 
 --
--- Name: gsk_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: gsk_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY gsk
@@ -1046,7 +1047,7 @@ ALTER TABLE ONLY gsk
 
 
 --
--- Name: hra_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: hra_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY hra
@@ -1054,7 +1055,7 @@ ALTER TABLE ONLY hra
 
 
 --
--- Name: icdcm_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: icdcm_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY icdcm
@@ -1062,7 +1063,7 @@ ALTER TABLE ONLY icdcm
 
 
 --
--- Name: icdcm_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: icdcm_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY icdcm
@@ -1070,7 +1071,7 @@ ALTER TABLE ONLY icdcm
 
 
 --
--- Name: icdpcs_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: icdpcs_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY icdpcs
@@ -1078,7 +1079,7 @@ ALTER TABLE ONLY icdpcs
 
 
 --
--- Name: icdpcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: icdpcs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY icdpcs
@@ -1086,7 +1087,7 @@ ALTER TABLE ONLY icdpcs
 
 
 --
--- Name: ictrp_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: ictrp_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY ictrp
@@ -1094,7 +1095,7 @@ ALTER TABLE ONLY ictrp
 
 
 --
--- Name: ictrp_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: ictrp_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY ictrp
@@ -1102,7 +1103,7 @@ ALTER TABLE ONLY ictrp
 
 
 --
--- Name: isrctn_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: isrctn_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY isrctn
@@ -1110,7 +1111,7 @@ ALTER TABLE ONLY isrctn
 
 
 --
--- Name: isrctn_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: isrctn_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY isrctn
@@ -1118,7 +1119,7 @@ ALTER TABLE ONLY isrctn
 
 
 --
--- Name: jprn_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: jprn_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY jprn
@@ -1126,7 +1127,7 @@ ALTER TABLE ONLY jprn
 
 
 --
--- Name: jprn_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: jprn_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY jprn
@@ -1134,7 +1135,7 @@ ALTER TABLE ONLY jprn
 
 
 --
--- Name: nct_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: nct_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY nct
@@ -1142,7 +1143,7 @@ ALTER TABLE ONLY nct
 
 
 --
--- Name: nct_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: nct_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY nct
@@ -1150,7 +1151,7 @@ ALTER TABLE ONLY nct
 
 
 --
--- Name: pfizer_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: pfizer_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY pfizer
@@ -1158,7 +1159,7 @@ ALTER TABLE ONLY pfizer
 
 
 --
--- Name: pfizer_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: pfizer_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY pfizer
@@ -1166,7 +1167,7 @@ ALTER TABLE ONLY pfizer
 
 
 --
--- Name: pubmed_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: pubmed_meta_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY pubmed
@@ -1174,7 +1175,7 @@ ALTER TABLE ONLY pubmed
 
 
 --
--- Name: pubmed_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: pubmed_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY pubmed
@@ -1182,7 +1183,7 @@ ALTER TABLE ONLY pubmed
 
 
 --
--- Name: takeda_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: takeda_meta_id_unique; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY takeda
@@ -1190,7 +1191,7 @@ ALTER TABLE ONLY takeda
 
 
 --
--- Name: takeda_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: takeda_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY takeda
@@ -1315,4 +1316,3 @@ CREATE TRIGGER takeda_set_meta_updated BEFORE UPDATE ON takeda FOR EACH ROW EXEC
 --
 -- PostgreSQL database dump complete
 --
-

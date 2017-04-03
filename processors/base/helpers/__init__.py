@@ -90,6 +90,7 @@ def clean_identifiers(identifiers):
         'ntr': r'^NTR',
         'pactr': r'^PACTR',
         'per': r'^PER',
+        'pubmed': r'^PUBMED\d+',
         'rbr': r'^RBR',
         'rpcec': r'^RPCEC',
         'takeda': r'^TAKEDA',
@@ -165,6 +166,7 @@ def find_list_of_identifiers(text):
         ('jprn', ['jprn', 'umin']),
         ('nct', ['nct']),
         ('takeda', ['takeda']),
+        ('pubmed', ['pubmed']),
     ]
 
     # Find identifiers

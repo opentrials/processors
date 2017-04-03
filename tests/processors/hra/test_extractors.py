@@ -9,28 +9,50 @@ import collections
 import processors.hra.extractors as extractors
 
 
-class TestExtractPublications(object):
-    def test_adds_identifiers_to_end_of_abstract(self):
+class TestHRAPublicationExtractor(object):
+    def test_extracts_publication_identifiers(self):
         record = collections.defaultdict(lambda: '')
         record.update({
             'nct_id': '00020500',
             'euctr_id': '2013-030180-02',
             'isrctn_id': '02018090',
         })
+        expected_identifiers = [{
+            'nct': 'NCT00020500',
+            'euctr': 'EUCTR2013-030180-02',
+            'isrctn': 'ISRCTN02018090',
+        }]
+        publication = extractors.extract_publication(record)
 
-        publication = extractors.extract_publications(record)[0]
+        assert publication['identifiers'] == expected_identifiers
 
-        identifiers = '[EUCTR2013-030180-02/ISRCTN02018090/NCT00020500]'
-        assert publication['abstract'].endswith(identifiers)
 
-    def test_does_not_add_invalid_identifiers_to_abstract(self):
+    def test_ignores_invalid_identifiers(self):
         record = collections.defaultdict(lambda: '')
         record.update({
             'nct_id': '00020500',
             'euctr_id': 'EUCTR0000-000000-00',
             'isrctn_id': 'ISRCTN00000000',
         })
+        expected_identifiers = [{'nct': 'NCT00020500'}]
+        publication = extractors.extract_publication(record)
 
-        publication = extractors.extract_publications(record)[0]
+        assert publication['identifiers'] == expected_identifiers
 
-        assert publication['abstract'].endswith('[NCT00020500]')
+
+    def test_extracts_identifiers_from_abstract(self):
+        record = collections.defaultdict(lambda: '')
+        record['research_summary'] = 'This publication mentions NCT00020500'
+        expected_identifiers = [{'nct': 'NCT00020500'}]
+        publication = extractors.extract_publication(record)
+
+        assert publication['identifiers'] == expected_identifiers
+
+
+    def test_creates_url_from_title(self):
+        record = collections.defaultdict(lambda: '')
+        record['application_title'] = 'Longterm F/U study of BOTOX® in Idiopathic Overactive Bladder patients'
+        expected_url = 'http://www.hra.nhs.uk/news/research-summaries/longterm-fu-study-of-botox-in-idiopathic-overactive-bladder-patients'
+        publication = extractors.extract_publication(record)
+
+        assert publication['source_url'] == expected_url

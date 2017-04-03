@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import requests
 import logging
-from sqlalchemy import exc as sqlalchemy_exceptions
+import sqlalchemy
 from .. import base
 from . import extractors as extractors_module
 logger = logging.getLogger(__name__)
@@ -88,7 +88,7 @@ def _process_document(conn, contribution, extractors, source_id):
             # Update data_contribution
             contribution['document_id'] = document_id
             conn['explorer']['data_contributions'].update(contribution, ['id'])
-        except sqlalchemy_exceptions.DBAPIError:
+        except sqlalchemy.exc.DBAPIError:
             conn['database'].rollback()
             logger.debug('Could not process data contribution: %s', contribution['id'])
             raise
@@ -106,7 +106,7 @@ def _remove_document(conn, contribution):
         conn['database']['documents'].delete(id=document_id)
         contribution.update({'document_id': None})
         conn['explorer']['data_contributions'].update(contribution, ['id'])
-    except sqlalchemy_exceptions.DBAPIError:
+    except sqlalchemy.exc.DBAPIError:
         conn['database'].rollback()
         logger.debug('Could not remove contributed document: %s', document_id)
         raise
