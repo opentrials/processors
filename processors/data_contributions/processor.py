@@ -91,7 +91,7 @@ def _process_document(conn, contribution, extractors, source_id):
         except sqlalchemy.exc.DBAPIError:
             conn['database'].rollback()
             logger.debug('Could not process data contribution: %s', contribution['id'])
-            raise
+            base.config.SENTRY.captureException()
         else:
             conn['database'].commit()
             logger.info('Sucessfully processed data contribution: %s', contribution['id'])
@@ -109,7 +109,7 @@ def _remove_document(conn, contribution):
     except sqlalchemy.exc.DBAPIError:
         conn['database'].rollback()
         logger.debug('Could not remove contributed document: %s', document_id)
-        raise
+        base.config.SENTRY.captureException()
     else:
         conn['database'].commit()
         logger.info('Sucessfully removed contributed document: %s', document_id)
