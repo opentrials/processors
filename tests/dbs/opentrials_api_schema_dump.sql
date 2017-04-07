@@ -485,7 +485,7 @@ CREATE TABLE sources (
     updated_at timestamp with time zone DEFAULT now(),
     source_url text,
     terms_and_conditions_url text,
-    CONSTRAINT sources_type_check CHECK ((type = ANY (ARRAY['register'::text, 'other'::text])))
+    CONSTRAINT sources_type_check CHECK ((type = ANY (ARRAY['register'::text, 'other'::text, 'journal'::text])))
 );
 
 

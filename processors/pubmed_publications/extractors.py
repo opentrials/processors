@@ -11,7 +11,7 @@ def extract_source(record):
     return {
         'id': 'pubmed',
         'name': 'PubMed',
-        'type': 'other',
+        'type': 'journal',
         'source_url': 'http://www.ncbi.nlm.nih.gov/pubmed',
         'terms_and_conditions_url': 'https://www.ncbi.nlm.nih.gov/home/about/policies.shtml',
     }
