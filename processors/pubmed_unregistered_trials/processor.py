@@ -25,16 +25,14 @@ def process(conf, conn):
     for record in base.helpers.iter_rows(conn, 'warehouse', 'pubmed', orderby='meta_id'):
         publication = pubmed_publications_extractors['extract_publication'](record)
         potential_trial = extractors['extract_trial'](record)
+        potential_trial['source_id'] = source_id
         conn['database'].begin()
         try:
 
             # Create/Update unregistered trial from the publication
             if not publication['registry_ids']:
-                trial_id, is_primary = base.writers.write_trial(
-                    conn, potential_trial, source_id, record['meta_id']
-                )
-                base.writers.write_record(
-                    conn, record, source_id, trial_id, potential_trial, is_primary
+                trial_id, is_primary = base.writers.write_trial_and_record(
+                    conn, potential_trial, record['meta_id'], record['meta_source']
                 )
 
             # Publication is not/no longer an unregistered trial but a results document

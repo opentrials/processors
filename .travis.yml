@@ -1,6 +1,13 @@
 sudo:
   false
 
+services:
+  - docker
+  - postgresql
+
+addons:
+  postgresql: "9.4"
+
 language:
   python
 
@@ -12,12 +19,6 @@ env:
     - TEST_DATABASE_URL=postgres://postgres@localhost:5432/opentrials_api_test
     - TEST_WAREHOUSE_URL=postgres://postgres@localhost:5432/opentrials_warehouse_test
     - TEST_EXPLORER_URL=postgres://postgres@localhost:5432/opentrials_explorer_test
-
-addons:
-  postgresql: "9.4"
-
-services:
-  - postgresql
 
 install:
   - pip install tox
@@ -31,3 +32,11 @@ before_script:
 
 script:
   - make test
+
+deploy:
+  provider: script
+  script:
+    - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+    - make deploy
+  on:
+    branch: master

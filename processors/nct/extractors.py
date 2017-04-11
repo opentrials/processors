@@ -76,7 +76,7 @@ def extract_trial(record):
     # Get study phase
     study_phase = base.normalizers.get_normalized_phase(record['phase'])
 
-    trial = {
+    return {
         'identifiers': identifiers,
         'registration_date': record['firstreceived_date'],
         'completion_date': record['completion_date_actual'],
@@ -99,7 +99,6 @@ def extract_trial(record):
         'has_published_results': has_published_results,
         'results_exemption_date': record['results_exemption_date'],
     }
-    return trial
 
 
 def extract_conditions(record):

@@ -250,27 +250,98 @@ def find_trial_by_identifiers(conn, identifiers, ignore_record_id=None):
         conn (dict): connection dict
         identifiers (dict): identifiers dict (nct: <id>, euct: <id>, ...)
         ignore_record_id (str): skip record with this id (for better dedup)
-
     Returns:
         dict: trial
-
     """
-    trial = None
     # See https://github.com/opentrials/processors/pull/46/files/f5e8403072bf6ed93b82d0c45bd3877e42e435c4#r76836368
-    QUERY = "SELECT * FROM records WHERE identifiers @> '%s'"
+    QUERY = (
+        'SELECT id, trial_id FROM records'
+        ' WHERE trial_id IS NOT NULL'
+        ' AND identifiers @> :identifiers'
+        ' AND id != :id'
+        ' ORDER BY id'
+    )
+    if ignore_record_id is None:
+        # This allow us to use a single query, regardless if `ignore_record_id`
+        # is set or not
+        BLANK_UUID = '00000000-0000-0000-0000-000000000000'
+        ignore_record_id = BLANK_UUID
     for source, identifier in identifiers.items():
-        query = QUERY % json.dumps({source: identifier})
-        records = list(conn['database'].query(query))
-        for record in records:
-            if (ignore_record_id and record['id'].hex == uuid.UUID(ignore_record_id).hex):
-                continue
-            trial = conn['database']['trials'].find_one(
-                id=record['trial_id'].hex)
-            if trial:
-                break
-        if trial:
-            break
-    return trial
+        records = conn['database'].query(
+            QUERY,
+            identifiers=json.dumps({source: identifier}),
+            id=ignore_record_id
+        )
+        trial_ids = [record['trial_id'].hex for record in records]
+
+        if trial_ids:
+            return conn['database']['trials'].find_one(id=trial_ids)
+
+
+def find_trial_by_public_title(conn, public_title, ignore_source_id, ignore_record_id=None):
+    QUERY = (
+        'SELECT trial_id FROM records'
+        ' WHERE public_title = :public_title'
+        ' AND source_id != :source_id'
+        ' AND id != :record_id'
+        ' AND trial_id IS NOT NULL'
+        ' LIMIT 1'
+    )
+    if ignore_record_id is None:
+        # This allow us to use a single query, regardless if `ignore_record_id`
+        # is set or not
+        BLANK_UUID = '00000000-0000-0000-0000-000000000000'
+        ignore_record_id = BLANK_UUID
+
+    records = conn['database'].query(
+        QUERY,
+        record_id=ignore_record_id,
+        public_title=public_title,
+        source_id=ignore_source_id
+    )
+    records = [record for record in records]
+
+    if records:
+        record = records[0]
+        return conn['database']['trials'].find_one(id=record['trial_id'].hex)
+
+
+def find_trial(conn, trial, ignore_record_id=None):
+    """Find if the trial already exists. Firstly, via identifiers. Secondly, via public title
+    Args:
+        conn (dict): connection dict
+        trial (dict): trial that may be found
+        record_id (str): record id from warehouse
+    Returns:
+        (dict, str): (trial, deduplication method)
+    """
+
+    deduplication_method = None
+    trial_found = find_trial_by_identifiers(
+        conn,
+        trial['identifiers'],
+        ignore_record_id
+    )
+
+    if trial_found:
+        deduplication_method = 'identifiers'
+    elif trial.get('public_title'):
+        source_id = trial['source_id']
+
+        trial_found = find_trial_by_public_title(
+            conn,
+            trial['public_title'],
+            source_id,
+            ignore_record_id
+        )
+
+        if trial_found:
+            deduplication_method = 'public_title'
+
+    if not trial_found and ignore_record_id is not None:
+        return find_trial(conn, trial, ignore_record_id=None)
+    else:
+        return trial_found, deduplication_method
 
 
 def safe_prepend(prepend_string, string):

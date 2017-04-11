@@ -28,6 +28,8 @@ ALTER TABLE IF EXISTS ONLY public.trials_documents DROP CONSTRAINT IF EXISTS tri
 ALTER TABLE IF EXISTS ONLY public.trials_conditions DROP CONSTRAINT IF EXISTS trials_conditions_trial_id_foreign;
 ALTER TABLE IF EXISTS ONLY public.records DROP CONSTRAINT IF EXISTS trialrecords_trial_id_foreign;
 ALTER TABLE IF EXISTS ONLY public.records DROP CONSTRAINT IF EXISTS trialrecords_source_id_foreign;
+ALTER TABLE IF EXISTS ONLY public.trial_deduplication_logs DROP CONSTRAINT IF EXISTS trial_deduplication_logs_trial_id_foreign;
+ALTER TABLE IF EXISTS ONLY public.trial_deduplication_logs DROP CONSTRAINT IF EXISTS trial_deduplication_logs_record_id_foreign;
 ALTER TABLE IF EXISTS ONLY public.risk_of_biases DROP CONSTRAINT IF EXISTS risk_of_biases_trial_id_foreign;
 ALTER TABLE IF EXISTS ONLY public.risk_of_biases DROP CONSTRAINT IF EXISTS risk_of_biases_source_id_foreign;
 ALTER TABLE IF EXISTS ONLY public.risk_of_biases_risk_of_bias_criterias DROP CONSTRAINT IF EXISTS risk_of_biases_risk_of_bias_criterias_risk_of_bias_id_foreign;
@@ -46,6 +48,7 @@ ALTER TABLE IF EXISTS ONLY public.documents DROP CONSTRAINT IF EXISTS documents_
 ALTER TABLE IF EXISTS ONLY public.documents DROP CONSTRAINT IF EXISTS documents_fda_approval_id_foreign;
 ALTER TABLE IF EXISTS ONLY public.documents DROP CONSTRAINT IF EXISTS documents_document_category_id_foreign;
 DROP TRIGGER IF EXISTS trials_set_updated_at ON public.trials;
+DROP TRIGGER IF EXISTS trial_deduplication_logs_set_updated_at ON public.trial_deduplication_logs;
 DROP TRIGGER IF EXISTS sources_set_updated_at ON public.sources;
 DROP TRIGGER IF EXISTS risk_of_biases_set_updated_at ON public.risk_of_biases;
 DROP TRIGGER IF EXISTS risk_of_bias_criterias_set_updated_at ON public.risk_of_bias_criterias;
@@ -72,6 +75,7 @@ ALTER TABLE IF EXISTS ONLY public.trials_locations DROP CONSTRAINT IF EXISTS tri
 ALTER TABLE IF EXISTS ONLY public.trials_interventions DROP CONSTRAINT IF EXISTS trials_interventions_pkey;
 ALTER TABLE IF EXISTS ONLY public.trials_documents DROP CONSTRAINT IF EXISTS trials_documents_pkey;
 ALTER TABLE IF EXISTS ONLY public.records DROP CONSTRAINT IF EXISTS trialrecords_pkey;
+ALTER TABLE IF EXISTS ONLY public.trial_deduplication_logs DROP CONSTRAINT IF EXISTS trial_deduplication_logs_pkey;
 ALTER TABLE IF EXISTS ONLY public.sources DROP CONSTRAINT IF EXISTS sources_pkey;
 ALTER TABLE IF EXISTS ONLY public.sources DROP CONSTRAINT IF EXISTS sources_name_type_unique;
 ALTER TABLE IF EXISTS ONLY public.risk_of_biases DROP CONSTRAINT IF EXISTS risk_of_biases_study_id_source_url_unique;
@@ -107,6 +111,7 @@ ALTER TABLE IF EXISTS ONLY public.documents DROP CONSTRAINT IF EXISTS documents_
 ALTER TABLE IF EXISTS ONLY public.documents DROP CONSTRAINT IF EXISTS documents_fda_approval_id_file_id_name_unique;
 ALTER TABLE IF EXISTS ONLY public.document_categories DROP CONSTRAINT IF EXISTS document_categories_pkey;
 ALTER TABLE IF EXISTS ONLY public.document_categories DROP CONSTRAINT IF EXISTS document_categories_name_group_unique;
+ALTER TABLE IF EXISTS public.trial_deduplication_logs ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.knex_migrations ALTER COLUMN id DROP DEFAULT;
 DROP TABLE IF EXISTS public.trials_publications;
 DROP TABLE IF EXISTS public.trials_persons;
@@ -116,6 +121,8 @@ DROP TABLE IF EXISTS public.trials_interventions;
 DROP TABLE IF EXISTS public.trials_documents;
 DROP TABLE IF EXISTS public.trials_conditions;
 DROP TABLE IF EXISTS public.trials;
+DROP SEQUENCE IF EXISTS public.trial_deduplication_logs_id_seq;
+DROP TABLE IF EXISTS public.trial_deduplication_logs;
 DROP TABLE IF EXISTS public.sources;
 DROP TABLE IF EXISTS public.risk_of_biases_risk_of_bias_criterias;
 DROP TABLE IF EXISTS public.risk_of_biases;
@@ -490,6 +497,40 @@ CREATE TABLE sources (
 
 
 --
+-- Name: trial_deduplication_logs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE trial_deduplication_logs (
+    id integer NOT NULL,
+    record_id uuid NOT NULL,
+    trial_id uuid NOT NULL,
+    method text NOT NULL,
+    commit text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: trial_deduplication_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE trial_deduplication_logs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: trial_deduplication_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE trial_deduplication_logs_id_seq OWNED BY trial_deduplication_logs.id;
+
+
+--
 -- Name: trials; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -605,6 +646,13 @@ CREATE TABLE trials_publications (
 --
 
 ALTER TABLE ONLY knex_migrations ALTER COLUMN id SET DEFAULT nextval('knex_migrations_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY trial_deduplication_logs ALTER COLUMN id SET DEFAULT nextval('trial_deduplication_logs_id_seq'::regclass);
 
 
 --
@@ -888,6 +936,14 @@ ALTER TABLE ONLY sources
 
 
 --
+-- Name: trial_deduplication_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY trial_deduplication_logs
+    ADD CONSTRAINT trial_deduplication_logs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: trialrecords_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1079,6 +1135,13 @@ CREATE TRIGGER sources_set_updated_at BEFORE UPDATE ON sources FOR EACH ROW EXEC
 
 
 --
+-- Name: trial_deduplication_logs_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trial_deduplication_logs_set_updated_at BEFORE UPDATE ON trial_deduplication_logs FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+
+
+--
 -- Name: trials_set_updated_at; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -1219,6 +1282,22 @@ ALTER TABLE ONLY risk_of_biases
 
 ALTER TABLE ONLY risk_of_biases
     ADD CONSTRAINT risk_of_biases_trial_id_foreign FOREIGN KEY (trial_id) REFERENCES trials(id);
+
+
+--
+-- Name: trial_deduplication_logs_record_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY trial_deduplication_logs
+    ADD CONSTRAINT trial_deduplication_logs_record_id_foreign FOREIGN KEY (record_id) REFERENCES records(id);
+
+
+--
+-- Name: trial_deduplication_logs_trial_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY trial_deduplication_logs
+    ADD CONSTRAINT trial_deduplication_logs_trial_id_foreign FOREIGN KEY (trial_id) REFERENCES trials(id);
 
 
 --

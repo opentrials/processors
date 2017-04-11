@@ -64,7 +64,7 @@ def extract_trial(record):
     if record['trial_results_url']:
         has_published_results = True
 
-    trial = {
+    return {
         'identifiers': identifiers,
         'registration_date': record['date_on_which_this_record_was_first_entered_in_the_eudract_data'],
         'completion_date': record['date_of_the_global_end_of_the_trial'],
@@ -83,7 +83,6 @@ def extract_trial(record):
         'gender': gender,
         'has_published_results': has_published_results,
     }
-    return trial
 
 
 def extract_conditions(record):

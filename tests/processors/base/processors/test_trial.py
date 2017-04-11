@@ -12,11 +12,17 @@ from processors.base.processors.trial import process_trials
 
 
 class TestTrialProcessor(object):
-    def test_updates_which_record_is_primary(self, conn, extractors, trial, record,
-        nct_record, euctr_source):
-
-        current_primary = conn['database']['records'].find_one(id=record)
+    def test_updates_which_record_is_primary(
+        self,
+        conn,
+        extractors,
+        trial,
+        record,
+        nct_record,
+        euctr_source
+    ):
         nct_record_attrs = conn['warehouse']['nct'].find_one(nct_id=nct_record)
+        current_primary = conn['database']['records'].find_one(id=record)
         current_primary.update({
             'trial_id': trial,
             'is_primary': True,
@@ -26,6 +32,7 @@ class TestTrialProcessor(object):
         conn['database']['records'].update(current_primary, ['id'])
 
         process_trials(conn, 'nct', extractors)
+
         updated_current_primary = conn['database']['records'].find_one(id=record)
         new_record = conn['database']['records'].find_one(id=nct_record_attrs['meta_id'])
 
