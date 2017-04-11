@@ -307,11 +307,22 @@ def find_trial_by_public_title(conn, public_title, ignore_source_id, ignore_reco
 
 
 def find_trial(conn, trial, ignore_record_id=None):
-    """Find if the trial already exists. Firstly, via identifiers. Secondly, via public title
+    """Find if the trial already exists.
+
+    In sequence, it'll try:
+
+    1. Via identifiers ignoring the record with `ignore_record_id`
+    2. Via public_title ignoring the record with `ignore_record_id`
+    3. If not found yet and `ignore_record_id` is not None, recursively call
+       itself with `ignore_record_id` set to None.
+
+    If the trial if found at any step, we'll return it without running the
+    next steps.
+
     Args:
         conn (dict): connection dict
         trial (dict): trial that may be found
-        record_id (str): record id from warehouse
+        ignore_record_id (str): record id from warehouse
     Returns:
         (dict, str): (trial, deduplication method)
     """
