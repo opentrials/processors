@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import uuid
 import pytest
 import processors.cochrane_reviews.processor as processor
+pytest.mark.usefixtures('betamax_session')
 
 
 class TestCochraneProcessor(object):
@@ -26,12 +27,16 @@ class TestCochraneProcessor(object):
         assert identifiers == expected
 
 
-    def test_scrape_pubmed_id(self):
+    def test_scrape_pubmed_id(self, betamax_session):
         reference = {
             'year': '2010',
             'title': ('Supported employment: randomised controlled trial'),
             'authors': ('Howard LM, Heslin M, Leese M, McCrone P, Rice C, Jarrett M, et al')
         }
+        pubmed_url = ('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?'
+                        'retmode=json&term=(supported employment randomised controlled trial) AND '
+                        '(howard lm heslin m leese m mccrone p rice c jarrett m et al) AND (2010)')
+        betamax_session.get(pubmed_url)
         pmid = processor.scrape_pubmed_id(reference)
 
         assert pmid == '20435968'

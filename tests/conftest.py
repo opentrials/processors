@@ -6,6 +6,8 @@ from __future__ import unicode_literals
 
 import pytest
 import dataset
+import betamax
+import os
 from sqlalchemy import MetaData
 from sqlalchemy.orm import sessionmaker
 import processors.base.config as config
@@ -28,6 +30,20 @@ from tests.fixtures.warehouse.nct import nct_record
 from tests.fixtures.warehouse.pubmed import pubmed_record
 
 from tests.fixtures.explorer.data_contributions import data_contribution
+
+# Betamax config
+
+with betamax.Betamax.configure() as cfg:
+    cfg.cassette_library_dir = 'tests/cassettes/'
+
+    record_mode = 'none' if os.environ.get('CI') else 'once'
+    cfg.default_cassette_options['record_mode'] = record_mode
+    cfg.default_cassette_options['match_requests_on'] = [
+        'uri',
+        'method',
+        'headers',
+        'body',
+    ]
 
 @pytest.fixture
 def conn(request):
@@ -61,6 +77,7 @@ def conn(request):
 
     request.addfinalizer(teardown)
     return conn
+
 
 def truncate_database(engine):
     metadata = MetaData(bind=engine)

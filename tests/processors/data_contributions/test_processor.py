@@ -7,21 +7,27 @@ from __future__ import unicode_literals
 import pytest
 import processors.data_contributions.processor as processor
 
+@pytest.mark.usefixtures('betamax_session')
 class TestDataContributionsProcessor(object):
-    def test_creates_document_from_contribution(self, conn, data_contribution):
+    def test_creates_document_from_contribution(self, conn, data_contribution, betamax_session):
+        contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
+        betamax_session.get(contrib['url'])
         processor.process({}, conn)
 
         updated_contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
         assert conn['database']['documents'].find_one(id=updated_contrib['document_id']) is not None
 
-    def test_links_created_document_with_trial(self, conn, data_contribution):
+    def test_links_created_document_with_trial(self, conn, data_contribution, betamax_session):
+        contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
+        betamax_session.get(contrib['url'])
         processor.process({}, conn)
 
         updated_contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
         assert conn['database']['trials_documents'].find_one(document_id=updated_contrib['document_id'],
             trial_id=updated_contrib['trial_id']) is not None
 
-    def test_updates_document_from_contribution(self, conn, data_contribution, document):
+    def test_updates_document_from_contribution(self, conn, data_contribution,
+        document, betamax_session):
         contrib_record = conn['explorer']['data_contributions'].find_one(id=data_contribution)
         document_record = conn['database']['documents'].find_one(id=document)
         contrib_record.update({
@@ -40,12 +46,16 @@ class TestDataContributionsProcessor(object):
         }
         updated_contrib.update(new_contrib_attrs)
         conn['explorer']['data_contributions'].update(updated_contrib, ['id'])
+        betamax_session.get(new_contrib_attrs['url'])
         processor.process({}, conn)
         updated_document = conn['database']['documents'].find_one(id=document)
 
         assert updated_document['source_url'] == new_contrib_attrs['url']
 
-    def test_removes_document_if_contribution_is_unapproved(self, conn, data_contribution):
+    def test_removes_document_if_contribution_is_unapproved(self, conn,
+        data_contribution, betamax_session):
+        contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
+        betamax_session.get(contrib['url'])
         processor.process({}, conn)
         updated_contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
         document = conn['database']['documents'].find_one(id=updated_contrib['document_id'])
@@ -56,7 +66,10 @@ class TestDataContributionsProcessor(object):
 
         assert conn['database']['documents'].find_one(id=document['id']) is None
 
-    def test_updates_contribution_document_id_if_document_is_removed(self, conn, data_contribution):
+    def test_updates_contribution_document_id_if_document_is_removed(self, conn,
+        data_contribution, betamax_session):
+        contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
+        betamax_session.get(contrib['url'])
         processor.process({}, conn)
         processed_contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
 
@@ -80,25 +93,28 @@ class TestDataContributionsProcessor(object):
         updated_contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
         assert updated_contrib['document_id'] is None
 
-    def test_ignores_archive_contribution(self, conn, data_contribution):
+    def test_ignores_archive_contribution(self, conn, data_contribution, betamax_session):
         contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
         contrib_attrs = {
             'url': 'https://github.com/opentrials/processors/archive/master.zip',
         }
         contrib.update(contrib_attrs)
         conn['explorer']['data_contributions'].update(contrib, ['id'])
+        betamax_session.get(contrib['url'])
         processor.process({}, conn)
 
         updated_contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
         assert updated_contrib['document_id'] is None
 
-    def test_ignores_contribution_with_invalid_trial_id(self, conn, data_contribution):
+    def test_ignores_contribution_with_invalid_trial_id(self, conn,
+        data_contribution, betamax_session):
         contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
         contrib_attrs = {
             'trial_id': 'e0f3ef3c-edba-11e6-ae32-e4b3181a2c8c',
         }
         contrib.update(contrib_attrs)
         conn['explorer']['data_contributions'].update(contrib, ['id'])
+        betamax_session.get(contrib['url'])
         processor.process({}, conn)
 
         updated_contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
