@@ -96,7 +96,7 @@ class TestDataContributionsProcessor(object):
     def test_ignores_archive_contribution(self, conn, data_contribution, betamax_session):
         contrib = conn['explorer']['data_contributions'].find_one(id=data_contribution)
         contrib_attrs = {
-            'url': 'https://github.com/opentrials/processors/archive/master.zip',
+            'url': 'https://api.github.com/repos/opentrials/processors/zipball/master',
         }
         contrib.update(contrib_attrs)
         conn['explorer']['data_contributions'].update(contrib, ['id'])

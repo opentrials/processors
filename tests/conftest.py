@@ -40,7 +40,6 @@ with betamax.Betamax.configure() as cfg:
     cfg.default_cassette_options['record_mode'] = record_mode
     cfg.default_cassette_options['match_requests_on'] = [
         'uri',
-        'method',
         'headers',
         'body',
     ]
