@@ -4,10 +4,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
+import mock
 import pytest
 import dataset
 import betamax
-import os
 from sqlalchemy import MetaData
 from sqlalchemy.orm import sessionmaker
 import processors.base.config as config
@@ -40,9 +41,27 @@ with betamax.Betamax.configure() as cfg:
     cfg.default_cassette_options['record_mode'] = record_mode
     cfg.default_cassette_options['match_requests_on'] = [
         'uri',
+        'method',
         'headers',
         'body',
     ]
+
+
+@pytest.fixture
+def enable_betamax(betamax_session):
+    '''Mocks requests methods to return the equivalent in Betamax.
+
+    To use it, add the decorator `@pytest.mark.usefixtures('enable_betamax')`
+    to the tests you want to use Betamax.
+    '''
+    with mock.patch('requests.head', side_effect=betamax_session.head), \
+         mock.patch('requests.post', side_effect=betamax_session.post), \
+         mock.patch('requests.delete', side_effect=betamax_session.delete), \
+         mock.patch('requests.put', side_effect=betamax_session.put), \
+         mock.patch('requests.patch', side_effect=betamax_session.patch), \
+         mock.patch('requests.get', side_effect=betamax_session.get):
+         yield
+
 
 @pytest.fixture
 def conn(request):
