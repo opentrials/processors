@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import mock
 import uuid
 import pytest
 import processors.cochrane_reviews.processor as processor
@@ -26,6 +27,7 @@ class TestCochraneProcessor(object):
         assert identifiers == expected
 
 
+    @pytest.mark.usefixtures('enable_betamax')
     def test_scrape_pubmed_id(self):
         reference = {
             'year': '2010',
@@ -37,7 +39,7 @@ class TestCochraneProcessor(object):
         assert pmid == '20435968'
 
 
-    def links_risk_of_bias_with_trial(self, conn, cochrane_review, trial_with_record):
+    def test_links_risk_of_bias_with_trial(self, conn, cochrane_review, trial_with_record):
         review_record = conn['warehouse']['cochrane_reviews'].find_one(id=cochrane_review)
         updated_reference = review_record['refs'][0]
         updated_reference.update({
