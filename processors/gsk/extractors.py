@@ -14,8 +14,8 @@ def extract_source(record):
         'id': 'gsk',
         'name': 'GlaxoSmithKline',
         'type': 'register',
-        'source_url': 'http://www.gsk.com',
-        'terms_and_conditions_url': 'http://www.gsk.com/en-gb/terms-of-use',
+        'source_url': 'https://www.gsk-clinicalstudyregister.com',
+        'terms_and_conditions_url': 'https://www.gsk-clinicalstudyregister.com',
     }
     return source
 
