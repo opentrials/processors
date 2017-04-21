@@ -39,6 +39,21 @@ class TestTrialProcessor(object):
         assert updated_current_primary['is_primary'] == False
         assert new_record['is_primary'] ==  True
 
+    def test_uses_warehouse_meta_id_and_meta_source_as_record_id_and_source_url(
+        self,
+        conn,
+        extractors,
+        nct_record
+    ):
+        nct_record_attrs = conn['warehouse']['nct'].find_one(nct_id=nct_record)
+
+        process_trials(conn, 'nct', extractors)
+
+        created_record = conn['database']['records'].find_one(id=nct_record_attrs['meta_id'])
+
+        assert created_record is not None
+        assert created_record['source_url'] == nct_record_attrs['meta_source']
+
 
 @pytest.fixture
 def extractors():
