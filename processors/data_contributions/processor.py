@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import requests
 import logging
 import sqlalchemy
+from contextlib import closing
 from .. import base
 from . import extractors as extractors_module
 logger = logging.getLogger(__name__)
@@ -118,26 +119,26 @@ def _remove_document(conn, contribution):
 def _document_is_valid(document):
     """Returns True if document is valid, False if not"""
     is_valid = True
-    data_request = _request_data_contribution(document['source_url'])
+    contribution_headers = _get_data_contribution_headers(document['source_url'])
     archive_mimetypes = ['-tar', '-gtar', 'zip', '7z', 'zlib']
-    if data_request:
-        content_type = data_request.headers['Content-Type']
+    if contribution_headers:
+        content_type = contribution_headers['Content-Type']
         if any(archive_type in content_type for archive_type in archive_mimetypes):
             is_valid = False
             msg = 'Ignoring document "%s" because it is of invalid type "%s"'
             logger.info(msg, document['source_url'], content_type)
     else:
-        msg = 'Ignoring document "%s" because it wasn\'t possible to download it'
+        msg = 'Ignoring document "%s" because it wasn\'t reachable.'
         logger.info(msg, document['source_url'])
         is_valid = False
     return is_valid
 
 
-def _request_data_contribution(data_url):
-    """Returns a Response Object or None"""
+def _get_data_contribution_headers(data_url):
+    """Returns a Response headers object or None"""
     try:
-        request = requests.head(data_url, allow_redirects=True)
-        request.raise_for_status()
+        with closing(requests.get(data_url, allow_redirects=True, stream=True)) as response:
+            response.raise_for_status()
+            return response.headers
     except requests.exceptions.RequestException:
-        request = None
-    return request
+        return None
