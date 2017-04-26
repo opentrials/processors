@@ -434,7 +434,8 @@ CREATE TABLE records (
     completion_date date,
     results_exemption_date date,
     last_verification_date date,
-    is_primary boolean DEFAULT false,
+    is_primary boolean DEFAULT false NOT NULL,
+    age_range jsonb,
     CONSTRAINT records_recruitment_status_check CHECK ((recruitment_status = ANY (ARRAY['recruiting'::text, 'not_recruiting'::text, 'unknown'::text, 'other'::text]))),
     CONSTRAINT records_status_check CHECK ((status = ANY (ARRAY['ongoing'::text, 'withdrawn'::text, 'suspended'::text, 'terminated'::text, 'complete'::text, 'unknown'::text, 'other'::text]))),
     CONSTRAINT trialrecords_gender_check CHECK ((gender = ANY (ARRAY['both'::text, 'male'::text, 'female'::text])))
@@ -559,6 +560,7 @@ CREATE TABLE trials (
     status text,
     completion_date date,
     results_exemption_date date,
+    age_range jsonb,
     CONSTRAINT trials_gender_check CHECK ((gender = ANY (ARRAY['both'::text, 'male'::text, 'female'::text]))),
     CONSTRAINT trials_recruitment_status_check CHECK ((recruitment_status = ANY (ARRAY['recruiting'::text, 'not_recruiting'::text, 'unknown'::text, 'other'::text]))),
     CONSTRAINT trials_status_check CHECK ((status = ANY (ARRAY['ongoing'::text, 'withdrawn'::text, 'suspended'::text, 'terminated'::text, 'complete'::text, 'unknown'::text, 'other'::text])))

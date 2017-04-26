@@ -90,7 +90,7 @@ def write_trial_and_record(conn, trial_attrs, record_id, source_url):
     return trial['id'], is_primary
 
 
-def _write_record(conn, trial, record_id, source_id=None, source_url=None, is_primary=None):
+def _write_record(conn, trial, record_id, source_id=None, source_url=None, is_primary=False):
     """Write record to database.
 
     Args:
@@ -99,7 +99,7 @@ def _write_record(conn, trial, record_id, source_id=None, source_url=None, is_pr
         record_id (dict): UUID of the record
         source_id (str): related source id (optional)
         source_url (str): Record source's URL (optional)
-        is_primary (bool): is the record primary (optional)
+        is_primary (bool): is the record primary (optional, default False)
 
     Raises:
         KeyError: if data structure is not valid
@@ -126,7 +126,7 @@ def _write_record(conn, trial, record_id, source_id=None, source_url=None, is_pr
         'trial_id': trial['id'],
         'source_id': source_id or record['source_id'],
         'source_url': source_url or record['source_url'],
-        'is_primary': is_primary or record.get('is_primary'),
+        'is_primary': is_primary,
         # ---
         'last_verification_date': trial.get('last_verification_date'),
     })
@@ -211,6 +211,7 @@ def _get_all_trial_attrs(trial_attrs):
         'primary_outcomes': trial_attrs.get('primary_outcomes'),
         'secondary_outcomes': trial_attrs.get('primary_outcomes'),
         'gender': trial_attrs.get('gender'),
+        'age_range': trial_attrs.get('age_range'),
         'has_published_results': trial_attrs.get('has_published_results'),
         'results_exemption_date': trial_attrs.get('results_exemption_date'),
     }

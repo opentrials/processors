@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import re
 from .. import base
 
 
@@ -57,6 +58,9 @@ def extract_trial(record):
     # Get has_published_results
     has_published_results = None
 
+    # Get age_range
+    age_range = _extract_age_range(record)
+
     return {
         'identifiers': identifiers,
         'public_title': public_title,
@@ -66,6 +70,7 @@ def extract_trial(record):
         'first_enrollment_date': record['study_start_date'],
         'study_type': record['study_type'],
         'gender': gender,
+        'age_range': age_range,
         'has_published_results': has_published_results,
     }
 
@@ -93,3 +98,18 @@ def extract_organisations(record):
 def extract_persons(record):
     persons = []
     return persons
+
+
+def _extract_age_range(record):
+    age = (record.get('age_range') or '').strip().lower()
+    min_age, max_age = None, None
+    if age.endswith(' and older'):
+        min_age = age[:-len(' and older')]
+        max_age = 'no limit'
+    elif len(re.split('\s*-\s*', age)) == 2:
+        min_age, max_age = re.split('\s*-\s*', age)
+
+    return {
+        'min_age': base.helpers.format_age(min_age),
+        'max_age': base.helpers.format_age(max_age),
+    }

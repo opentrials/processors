@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import re
 from .. import base
 
 
@@ -59,8 +60,11 @@ def extract_trial(record):
     if record['download_the_clinical_trial_summary']:
         has_published_results = True
 
-    # Get study phase
+    # Get study_phase
     study_phase = base.normalizers.get_normalized_phase(record['trial_phase'])
+
+    # Get age_range
+    age_range = _extract_age_range(record)
 
     return {
         'identifiers': identifiers,
@@ -76,6 +80,7 @@ def extract_trial(record):
         'study_design': record['trial_design'],
         'study_phase': study_phase,
         'gender': gender,
+        'age_range': age_range,
         'has_published_results': has_published_results,
     }
 
@@ -136,3 +141,21 @@ def extract_documents(record):
 
 def extract_document_category(record):
     return base.config.DOCUMENT_CATEGORIES['clinical_study_report_synopsis']
+
+
+def _extract_age_range(record):
+    age = (record.get('ages') or '').strip().lower()
+    min_age, max_age = None, None
+    if age.endswith(' and up'):
+        min_age = age[:-len(' and up')]
+        max_age = 'no limit'
+    elif age.startswith('up to '):
+        min_age = 'no limit'
+        max_age = age[len('up to '):]
+    elif len(re.split('\s*-\s*', age)) == 2:
+        min_age, max_age = re.split('\s*-\s*', age)
+
+    return {
+        'min_age': base.helpers.format_age(min_age),
+        'max_age': base.helpers.format_age(max_age),
+    }

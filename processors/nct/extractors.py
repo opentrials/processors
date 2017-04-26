@@ -73,8 +73,11 @@ def extract_trial(record):
     if target_sample_size is None:
         target_sample_size = record.get('enrollment_actual')
 
-    # Get study phase
+    # Get study_phase
     study_phase = base.normalizers.get_normalized_phase(record['phase'])
+
+    # Get age range
+    age_range = _extract_age_range(record)
 
     return {
         'identifiers': identifiers,
@@ -96,6 +99,7 @@ def extract_trial(record):
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
+        'age_range': age_range,
         'has_published_results': has_published_results,
         'results_exemption_date': record['results_exemption_date'],
     }
@@ -172,3 +176,14 @@ def extract_documents(record):
 
 def extract_document_category(record):
     return base.config.DOCUMENT_CATEGORIES['clinical_study_report']
+
+
+def _extract_age_range(record):
+    eligibility = record.get('eligibility') or {}
+    min_age = eligibility.get('minimum_age')
+    max_age = eligibility.get('maximum_age')
+
+    return {
+        'min_age': base.helpers.format_age(min_age),
+        'max_age': base.helpers.format_age(max_age),
+    }

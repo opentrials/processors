@@ -413,3 +413,75 @@ def get_canonical_location_name(location):
     logger.debug('Location "%s" normalized as "%s"', cleaned_location, current_match)
 
     return current_match
+
+
+def format_age(
+    age,
+    NA_STRINGS=('n/a', 'not applicable'),
+    UNKNOWN_STRINGS=('not stated',),
+    NO_LIMIT_STRINGS=('no limit',),
+):
+    '''Formats an age string to be 'XX Unit' (e.g. '12 Years')
+
+    Args:
+        age (str): The age string from a trial. It's assumed to have the format
+            'XX Unit', like '12 Years'. If it's included in the `NA_STRINGS`
+            list it'll become `None`, and if it's included in the
+            `UNKNOWN_STRINGS` list it'll become 'Unknown'
+        NA_STRINGS (list of str): list of strings that means `age` isn't
+            limitted. If the received `age` string is equal to any of these
+            strings, this method will return 'N/A'.
+        UNKNOWN_STRINGS (list of str): list of strings that means `age` is
+            unknown. If the received `age` string is equal to any of these
+            strings, this method will return `None`.
+        NO_LIMIT_STRINGS (list of str): list of strings that means that there's
+            no age limit. If the received `age` string is equal to any of these
+            strings, this method will return 'any'.
+
+    Returns:
+        (str): Depending on the parameters this is called with, the return
+            value can be:
+                * The age formatted as 'XX Unit';
+                * 'N/A' if the age is included in `NA_STRINGS`;
+                * `None` if the age is included in `UNKNOWN_STRINGS`;
+                * 'any' if the age is included in `NO_LIMIT_STRINGS`.
+
+    Raises:
+        ValueError: If the numeric part of the age (e.g. 12 in '12 Years')
+            isn't numeric or is negative, or if the time unit is invalid.
+    '''
+    clean_age = (age or '').strip().lower()
+    if not clean_age or clean_age in UNKNOWN_STRINGS:
+        return
+    if clean_age in NA_STRINGS:
+        return 'N/A'
+    elif clean_age in NO_LIMIT_STRINGS:
+        return 'any'
+
+    # We expect the age to be in format '10 Years'
+    age_num, age_unit = clean_age.split()
+    try:
+        age_num = int(age_num)
+        if age_num < 0:
+            msg = 'Negative age "{}" is invalid'.format(age)
+            raise ValueError(msg)
+    except ValueError:
+        msg = 'Non-integer age "{}" is invalid'.format(age)
+        raise ValueError(msg)
+
+    AGE_UNITS = (
+        'year',
+        'month',
+        'week',
+        'day',
+        'hour',
+        'minute',
+    )
+    age_unit = age_unit.rstrip('s')
+    if age_unit not in AGE_UNITS:
+        msg = 'Unit of age "{}" is invalid (valid units: {})'.format(age, AGE_UNITS)
+        raise ValueError(msg)
+
+    if age_num != 1:
+        age_unit += 's'
+    return '{} {}'.format(age_num, age_unit).title()

@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import datetime
+import mock
 import pytest
 import processors.nct.extractors as extractors
 
@@ -52,6 +53,30 @@ class TestNCTExtractors(object):
 
         assert trial['status'] == 'unknown'
         assert trial['recruitment_status'] == 'unknown'
+
+    @pytest.mark.parametrize('age,expected_age_call', [
+        ('12 Years', '12 Years'),
+        (None, None),
+    ])
+    @mock.patch('processors.base.helpers.format_age', side_effect=lambda x: x)
+    def test_extracts_minimum_and_maximum_ages(self, format_age_mock, stub_record, age, expected_age_call):
+        stub_record.update({
+            'eligibility': {
+                'minimum_age': age,
+                'maximum_age': age,
+            }
+        })
+
+        trial = extractors.extract_trial(stub_record)
+
+        assert trial['age_range'] == {
+            'min_age': expected_age_call,
+            'max_age': expected_age_call,
+        }
+        format_age_mock.assert_has_calls([
+            mock.call(age),
+            mock.call(age),
+        ])
 
 
 @pytest.fixture

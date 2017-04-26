@@ -346,3 +346,56 @@ class TestFindTrialByIdentifiers(object):
 
         trial_found = helpers.find_trial_by_identifiers(conn, ordered_identifiers)
         assert trial_found is not None
+
+
+# * We have an age
+# * There is an age, but we dont know it == None
+# * There is no age limit == any
+# * There is no age == N/A
+class TestFormatAge(object):
+    @pytest.mark.parametrize('age,expected_age', [
+        ('12 years', '12 Years'),
+        ('1 year', '1 Year'),
+        ('3 months', '3 Months'),
+        ('1 month', '1 Month'),
+        ('12 weeks', '12 Weeks'),
+        ('1 week', '1 Week'),
+        ('6 days', '6 Days'),
+        ('1 day', '1 Day'),
+        ('72 hours', '72 Hours'),
+        ('1 hour', '1 Hour'),
+        ('0 years', '0 Years'),
+    ])
+    def test_format_age(self, age, expected_age):
+        assert helpers.format_age(age) == expected_age
+
+    @pytest.mark.parametrize('not_applicable_age', [
+        'N/A',
+        'Not applicable',
+    ])
+    def test_no_age_exists(self, not_applicable_age):
+        assert helpers.format_age(not_applicable_age) == 'N/A'
+
+    @pytest.mark.parametrize('unknown_age', [
+        'Not stated',
+        '',
+        None,
+    ])
+    def test_unknown_age(self, unknown_age):
+        assert helpers.format_age(unknown_age) is None
+
+    @pytest.mark.parametrize('no_limit_age', [
+        'No limit',
+    ])
+    def test_no_age_limit(self, no_limit_age):
+        assert helpers.format_age(no_limit_age) == 'any'
+
+    @pytest.mark.parametrize('invalid_age', [
+        '-20 Years',
+        'Twenty Years',
+        '12 Foo',
+    ])
+    def test_raises_if_age_is_invalid(self, invalid_age):
+        with pytest.raises(ValueError):
+            helpers.format_age(invalid_age)
+

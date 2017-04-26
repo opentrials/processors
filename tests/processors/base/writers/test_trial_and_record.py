@@ -288,13 +288,12 @@ class TestRecordWriter(object):
         trial_attrs = conn['database']['trials'].find_one(id=trial)
         record_attrs = conn['database']['records'].find_one(id=record)
 
-        trial_and_record_writer._write_record(conn, trial_attrs, record, None, None, None)
+        trial_and_record_writer._write_record(conn, trial_attrs, record, None, None)
 
         updated_record_attrs = conn['database']['records'].find_one(id=record)
 
         assert record_attrs['source_id'] == updated_record_attrs['source_id']
         assert record_attrs['source_url'] == updated_record_attrs['source_url']
-        assert record_attrs['is_primary'] == updated_record_attrs['is_primary']
 
     def test_sets_is_primary_on_all_other_records_to_false_if_its_the_primary(self, conn, trial):
         trial_attrs = conn['database']['trials'].find_one(id=trial)

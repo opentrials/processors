@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 
 from .. import base
 
-
 # Module API
+
 
 def extract_source(record):
     source = {
@@ -62,6 +62,9 @@ def extract_trial(record):
     # Get study_phase
     study_phase = base.normalizers.get_normalized_phase(record['phase'])
 
+    # Get age_range
+    age_range = _extract_age_range(record)
+
     return {
         'identifiers': identifiers,
         'registration_date': record['first_received'],
@@ -82,6 +85,7 @@ def extract_trial(record):
         'primary_outcomes': record['primary_outcomes'],
         'secondary_outcomes': record['secondary_outcomes'],
         'gender': gender,
+        'age_range': age_range,
         'has_published_results': has_published_results,
         'last_verification_date': record['record_verification_date'],
     }
@@ -130,3 +134,10 @@ def extract_documents(record):
 
 def extract_document_category(record):
     return base.config.DOCUMENT_CATEGORIES['clinical_study_report']
+
+
+def _extract_age_range(record):
+    return {
+        'min_age': base.helpers.format_age(record.get('minimum_age')),
+        'max_age': base.helpers.format_age(record.get('maximum_age')),
+    }

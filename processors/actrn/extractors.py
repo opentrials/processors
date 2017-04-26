@@ -68,8 +68,11 @@ def extract_trial(record):
     # Get has_published_results
     has_published_results = None
 
-    # Get study phase
+    # Get study_phase
     study_phase = base.normalizers.get_normalized_phase(record['phase'])
+
+    # Get age_range
+    age_range = _extract_age_range(record)
 
     return {
         'identifiers': identifiers,
@@ -84,6 +87,7 @@ def extract_trial(record):
             'inclusion': record['key_inclusion_criteria'],
             'exclusion': record['key_exclusion_criteria'],
         },
+        'age_range': age_range,
         'target_sample_size': record['target_sample_size'],
         'first_enrollment_date': record['anticipated_date_of_first_participant_enrolment'],
         'study_type': record['study_type'],
@@ -134,3 +138,10 @@ def extract_persons(record):
             'trial_role': role,
         })
     return persons
+
+
+def _extract_age_range(record):
+    return {
+        'min_age': base.helpers.format_age(record.get('minimum_age')),
+        'max_age': base.helpers.format_age(record.get('maximum_age')),
+    }
