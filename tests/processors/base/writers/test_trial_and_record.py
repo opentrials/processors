@@ -84,7 +84,7 @@ class TestTrialWriter(object):
             conn,
             update_attrs,
             record_attrs['id'],
-            source_url=None
+            source_url='http://example.com'
         )
         updated_trial = conn['database']['trials'].find_one(id=trial)
         updated_record = conn['database']['records'].find_one(id=record)
@@ -119,7 +119,7 @@ class TestTrialWriter(object):
             conn,
             update_attrs,
             record_attrs['id'],
-            source_url=None
+            source_url='http://example.com/'
         )
         updated_trial = conn['database']['trials'].find_one(id=trial)
 
@@ -152,7 +152,7 @@ class TestTrialWriter(object):
             conn,
             new_trial,
             existing_record['id'],
-            source_url=None
+            source_url='http://example.com'
         )
         updated_trial = conn['database']['trials'].find_one(id=trial)
 
@@ -284,17 +284,6 @@ class TestRecordWriter(object):
 
         assert conn['database']['records'].count(id=record_id) == 1
 
-    def test_doesnt_update_None_parameters(self, conn, trial, record):
-        trial_attrs = conn['database']['trials'].find_one(id=trial)
-        record_attrs = conn['database']['records'].find_one(id=record)
-
-        trial_and_record_writer._write_record(conn, trial_attrs, record, None, None)
-
-        updated_record_attrs = conn['database']['records'].find_one(id=record)
-
-        assert record_attrs['source_id'] == updated_record_attrs['source_id']
-        assert record_attrs['source_url'] == updated_record_attrs['source_url']
-
     def test_sets_is_primary_on_all_other_records_to_false_if_its_the_primary(self, conn, trial):
         trial_attrs = conn['database']['trials'].find_one(id=trial)
         record_id = uuid.uuid1().hex
@@ -331,6 +320,7 @@ class TestRecordWriter(object):
         conn_mock = mock.MagicMock()
         conn_mock['database']['records'].find_one.return_value = None
         source_id = record_attrs['source_id']
+        is_primary = False
         simplest_trial = {
             'id': trial,
             'identifiers': {},
@@ -338,7 +328,7 @@ class TestRecordWriter(object):
             'source_id': source_id,
         }
 
-        trial_and_record_writer._write_record(conn_mock, simplest_trial, record, source_id, source_url)
+        trial_and_record_writer._write_record(conn_mock, simplest_trial, record, source_id, source_url, is_primary)
 
         conn_mock['database']['records'].upsert.assert_called()
 

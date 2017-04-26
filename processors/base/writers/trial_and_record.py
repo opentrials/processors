@@ -90,16 +90,16 @@ def write_trial_and_record(conn, trial_attrs, record_id, source_url):
     return trial['id'], is_primary
 
 
-def _write_record(conn, trial, record_id, source_id=None, source_url=None, is_primary=False):
+def _write_record(conn, trial, record_id, source_id, source_url, is_primary):
     """Write record to database.
 
     Args:
         conn (dict): connection dict
         trial (dict): related trial data
         record_id (dict): UUID of the record
-        source_id (str): related source id (optional)
-        source_url (str): Record source's URL (optional)
-        is_primary (bool): is the record primary (optional, default False)
+        source_id (str): related source id
+        source_url (str): Record source's URL
+        is_primary (bool): is the record primary
 
     Raises:
         KeyError: if data structure is not valid
@@ -124,8 +124,8 @@ def _write_record(conn, trial, record_id, source_id=None, source_url=None, is_pr
     record.update(_get_all_trial_attrs(trial))
     record.update({
         'trial_id': trial['id'],
-        'source_id': source_id or record['source_id'],
-        'source_url': source_url or record['source_url'],
+        'source_id': source_id,
+        'source_url': source_url,
         'is_primary': is_primary,
         # ---
         'last_verification_date': trial.get('last_verification_date'),
