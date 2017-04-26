@@ -11,6 +11,9 @@ import processors.ictrp.extractors as extractors
 
 
 class TestICTRPExtractors(object):
+    def test_stub_record_is_valid(self, stub_record):
+        extractors.extract_trial(stub_record)
+
     @pytest.mark.parametrize('date_str,expected_date', [
         ('2012-12-31', datetime.date(2012, 12, 31)),
         ('31/12/2012', datetime.date(2012, 12, 31)),
@@ -19,13 +22,26 @@ class TestICTRPExtractors(object):
         ('invalid', None),
         ('', None),
     ])
-    def test_extract_trial_handles_dates(self, date_str, expected_date, stub_record):
+    def test_extract_trial_registration_date(self, date_str, expected_date, stub_record):
         stub_record['date_of_registration'] = date_str
 
         trial = extractors.extract_trial(stub_record)
 
         assert trial.get('registration_date') == expected_date
 
+    @pytest.mark.parametrize('record_status,expected_status,expected_recruitment_status', [
+        (None, None, None),
+        ('', None, None),
+        ('other', 'other', 'other'),
+    ])
+    def test_extract_trial_status(self, record_status, expected_status,
+        expected_recruitment_status, stub_record):
+        stub_record['recruitment_status'] = record_status
+
+        trial = extractors.extract_trial(stub_record)
+
+        assert trial.get('recruitment_status') == expected_recruitment_status
+        assert trial.get('status') == expected_status
 
 @pytest.fixture
 def stub_record():

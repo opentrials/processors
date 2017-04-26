@@ -107,7 +107,7 @@ def extract_trial(record):
         'withdrawn': ['withdrawn', 'not_recruiting'],
         'withheld': ['other', 'other'],
     }
-    key = record.get('recruitment_status', '').strip().lower()
+    key = (record.get('recruitment_status') or '').strip().lower()
     status, recruitment_status = statuses[key]
 
     # Get gender
