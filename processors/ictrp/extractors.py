@@ -104,6 +104,7 @@ def extract_trial(record):
         'temporary halt or suspension': ['suspended', 'not_recruiting'],
         'temporary halt': ['suspended', 'not_recruiting'],
         'terminated': ['terminated', 'not_recruiting'],
+        'unknown status': ['unknown', 'unknown'],
         'withdrawn': ['withdrawn', 'not_recruiting'],
         'withheld': ['other', 'other'],
     }
