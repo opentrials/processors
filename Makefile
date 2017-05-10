@@ -16,11 +16,17 @@ ifeq ("${BRANCH}", "master")
 endif
 
 deploy: build
-	docker push ${DOCKER_REPO}
+	docker push ${DOCKER_REPO}:${COMMIT}
+ifeq ("${BRANCH}", "master")
+	docker push ${DOCKER_REPO}:latest
+endif
 
 deploy_travis: build
 	docker login -e ${DOCKER_EMAIL} -u ${DOCKER_USER} -p ${DOCKER_PASS}
-	docker push ${DOCKER_REPO}
+	docker push ${DOCKER_REPO}:${COMMIT}
+ifeq ("${BRANCH}", "master")
+	docker push ${DOCKER_REPO}:latest
+endif
 
 list:
 	@grep '^\.PHONY' Makefile | cut -d' ' -f2- | tr ' ' '\n'
