@@ -35,8 +35,6 @@ script:
 
 deploy:
   provider: script
-  script:
-    - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-    - make deploy
+  script: make deploy_travis
   on:
     branch: master

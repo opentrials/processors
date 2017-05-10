@@ -1,4 +1,4 @@
-.PHONY: all build deploy list start test up
+.PHONY: all build deploy deploy_travis list start test dump_schemas restore_schemas up
 
 all: list
 
@@ -16,6 +16,10 @@ ifeq ("${BRANCH}", "master")
 endif
 
 deploy: build
+	docker push ${DOCKER_REPO}
+
+deploy_travis: build
+	docker login -e ${DOCKER_EMAIL} -u ${DOCKER_USER} -p ${DOCKER_PASS}
 	docker push ${DOCKER_REPO}
 
 list:
