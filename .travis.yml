@@ -35,6 +35,6 @@ script:
 
 deploy:
   provider: script
-  script: make deploy_travis
+  script: make deploy_travis BRANCH=$TRAVIS_BRANCH
   on:
     branch: master

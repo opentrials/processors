@@ -13,8 +13,6 @@ build:
 		.
 ifeq ("${BRANCH}", "master")
 	docker tag ${DOCKER_REPO}:${COMMIT} ${DOCKER_REPO}:latest
-else
-	@echo 'Not tagging Docker image as latest because we are not in "master" (current branch: "${BRANCH}")'
 endif
 
 deploy: build
