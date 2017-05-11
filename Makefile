@@ -22,7 +22,7 @@ ifeq ("${BRANCH}", "master")
 endif
 
 deploy_travis: build
-	docker login -e ${DOCKER_EMAIL} -u ${DOCKER_USER} -p ${DOCKER_PASS}
+	docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 	docker push ${DOCKER_REPO}:${COMMIT}
 ifeq ("${BRANCH}", "master")
 	docker push ${DOCKER_REPO}:latest
