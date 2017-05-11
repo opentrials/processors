@@ -4,7 +4,7 @@ all: list
 
 COMMIT := $(shell git rev-parse HEAD)
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-DOCKER_REPO := 'opentrials/processors'
+DOCKER_REPO := opentrials/processors
 
 build:
 	docker build \
@@ -13,6 +13,8 @@ build:
 		.
 ifeq ("${BRANCH}", "master")
 	docker tag ${DOCKER_REPO}:${COMMIT} ${DOCKER_REPO}:latest
+else
+	@echo 'Not tagging Docker image as latest because we are not in "master" (current branch: "${BRANCH}")'
 endif
 
 deploy: build
